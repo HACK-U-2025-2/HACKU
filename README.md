@@ -2,7 +2,7 @@
 
 ## Github Project
 - プロジェクト管理はgithub projectを用いて行う
-- github projectでは複数テーブルがあり、sprintの若い順か開発を進めていく
+- github projectでは複数テーブルがあり、sprintの若い順から開発を進めていく
 - 各sprintは実装する機能の優先度を表しており、例えばsprint1はMVPに相当する機能を指す
 - 各担当(front, server, AI)について、該当sprintの実装を完了した場合にのみマネージャに確認をとった上で次のsprintの開発に進むことができる
 - テーブルには以下のカラムがある
