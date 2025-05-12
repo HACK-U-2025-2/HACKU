@@ -1,0 +1,26 @@
+{
+  "dart.flutterSdkPath": "frontend/.fvm/versions/3.29.3",
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "pubspec.yaml": ".packages, .metadata, pubspec.lock",
+    "*.dart": "$(capture).g.dart, $(capture).freezed.dart, $(capture).gr.dart",
+    "*.feature": "$(capture)_test.dart"
+  },
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "quickfix.insertSemicolon": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.rulers": [
+      80
+    ],
+    "editor.suggestSelection": "first",
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": "off"
+  },
+}

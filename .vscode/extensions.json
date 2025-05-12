@@ -1,0 +1,26 @@
+{
+    "recommendations": [
+        // Basic
+        "MS-CEINTL.vscode-language-pack-ja",
+        "streetsidesoftware.code-spell-checker",
+        "usernamehw.errorlens",
+        "mosapride.zenkaku",
+        "shardulm94.trailing-spaces",
+        // Dart, Flutter
+        "Dart-Code.dart-code",
+        "Dart-Code.flutter",
+        "robert-brunhage.flutter-riverpod-snippets",
+        // AI
+        "GitHub.copilot",
+        // Git
+        "mhutchie.git-graph",
+        "donjayamanne.githistory",
+        "GitHub.vscode-pull-request-github",
+        // 以下、お好みのテーマ
+        // "dracula-theme.theme-dracula",
+        // 以下、テスト導入時に検討
+        // "flutterando.flutter-coverage". // coverage viewer
+        // "ryanluker.vscode-coverage-gutters", // coverage line viewer
+        // "alexkrechik.cucumberautocomplete", // cucumber
+    ]
+}
