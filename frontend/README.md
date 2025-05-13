@@ -29,13 +29,36 @@ Dockerを利用する方法については詳しくないため省略します�
   - .fvmrcファイルに記載されているバージョンを使用するためのコマンド
 - `flutter doctor`の実行
   - もし、セットアップが必要なものがあれば、指示に従ってセットアップを行う
+
+    ```txt
+    > flutter doctor
+    Doctor summary (to see all details, run flutter doctor -v):
+    [✓] Flutter (Channel stable, 3.29.3, on macOS 15.4.1 24E263 darwin-arm64, locale ja-JP)
+    [✓] Android toolchain - develop for Android devices (Android SDK version 35.0.0)
+    [✓] Xcode - develop for iOS and macOS (Xcode 16.3)
+    [✓] Chrome - develop for the web
+    [✓] Android Studio (version 2024.3)
+    [✓] VS Code (version 1.100.0)
+    [✓] Connected device (5 available)
+    [✓] Network resources
+
+    • No issues found!
+    ```
+
 - `dart pub get`の実行
+
+### 補足
+
+- `fvm global`を実行しなかった場合、`flutter`を`fvm flutter`、`dart`を`fvm dart`として実行する必要があります
+- Android StudioやXCodeが重たい場合は、Webでの実行も可能です
+  - `flutter docker`にて、Chrome環境だけあれば実行可能なはず
+  - ただし、このアプリはモバイル想定のため、モバイルでの一部の機能が制限される場合があります
 
 ## 実行
 
 ### VSCodeから実行
 
-`F5`で実行します。
+`F5`や`Command+Shift+D`（VSCodeの左のツールバー）で実行します。
 
 デバイスが起動している必要があります。
 
