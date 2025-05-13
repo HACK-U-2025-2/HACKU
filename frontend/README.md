@@ -65,3 +65,30 @@ Dockerを利用する方法については詳しくないため省略します�
 ### `flutter run`を実行
 
 実行するデバイスを後から選択する場合は、`flutter run`を実行します。
+
+## 開発
+
+### フォルダ構造
+
+Feature-FirstとLayeredがあるが、今回はわかりやすさのためにLayeredを採用。（仮）
+
+```md
+- lib
+  - pages/
+    - *_page.dart（Scaffoldを含むWidget）
+  - widgets/
+    - *.dart（ScaffoldでないWidget）
+  - models/
+  - services/
+  - repositories/
+```
+
+### ルーティング
+
+ルーティングライブラリは一旦使用しない。将来的には使用予定。
+
+`Navigator.of(context)`を使用する。
+
+### Linter
+
+very_good_analysisを採用。
