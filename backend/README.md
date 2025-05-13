@@ -11,6 +11,12 @@
 - docker-compose コマンドが使用可能であること
 
 ### 実行方法
+- 初回実行時
+```bash
+    cd backend
+    docker-compose up -d --build
+```
+- ２回目以降
 ```bash
     cd backend
     docker-compose up -d
