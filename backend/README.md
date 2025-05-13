@@ -12,20 +12,22 @@
 
 ### 実行方法
 ```bash
+    cd backend
     docker-compose up -d
 ```
 
 ### サーバへのアクセス方法
 - APIサーバ: http://localhost:8000
-- PostgreSQL: localhost:15432 (username: hacku, password: password)
 - API docs: http://localhost:8000/docs
+- DBサーバ: localhost:15432 (username: hacku, password: password, dbname: hacku_db)
+  - GUI クライアントやpsqlを用いてアクセス
 
 ### サーバの停止方法
 - DBの内容を残したい場合
 ```bash
-    docker-compose up down
+    docker-compose down
 ```
 - DBの内容を削除したい場合
 ```bash
-    docker-compose up down -v
+    docker-compose down -v
 ```
