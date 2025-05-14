@@ -26,9 +26,23 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: hacku_db
     ports:
-      - "15432:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "81:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: fastapi@example.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
 
 volumes:
   postgres_data:
+  pgadmin_data:

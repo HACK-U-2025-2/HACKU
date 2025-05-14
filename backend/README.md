@@ -36,6 +36,21 @@
 - API docs: http://localhost:8000/docs
 - DBサーバ: localhost:15432 (username: hacku, password: password, dbname: hacku_db)
   - GUI クライアントやpsqlを用いてアクセス
+- pgadmin: http://localhost:181 (email:  fastapi@example.com, password: password)
+
+### pgadminの初期設定
+- pgadminにアクセス
+- 新しいサーバを追加を選択
+  - 名前: hacku_db
+  - ホスト名: db
+  - 管理用データベース: postgres
+  - ユーザ名: hacku
+  - パスワード: password
+- これによりテーブルがpgadmin上で確認できるようになる
+
+### DB内のテーブル確認
+- pgadminにアクセス
+- Servers -> hacku_db -> データベース -> hacku_db -> スキーマ -> public -> テーブル
 
 ### サーバの停止方法
 - DBの内容を残したい場合

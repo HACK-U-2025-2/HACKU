@@ -1,3 +1,14 @@
-from database import Base
+from datetime import datetime
 
-## 今後メモ用のclassを作成予定
+from database import Base
+from sqlalchemy import Column, DateTime, Integer, String
+
+
+class Memos(Base):
+    __tablename__ = "memos"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String, nullable=False)
+    user_id = Column(String, nullable=False)
+    body = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
