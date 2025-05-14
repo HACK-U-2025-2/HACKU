@@ -10,6 +10,8 @@
 
 - docker-compose コマンドが使用可能であること
 
+- Cloudflaredがインストール済みであること
+
 ### 実行方法
 - 初回実行時
 ```bash
@@ -21,6 +23,13 @@
     cd backend
     docker-compose up -d
 ```
+
+### Cloudflare Tunnelの実行
+```bash
+    cloudflared tunnel --url http://localhost:8000
+```
+
+(ドメイン登録をしていないので、起動のたびにエンドポイントが変更されます)
 
 ### サーバへのアクセス方法
 - APIサーバ: http://localhost:8000
