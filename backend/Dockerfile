@@ -1,4 +1,10 @@
-FROM python:3.13-alpine
+FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04
+
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip git curl ca-certificates \
+  && ln -sf /usr/bin/python3 /usr/bin/python \
+  && ln -sf /usr/bin/pip3     /usr/bin/pip \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
