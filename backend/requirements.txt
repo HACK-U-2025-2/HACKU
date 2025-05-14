@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+black
+isort
+httpx
+pytest
+pydantic
+pydantic-settings
+pydantic_core
+python-dotenv
+psycopg2-binary
+SQLAlchemy
+starlette
