@@ -72,20 +72,18 @@ Dockerを利用する方法については詳しくないため省略します�
 
 Feature-FirstとLayeredがあるが、今回はわかりやすさのためにLayeredを採用。（仮）
 
-Providerに関しては、特定のWidgetのみで使用する場合は、そのWidgetのファイル内に、共通で使用する場合は、`providers`フォルダに配置する。
-
 ```md
 - lib
-  - pages/
-    - *_page.dart（Scaffoldを含むWidget）
-  - widgets/
-    - *.dart（ScaffoldでないWidget）
-  - models/
-  - providers/
+  - pages/（Scaffoldを含むWidget）
+    - *_page.dart
+  - widgets/（ScaffoldでないWidget）
+    - *.dart
+  - models/（DBのテーブルを元にしたDartのクラス）
+  - providers/（Riverpodのプロバイダー）
     - *_provider.dart
-  - services/
+  - services/（APIやほかサービスとつなげるためのクラス）
     - *_service.dart
-  - repositories/
+  - repositories/（データベースなどにアクセスするクラス）
     - *_repository.dart
 ```
 
