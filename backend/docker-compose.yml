@@ -10,6 +10,14 @@ services:
     volumes:
       - .:/app
 
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
   db:
     image: postgres:14
     restart: always
