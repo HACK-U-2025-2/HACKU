@@ -34,9 +34,9 @@
 ### サーバへのアクセス方法
 - APIサーバ: http://localhost:8000
 - API docs: http://localhost:8000/docs
-- DBサーバ: localhost:15432 (username: hacku, password: password, dbname: hacku_db)
+- DBサーバ: localhost:5432 (username: hacku, password: password, dbname: hacku_db)
   - GUI クライアントやpsqlを用いてアクセス
-- pgadmin: http://localhost:181 (email:  fastapi@example.com, password: password)
+- pgadmin: http://localhost:81 (email:  fastapi@example.com, password: password)
 
 ### pgadminの初期設定
 - pgadminにアクセス
