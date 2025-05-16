@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from routers import memo
-from app.llm.loader import load_model
+from llm.loader import load_model
 
 async def lifespan(app: FastAPI):
     # サーバ起動時に一度だけモデルをロード

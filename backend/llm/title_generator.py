@@ -1,5 +1,4 @@
-# app/llm/generator.py
-from app.llm.loader import load_model
+from llm.loader import load_model
 
 def generate_title(text: str) -> str:
     """
