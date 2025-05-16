@@ -2,6 +2,7 @@
 torch==2.2.0+cu121
 numpy==1.26.4
 transformers
+alembic
 accelerate
 fastapi
 uvicorn
