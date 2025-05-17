@@ -10,24 +10,34 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // キーボードが開くとき、スクロールしないようにする。
+      // これにより、Overflowが発生しないようにする。
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(title: const Text('ホーム'), centerTitle: true),
       drawer: const HomeDrawer(),
-      body: const SafeArea(
-        child: Column(
-          spacing: 8,
-          children: [
-            Padding(padding: EdgeInsets.all(16), child: MemoTextField()),
-            Divider(),
-            Padding(
-              padding: EdgeInsets.only(left: 16),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('頻出メモ'),
+      body: GestureDetector(
+        onTap: () {
+          // タップ検知可能なWidget以外をタップしたとき、キーボードを閉じる
+          FocusScope.of(context).unfocus();
+        },
+        behavior: HitTestBehavior.opaque,
+        child: const SafeArea(
+          child: Column(
+            spacing: 8,
+            children: [
+              Padding(padding: EdgeInsets.all(16), child: MemoTextField()),
+              Divider(),
+              Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('頻出メモ'),
+                ),
               ),
-            ),
-            Expanded(child: _MemoListView()),
-            RecordButton(),
-          ],
+              Expanded(child: _MemoListView()),
+              RecordButton(),
+            ],
+          ),
         ),
       ),
     );
