@@ -23,7 +23,6 @@ class HomePage extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         child: const SafeArea(
           child: Column(
-            spacing: 8,
             children: [
               Padding(padding: EdgeInsets.all(16), child: MemoTextField()),
               Divider(),
@@ -35,7 +34,9 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               Expanded(child: _MemoListView()),
+              SizedBox(height: 16),
               RecordButton(),
+              SizedBox(height: 16),
             ],
           ),
         ),
