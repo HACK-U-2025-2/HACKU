@@ -27,7 +27,7 @@ class MemoTextField extends HookWidget {
         keyboardType: TextInputType.multiline,
         textInputAction: TextInputAction.newline,
         maxLines: null,
-        minLines: 1,
+        expands: true,
         validator: (value) {
           if (value == null || value.trim().isEmpty) {
             return '空のメモは作成できません';
@@ -36,6 +36,7 @@ class MemoTextField extends HookWidget {
         },
         decoration: InputDecoration(
           labelText: 'メモを入力してください',
+          alignLabelWithHint: true,
           filled: true,
           fillColor: colorScheme.secondaryContainer,
           contentPadding: const EdgeInsets.all(16),
