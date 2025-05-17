@@ -13,6 +13,7 @@ sealed class Memo with _$Memo {
     @MemoIdJsonConverter() required MemoId id,
     required String title,
     required String body,
+    required String raw,
     required DateTime createdAt,
     @Default([]) List<Tag> tags,
     DateTime? updatedAt,

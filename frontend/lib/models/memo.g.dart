@@ -10,6 +10,7 @@ _Memo _$MemoFromJson(Map<String, dynamic> json) => _Memo(
   id: const MemoIdJsonConverter().fromJson((json['id'] as num).toInt()),
   title: json['title'] as String,
   body: json['body'] as String,
+  raw: json['raw'] as String,
   createdAt: DateTime.parse(json['created_at'] as String),
   tags:
       (json['tags'] as List<dynamic>?)
@@ -26,6 +27,7 @@ Map<String, dynamic> _$MemoToJson(_Memo instance) => <String, dynamic>{
   'id': const MemoIdJsonConverter().toJson(instance.id),
   'title': instance.title,
   'body': instance.body,
+  'raw': instance.raw,
   'created_at': instance.createdAt.toIso8601String(),
   'tags': instance.tags,
   'updated_at': instance.updatedAt?.toIso8601String(),
