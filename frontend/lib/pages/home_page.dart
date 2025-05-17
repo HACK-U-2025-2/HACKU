@@ -9,10 +9,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 16;
+
     return Scaffold(
-      // キーボードが開くとき、スクロールしないようにする。
-      // これにより、Overflowが発生しないようにする。
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(title: const Text('ホーム'), centerTitle: true),
       drawer: const HomeDrawer(),
       body: GestureDetector(
@@ -21,20 +20,30 @@ class HomePage extends StatelessWidget {
           FocusScope.of(context).unfocus();
         },
         behavior: HitTestBehavior.opaque,
-        child: const SafeArea(
+        child: SafeArea(
           child: Column(
             children: [
-              _MemoListHeaderLabel(),
-              SizedBox(height: 8),
-              SizedBox(height: 60, child: _MemoHorizontalListView()),
-              Expanded(
+              const _MemoListHeaderLabel(),
+              const SizedBox(height: 8),
+              const SizedBox(height: 60, child: _MemoHorizontalListView()),
+              const Expanded(
                 child: Padding(
                   padding: EdgeInsets.all(16),
                   child: MemoTextField(),
                 ),
               ),
-              RecordButton(),
-              SizedBox(height: 16),
+              // 表示スペースの関係上、キーボードが表示されていないときのみRecordButtonを表示
+              AnimatedSize(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                child:
+                    (!isKeyboardVisible)
+                        ? const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: RecordButton(),
+                        )
+                        : const SizedBox.shrink(),
+              ),
             ],
           ),
         ),
