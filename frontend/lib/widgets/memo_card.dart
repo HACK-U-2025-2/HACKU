@@ -46,9 +46,7 @@ class MemoCard extends HookWidget {
                   style: theme.textTheme.bodyMedium,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 3,
-                )
-              else
-                const SizedBox.shrink(),
+                ),
             ],
           ),
         ),
