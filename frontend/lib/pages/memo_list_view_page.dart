@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/memo_details_page.dart';
-import 'package:frontend/widgets/home_drawer.dart';
+import 'package:frontend/widgets/destination_navigation_drawer.dart';
 import 'package:frontend/widgets/memo_card.dart';
 
 class MemoListViewPage extends StatelessWidget {

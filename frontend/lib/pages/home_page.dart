@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/widgets/home_drawer.dart';
+import 'package:frontend/widgets/destination_navigation_drawer.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
