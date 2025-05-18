@@ -5,8 +5,8 @@ enum HomeDrawerDestination {
   home(iconData: Icons.home_outlined, label: 'ホーム'),
   memoList(iconData: Icons.list_outlined, label: 'メモ一覧'),
   tagList(iconData: Icons.label_outline, label: 'タグ一覧'),
-  important(iconData: Icons.favorite_outline, label: '重要メモ'),
-  archive(iconData: Icons.archive_outlined, label: 'アーカイブ');
+  importantList(iconData: Icons.favorite_outline, label: '重要メモ'),
+  archiveList(iconData: Icons.archive_outlined, label: 'アーカイブ');
 
   const HomeDrawerDestination({required this.iconData, required this.label});
 
@@ -47,8 +47,8 @@ class HomeDrawer extends StatelessWidget {
               ),
             );
           case HomeDrawerDestination.tagList:
-          case HomeDrawerDestination.important:
-          case HomeDrawerDestination.archive:
+          case HomeDrawerDestination.importantList:
+          case HomeDrawerDestination.archiveList:
             showDialog<void>(
               context: context,
               builder: (context) {
