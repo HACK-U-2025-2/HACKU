@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/pages/memo_list_view_page.dart';
+import 'package:frontend/providers/router_provider.dart';
+import 'package:frontend/types/destination.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-enum _HomeDrawerDestination {
-  home(iconData: Icons.home_outlined, label: 'ホーム'),
-  memoList(iconData: Icons.list_outlined, label: 'メモ一覧'),
-  tagList(iconData: Icons.label_outline, label: 'タグ一覧'),
-  importantList(iconData: Icons.favorite_outline, label: '重要メモ'),
-  archiveList(iconData: Icons.archive_outlined, label: 'アーカイブ');
-
-  const _HomeDrawerDestination({required this.iconData, required this.label});
-
-  final IconData iconData;
-  final String label;
-}
-
-class HomeDrawer extends StatelessWidget {
-  const HomeDrawer({super.key});
+class DestinationNavigationDrawer extends ConsumerWidget {
+  const DestinationNavigationDrawer({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedDestination = ref.watch(selectedDestinationProvider);
     final textTheme = Theme.of(context).textTheme;
     return NavigationDrawer(
+      selectedIndex: selectedDestination.index,
+      onDestinationSelected:
+          (value) => _onDestinationSelected(ref, Destination.values[value]),
       children: [
         Padding(
           padding: const EdgeInsets.all(16),
@@ -29,44 +23,39 @@ class HomeDrawer extends StatelessWidget {
             style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
-        for (final destination in _HomeDrawerDestination.values)
+        for (final destination in Destination.values)
           NavigationDrawerDestination(
             icon: Icon(destination.iconData),
             label: Text(destination.label),
           ),
       ],
-      onDestinationSelected: (value) {
-        final destination = _HomeDrawerDestination.values[value];
-        switch (destination) {
-          case _HomeDrawerDestination.home:
-            Navigator.of(context).pop();
-          case _HomeDrawerDestination.memoList:
-            Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (context) => const MemoListViewPage(),
-              ),
-            );
-          case _HomeDrawerDestination.tagList:
-          case _HomeDrawerDestination.importantList:
-          case _HomeDrawerDestination.archiveList:
-            // TODO: 各画面の実装
-            showDialog<void>(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text(destination.label),
-                  content: const Text('Coming soon...'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('OK'),
-                    ),
-                  ],
-                );
-              },
-            );
-        }
-      },
     );
+  }
+
+  void _onDestinationSelected(WidgetRef ref, Destination destination) {
+    final context = ref.context;
+    // Drawerを閉じる。popでも可能だが、明示的に閉じる
+    Scaffold.of(context).closeDrawer();
+
+    final selectedDestination = ref.read(selectedDestinationProvider);
+    if (selectedDestination == destination) return;
+
+    ref.read(selectedDestinationProvider.notifier).setDestination(destination);
+
+    // ホームまで戻る
+    // これをしないと、入れ子になってしまう
+    Navigator.of(context).popUntil((route) => route.isFirst);
+
+    switch (destination) {
+      case Destination.home:
+        // 何もしない
+        break;
+      case Destination.memoList:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (context) => const MemoListViewPage(),
+          ),
+        );
+    }
   }
 }
