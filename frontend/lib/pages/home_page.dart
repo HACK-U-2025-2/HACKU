@@ -23,6 +23,7 @@ class HomePage extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
+              const SizedBox(height: 8),
               const _MemoListHeaderLabel(),
               const SizedBox(height: 8),
               const SizedBox(height: 60, child: _MemoHorizontalListView()),
@@ -58,7 +59,7 @@ class _MemoListHeaderLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16, top: 16),
+      padding: const EdgeInsets.only(left: 16),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text('頻出メモ', style: Theme.of(context).textTheme.titleMedium),
