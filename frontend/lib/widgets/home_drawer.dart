@@ -49,7 +49,21 @@ class HomeDrawer extends StatelessWidget {
           case HomeDrawerDestination.tagList:
           case HomeDrawerDestination.important:
           case HomeDrawerDestination.archive:
-            throw UnimplementedError('未実装のメニューが選択されました: ${destination.label}');
+            showDialog<void>(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text(destination.label),
+                  content: const Text('Coming soon...'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
         }
       },
     );
