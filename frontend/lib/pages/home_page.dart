@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/home_drawer.dart';
 import 'package:frontend/widgets/memo_text_field.dart';
-import 'package:frontend/widgets/mini_memo_card.dart';
 import 'package:frontend/widgets/record_button.dart';
 
 class HomePage extends StatelessWidget {
@@ -78,8 +77,33 @@ class _MemoHorizontalListView extends StatelessWidget {
       itemCount: 10,
       separatorBuilder: (context, index) => const SizedBox(width: 4),
       itemBuilder: (context, index) {
-        return const MiniMemoCard();
+        // TODO(tyPhoon-collab): MemoCardに統合する
+        // 仮置きのWidgetを採用中
+        return const _MiniMemoCard();
       },
+    );
+  }
+}
+
+class _MiniMemoCard extends StatelessWidget {
+  const _MiniMemoCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: InkWell(
+        onTap: () {},
+        borderRadius: BorderRadius.circular(10),
+        child: const Padding(
+          padding: EdgeInsets.all(16),
+          child: Center(
+            child: Text(
+              'メモタイトル',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
