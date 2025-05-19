@@ -1,0 +1,326 @@
+openapi: 3.0.0
+info:
+  title: Memo API
+  version: 1.0.0
+
+paths:
+  /memos/:
+    get:
+      summary: メモ一覧を取得
+      parameters:
+        - name: keyword
+          in: query
+          schema:
+            type: string
+        - name: tag
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: メモ一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShortMemo'
+        '403':
+          description: ユーザ情報が不正
+        '422':
+          description: リクエストが不正
+
+    post:
+      summary: 新たなメモを投稿
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [raw, tags, correction]
+              properties:
+                correction:
+                  type: boolean
+                raw:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: メモ作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Memo'
+        '403':
+          description: ユーザ情報が不正
+        '422':
+          description: リクエストが不正
+
+  /memos/{memo_id}:
+    get:
+      summary: 指定されたメモの詳細情報を取得
+      parameters:
+        - name: memo_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: メモ情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Memo'
+        '403':
+          description: ユーザ情報が不正
+        '404':
+          description: メモが存在しない
+
+    delete:
+      summary: メモを削除
+      parameters:
+        - name: memo_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: なし
+        '403':
+          description: ユーザ情報が不正
+        '404':
+          description: メモが存在しない
+
+  /memos/{memo_id}/body:
+    put:
+      summary: メモの文章修正（HTTP版）
+      parameters:
+        - name: memo_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body]
+              properties:
+                body:
+                  type: string
+      responses:
+        '200':
+          description: なし
+        '403':
+          description: ユーザ情報が不正
+        '404':
+          description: メモが存在しない
+        '422':
+          description: リクエストが不正
+
+  /memos/{memo_id}/title:
+    put:
+      summary: メモのタイトル修正
+      parameters:
+        - name: memo_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+      responses:
+        '200':
+          description: なし
+        '403':
+          description: ユーザ情報が不正
+        '404':
+          description: メモが存在しない
+        '422':
+          description: リクエストが不正
+
+  /memos/{memo_id}/tag:
+    put:
+      summary: メモのタグ修正
+      parameters:
+        - name: memo_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tags]
+              properties:
+                tags:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: なし
+        '403':
+          description: ユーザ情報が不正
+        '404':
+          description: メモが存在しない
+        '422':
+          description: リクエストが不正
+
+  /tags:
+    get:
+      summary: ユーザが使用したタグ一覧を取得
+      parameters:
+        - name: keyword
+          in: query
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: タグ一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+        '403':
+          description: ユーザ情報が不正
+        '422':
+          description: リクエストが不正
+
+  /auth:
+    post:
+      summary: ユーザIDからトークン発行
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id]
+              properties:
+                user_id:
+                  type: string
+      responses:
+        '200':
+          description: トークン
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '422':
+          description: リクエストが不正
+
+components:
+  schemas:
+    ShortMemo:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+  
+    Memo:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+        raw:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string

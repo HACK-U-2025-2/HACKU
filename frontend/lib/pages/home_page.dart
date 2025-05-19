@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/widgets/home_drawer.dart';
+import 'package:frontend/widgets/destination_navigation_drawer.dart';
 import 'package:frontend/widgets/memo_text_field.dart';
 import 'package:frontend/widgets/record_button.dart';
 
@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       appBar: AppBar(title: const Text('ホーム'), centerTitle: true),
-      drawer: const HomeDrawer(),
+      drawer: const DestinationNavigationDrawer(),
       body: GestureDetector(
         onTap: () {
           // タップ検知可能なWidget以外をタップしたとき、キーボードを閉じる
