@@ -125,6 +125,7 @@ class _TagChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Chip(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       label: Text(tag.name),
       // onDeleted: () {
       //   // TODO(tyPhoon-collab): タグを削除する処理を実装する
