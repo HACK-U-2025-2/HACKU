@@ -5,6 +5,7 @@ from llm.loader import load_model
 from routers import auth, memo
 
 
+@asynccontextmanager
 async def lifespan(app: FastAPI):
     # サーバ起動時に一度だけモデルをロード
     load_model()
