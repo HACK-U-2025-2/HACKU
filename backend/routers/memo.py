@@ -14,5 +14,5 @@ router = APIRouter(tags=["Memos"])
 async def read_root(
     db: Session = Depends(get_db),
 ):
-    user_id = ""  # ログインに成功していると仮定
+    user_id = "a"  # ログインに成功していると仮定
     return fetch_memos(db=db, user_id=user_id)
