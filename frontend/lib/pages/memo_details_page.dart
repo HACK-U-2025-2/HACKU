@@ -30,6 +30,7 @@ class MemoDetailsPage extends ConsumerWidget {
     final memo = memoAsyncValue.requireValue;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       appBar: AppBar(title: Text(memo.title)),
       body: DefaultTabController(
         length: MemoDetailsTab.values.length,
