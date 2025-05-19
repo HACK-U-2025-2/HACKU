@@ -44,6 +44,13 @@
   - GUI クライアントやpsqlを用いてアクセス
 - pgadmin: http://localhost:81 (email:  fastapi@example.com, password: password)
 
+### docs上で認証が必要なエンドポイントを確認する方法
+- POST /authから、確認したいuser_idを入力し、レスポンスを生成
+- レスポンスから"access_token"に該当する箇所の文字列を取得
+- 右上Authorizeボタンを押下
+- valueに先ほどの文字列を入れ、Authorizeボタンを押す
+- これにより、指定したuser_idとして他エンドポイントを参照可能になる
+
 ### pgadminの初期設定
 - pgadminにアクセス
 - 新しいサーバを追加を選択
