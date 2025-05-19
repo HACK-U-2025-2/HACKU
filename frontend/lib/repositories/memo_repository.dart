@@ -77,6 +77,9 @@ class InMemoryMemoRepository implements MemoRepository {
 
   @override
   Future<void> deleteMemo(MemoId id) async {
+    if (_memos[id] == null) {
+      throw MemoNotFoundException(id);
+    }
     _memos.remove(id);
   }
 }
