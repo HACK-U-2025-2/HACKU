@@ -12,7 +12,7 @@
 
 - Cloudflaredがインストール済みであること
 
-### 実行方法
+### 実行方法(GPU環境)
 - 初回実行時
 ```bash
     cd backend
@@ -22,6 +22,18 @@
 ```bash
     cd backend
     docker-compose up -d
+```
+
+### 実行方法(CPU環境)
+- 初回実行時
+```bash
+    cd backend
+    docker-compose -f docker-compose.yml up -d --build
+```
+- ２回目以降
+```bash
+    cd backend
+    docker-compose -f docker-compose.yml up -d
 ```
 
 ### Cloudflare Tunnelの実行
