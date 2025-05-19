@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
+import 'package:frontend/widgets/destination_navigation_drawer.dart';
 import 'package:frontend/widgets/memo_card.dart';
 
 class MemoListViewPage extends StatelessWidget {
@@ -19,6 +20,7 @@ class MemoListViewPage extends StatelessWidget {
     );
 
     return Scaffold(
+      drawer: const DestinationNavigationDrawer(),
       appBar: AppBar(title: const Text('メモ一覧')),
       body: ListView(
         children: [
