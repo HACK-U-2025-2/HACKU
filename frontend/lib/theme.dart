@@ -16,5 +16,8 @@ ThemeData buildThemeData(Brightness brightness) {
     appBarTheme: const AppBarTheme(centerTitle: true),
     tabBarTheme: const TabBarTheme(indicatorSize: TabBarIndicatorSize.tab),
     chipTheme: ChipThemeData(backgroundColor: backgroundColor),
+    searchBarTheme: const SearchBarThemeData(
+      elevation: WidgetStatePropertyAll(0),
+    ),
   );
 }
