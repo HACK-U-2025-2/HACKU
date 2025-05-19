@@ -11,8 +11,7 @@ class HomePage extends StatelessWidget {
     final isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 16;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-      appBar: AppBar(title: const Text('ホーム'), centerTitle: true),
+      appBar: AppBar(title: const Text('ホーム')),
       drawer: const DestinationNavigationDrawer(),
       body: GestureDetector(
         onTap: () {
