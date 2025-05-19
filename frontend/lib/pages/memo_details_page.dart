@@ -30,7 +30,6 @@ class MemoDetailsPage extends ConsumerWidget {
     final memo = memoAsyncValue.requireValue;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       appBar: AppBar(title: Text(memo.title)),
       body: DefaultTabController(
         length: MemoDetailsTab.values.length,
@@ -44,7 +43,6 @@ class MemoDetailsPage extends ConsumerWidget {
                 tabs: [
                   for (final tab in MemoDetailsTab.values) Tab(text: tab.label),
                 ],
-                indicatorSize: TabBarIndicatorSize.tab,
               ),
               Expanded(
                 child: TabBarView(
@@ -125,7 +123,6 @@ class _TagChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Chip(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       label: Text(tag.name),
       // onDeleted: () {
       //   // TODO(tyPhoon-collab): タグを削除する処理を実装する
