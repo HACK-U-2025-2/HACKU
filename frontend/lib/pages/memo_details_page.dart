@@ -98,6 +98,7 @@ class _TagsHorizontalListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO(tyPhoon-collab): 編集モードの実装
     return SizedBox(
       height: 40,
       child: ListView.separated(
