@@ -38,6 +38,7 @@ class MemoDetailsPage extends ConsumerWidget {
           child: Column(
             spacing: 8,
             children: [
+              const SizedBox(height: 8),
               _TagsHorizontalListView(tags: memo.tags),
               TabBar(
                 tabs: [
@@ -71,9 +72,9 @@ class _MemoBodyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: SingleChildScrollView(child: GptMarkdown(memo.body)),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: GptMarkdown(memo.body),
     );
   }
 }
@@ -85,9 +86,9 @@ class _MemoRawView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: SingleChildScrollView(child: Text(memo.raw)),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Text(memo.raw),
     );
   }
 }
