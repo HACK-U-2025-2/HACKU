@@ -31,6 +31,12 @@
 
 (ドメイン登録をしていないので、起動のたびにエンドポイントが変更されます)
 
+### テストコードの実行
+```bash
+    cd backend
+    docker-compose run --rm backend pytest -s
+```
+
 ### サーバへのアクセス方法
 - APIサーバ: http://localhost:8000
 - API docs: http://localhost:8000/docs
