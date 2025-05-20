@@ -58,7 +58,7 @@ class HomePage extends HookWidget {
                               debugPrint('Transcription: $transcription');
                               if (transcription == null) return;
 
-                              textController.text = transcription;
+                              textController.text += transcription;
                               focusNode.requestFocus();
                             },
                           ),
