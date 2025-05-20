@@ -37,6 +37,7 @@ class _RecordDialog extends HookConsumerWidget {
           ManualSttController(context)
             ..listen(
               onListeningStateChanged: (state) {
+                if (!context.mounted) return;
                 if (state == ManualSttState.listening) {
                   ref.read(isRecordingProvider.notifier).setAsRecording();
                 } else {
