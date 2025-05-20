@@ -275,7 +275,7 @@ paths:
 
 components:
   schemas:
-    ShortMemo:
+    MemoPreview:
       type: object
       properties:
         id:
@@ -290,10 +290,6 @@ components:
         updated_at:
           type: string
           format: date-time
-        tags:
-          type: array
-          items:
-            $ref: '#/components/schemas/Tag'
   
     Memo:
       type: object

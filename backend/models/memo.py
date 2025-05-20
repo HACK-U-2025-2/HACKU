@@ -10,5 +10,9 @@ class Memos(Base):
     title = Column(String, nullable=False)
     user_id = Column(String, nullable=False)
     body = Column(String, nullable=False)
+    raw = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+    class Config:
+        orm_mode = True

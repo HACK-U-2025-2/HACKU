@@ -7,6 +7,7 @@ def create_test_memos(test_db, memo_list):
             title=data["title"],
             user_id=data["user_id"],
             body=data["body"],
+            raw=data["raw"],
             created_at=data["created_at"],
             updated_at=data["updated_at"],
         )

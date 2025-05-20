@@ -20,7 +20,7 @@ def create_access_token(user_id: str, expires_delta: timedelta):
     return jwt.encode(payload, SECRET_KEY, algorithm=SECRET_ALGORITHM)
 
 
-def get_cuurent_user(token: Annotated[HTTPAuthorizationCredentials, Depends(security)]):
+def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(security)]):
     if token is None:
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED, detail="Invalid Authorization"
