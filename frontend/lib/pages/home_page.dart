@@ -56,8 +56,6 @@ class HomePage extends HookWidget {
                           child: RecordButton(
                             onTranscribed: (transcription) {
                               debugPrint('Transcription: $transcription');
-                              if (transcription == null) return;
-
                               textController.text += transcription;
                               focusNode.requestFocus();
                             },
