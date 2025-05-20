@@ -3,7 +3,8 @@ import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:frontend/providers/memo_edit_provider.dart';
 import 'package:frontend/providers/memo_provider.dart';
-import 'package:gpt_markdown/gpt_markdown.dart';
+import 'package:frontend/widgets/memo_details/memo_body_view.dart';
+import 'package:frontend/widgets/memo_details/memo_raw_view.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 enum MemoDetailsTab {
@@ -50,20 +51,18 @@ class MemoDetailsPage extends ConsumerWidget {
             children: [
               const SizedBox(height: 8),
               _TagsHorizontalListView(tags: memo.tags),
-              if (!isEditingMode)
-                TabBar(
-                  tabs: [
-                    for (final tab in MemoDetailsTab.values)
-                      Tab(text: tab.label),
-                  ],
-                ),
+              TabBar(
+                tabs: [
+                  for (final tab in MemoDetailsTab.values) Tab(text: tab.label),
+                ],
+              ),
               Expanded(
                 child: TabBarView(
                   children: [
                     for (final tab in MemoDetailsTab.values)
                       switch (tab) {
-                        MemoDetailsTab.body => _MemoBodyView(memo: memo),
-                        MemoDetailsTab.raw => _MemoRawView(memo: memo),
+                        MemoDetailsTab.body => MemoBodyView(memo: memo),
+                        MemoDetailsTab.raw => MemoRawView(memo: memo),
                       },
                   ],
                 ),
@@ -72,63 +71,6 @@ class MemoDetailsPage extends ConsumerWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _MemoBodyView extends HookConsumerWidget {
-  const _MemoBodyView({required this.memo});
-
-  final Memo memo;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isEditingMode = ref.watch(isEditingModeProvider);
-
-    if (isEditingMode) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Expanded(
-              child: TextFormField(
-                initialValue: memo.body,
-                maxLines: null, // 無制限に改行を許可
-                expands: true, // 利用可能なスペースを最大限に利用
-                keyboardType: TextInputType.multiline,
-                decoration: const InputDecoration(
-                  border: InputBorder.none, // ボーダーを非表示
-                  hintText: 'メモ本文を入力してください...',
-                ),
-                onChanged: (text) {
-                  // TODO(tyPhoon-collab): メモの内容を更新する処理を実装する
-                },
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return SingleChildScrollView(
-      // FABとの重なりを避けるために、下部に余白を追加
-      padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 100),
-      child: GptMarkdown(memo.body),
-    );
-  }
-}
-
-class _MemoRawView extends StatelessWidget {
-  const _MemoRawView({required this.memo});
-
-  final Memo memo;
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Text(memo.raw),
     );
   }
 }
