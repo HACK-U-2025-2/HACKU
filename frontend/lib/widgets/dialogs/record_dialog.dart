@@ -62,7 +62,7 @@ class _RecordDialog extends HookConsumerWidget {
 
       initSpeech();
       return null;
-    }, [speech]); // 依存関係にspeechToTextとrefを含める
+    }, [speech]);
 
     return AlertDialog(
       icon: const Icon(Icons.mic),
