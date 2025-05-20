@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/widgets/dialogs/record_dialog.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 typedef OnTranscribed = void Function(String? transcription);
 
-class RecordButton extends HookConsumerWidget {
+class RecordButton extends HookWidget {
   const RecordButton({super.key, this.onTranscribed, this.iconSize = 80});
 
   final double iconSize;
   final OnTranscribed? onTranscribed;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final isRecording = useState(false);
 
     final iconData = isRecording.value ? Icons.stop : Icons.mic;
@@ -21,7 +20,7 @@ class RecordButton extends HookConsumerWidget {
       padding: const EdgeInsets.all(24),
       onPressed: () async {
         isRecording.value = true;
-        final transcription = await pickTranscribed(context, ref);
+        final transcription = await pickTranscribed(context);
         isRecording.value = false;
         onTranscribed?.call(transcription);
       },

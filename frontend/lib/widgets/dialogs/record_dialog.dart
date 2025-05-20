@@ -5,7 +5,7 @@ import 'package:frontend/services/speech_to_text_service.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// 音声入力を行うダイアログを表示し、文字起こしされたテキストを返す
-Future<String?> pickTranscribed(BuildContext context, WidgetRef ref) async {
+Future<String?> pickTranscribed(BuildContext context) async {
   final result = await showDialog<String?>(
     context: context,
     barrierDismissible: false, // 処理をシンプルにするために、画面外をタップしても閉じないようにする
