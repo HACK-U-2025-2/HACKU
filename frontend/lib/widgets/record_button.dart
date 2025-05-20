@@ -1,53 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:manual_speech_to_text/manual_speech_to_text.dart';
+import 'package:frontend/providers/recording_provider.dart';
+import 'package:frontend/widgets/dialogs/record_dialog.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class RecordButton extends HookWidget {
+class RecordButton extends HookConsumerWidget {
   const RecordButton({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final recordingState = useState(ManualSttState.stopped);
-    final transcribed = useState('');
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isRecording = ref.watch(isRecordingProvider);
 
-    final sttController = useMemoized(() {
-      final sttController =
-          ManualSttController(context)
-            ..listen(
-              onListeningStateChanged: (state) {
-                recordingState.value = state;
-              },
-              onListeningTextChanged: (recognizedText) {
-                debugPrint('Recognized text: $recognizedText');
-                transcribed.value = recognizedText;
-              },
-            )
-            ..enableHapticFeedback = true
-            ..localId = 'ja';
-
-      debugPrint('STT Controller initialized');
-      return sttController;
-    });
-    useEffect(() => sttController.dispose, [sttController]);
-
-    void start() {
-      sttController.startStt();
-    }
-
-    void stop() {
-      sttController.stopStt();
-    }
-
-    final onPressed =
-        recordingState.value == ManualSttState.listening ? stop : start;
-    final iconData =
-        recordingState.value == ManualSttState.listening
-            ? Icons.stop
-            : Icons.mic;
+    final iconData = isRecording ? Icons.stop : Icons.mic;
 
     return IconButton.filled(
       padding: const EdgeInsets.all(24),
-      onPressed: onPressed,
+      onPressed: () {
+        final transcription = pickTranscribed(context, ref);
+        debugPrint('Transcription: $transcription');
+      },
       icon: Icon(iconData, size: 80),
     );
   }
