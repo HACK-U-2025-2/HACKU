@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/providers/recording_provider.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/widgets/dialogs/record_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -13,14 +13,16 @@ class RecordButton extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isRecording = ref.watch(isRecordingProvider);
+    final isRecording = useState(false);
 
-    final iconData = isRecording ? Icons.stop : Icons.mic;
+    final iconData = isRecording.value ? Icons.stop : Icons.mic;
 
     return IconButton.filled(
       padding: const EdgeInsets.all(24),
       onPressed: () async {
+        isRecording.value = true;
         final transcription = await pickTranscribed(context, ref);
+        isRecording.value = false;
         onTranscribed?.call(transcription);
       },
       icon: Icon(iconData, size: iconSize),

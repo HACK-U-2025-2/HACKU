@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:frontend/providers/recording_provider.dart';
+import 'package:frontend/providers/record_provider.dart';
+import 'package:frontend/services/speech_to_text_service.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:manual_speech_to_text/manual_speech_to_text.dart';
 
 /// 音声入力を行うダイアログを表示し、文字起こしされたテキストを返す
 Future<String?> pickTranscribed(BuildContext context, WidgetRef ref) async {
@@ -25,80 +25,72 @@ class _RecordDialog extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final transcribed = useState('');
+    final speech = ref.watch(speechToTextServiceProvider);
+    final errorMessage = useState<String?>(null);
+    final shouldReturnValue = useState<bool>(true);
+    final isRecording = useState<bool>(false);
 
-    // 今回使用しているSTTライブラリの録音の停止が非同期かつ、awaitできないため
-    // 録音の停止の管理をonListeningStateChangedで管理する
-    // そのとき、文字起こしを返すかどうかをフラグで管理する
-    final shouldPop = useState(false);
-    final shouldReturnTranscription = useState(false);
-
-    final sttController = useMemoized(() {
-      final sttController =
-          ManualSttController(context)
-            ..listen(
-              onListeningStateChanged: (state) {
-                if (!context.mounted) return;
-                if (state == ManualSttState.listening) {
-                  ref.read(isRecordingProvider.notifier).setAsRecording();
-                } else {
-                  ref.read(isRecordingProvider.notifier).setAsNotRecording();
-                  if (shouldPop.value) {
-                    Navigator.of(context).pop(
-                      shouldReturnTranscription.value
-                          ? transcribed.value
-                          : null,
-                    );
-                  }
-                }
-              },
-              onListeningTextChanged: (recognizedText) {
-                debugPrint('Recognized text: $recognizedText');
-                transcribed.value = recognizedText;
-              },
-            )
-            ..localId = 'ja-JP'
-            ..enableHapticFeedback = true;
-
-      debugPrint('STT Controller initialized');
-      return sttController;
+    ref.listen(speechToTextEventsProvider, (prev, next) {
+      if (next.value == null) return;
+      switch (next.requireValue) {
+        case final SpeechToTextResultEvent result:
+          debugPrint('SpeechToTextResultEvent: ${result.result}');
+          transcribed.value = result.result;
+        case final SpeechToTextStartEvent _:
+          isRecording.value = true;
+        case final SpeechToTextStopEvent _:
+          Navigator.of(
+            context,
+          ).pop(shouldReturnValue.value ? transcribed.value : null);
+        case final SpeechToTextErrorEvent error:
+          errorMessage.value = error.message;
+      }
     });
 
-    void start() {
-      sttController.startStt();
-    }
-
-    void stop() {
-      sttController.stopStt();
-    }
-
     useEffect(() {
-      start();
-      return sttController.dispose;
-    }, [sttController]);
+      Future<void> initSpeech() async {
+        try {
+          await speech.start();
+        } on SpeechToTextNotAvailableException catch (e) {
+          errorMessage.value = e.toString();
+          debugPrint('Speech recognition is not available: $e');
+        } on Exception catch (e) {
+          errorMessage.value = e.toString();
+          debugPrint('Error initializing speech recognition: $e');
+        }
+      }
+
+      initSpeech();
+      return null;
+    }, [speech]); // 依存関係にspeechToTextとrefを含める
 
     return AlertDialog(
       icon: const Icon(Icons.mic),
       title: const Text('音声入力中'),
-      content: Text(
-        transcribed.value.isEmpty ? 'メモの内容を話してください' : transcribed.value,
-      ),
+      content:
+          errorMessage.value != null
+              ? Text(errorMessage.value!)
+              : isRecording.value
+              ? Text(
+                transcribed.value.isEmpty ? 'メモの内容を話してください' : transcribed.value,
+              )
+              : const Text('音声入力準備中...'),
       actions: [
         TextButton(
           onPressed: () {
-            stop();
-            shouldPop.value = true;
-            shouldReturnTranscription.value = false;
+            shouldReturnValue.value = false;
+            speech.stop();
           },
           child: const Text('キャンセル'),
         ),
-        TextButton(
-          onPressed: () {
-            stop();
-            shouldPop.value = true;
-            shouldReturnTranscription.value = true;
-          },
-          child: const Text('完了'),
-        ),
+        if (isRecording.value && errorMessage.value == null)
+          TextButton(
+            onPressed: () {
+              shouldReturnValue.value = true;
+              speech.stop();
+            },
+            child: const Text('完了'),
+          ),
       ],
     );
   }
