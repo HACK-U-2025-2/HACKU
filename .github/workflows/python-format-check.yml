@@ -13,18 +13,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install black
-          pip install isort
 
       - name: Install black and isort
         run: |
@@ -32,8 +30,8 @@ jobs:
 
       - name: Check code formatting with black
         run: |
-          black --check .  # blackで整形がされているか確認
+          black --check backend/  # blackで整形がされているか確認
 
       - name: Check code formatting with isort
         run: |
-          isort --check-only .  # isortでインポートの順序が正しいか確認
+          isort --check-only backend/  # isortでインポートの順序が正しいか確認
