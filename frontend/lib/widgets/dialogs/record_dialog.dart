@@ -56,6 +56,7 @@ class _RecordDialog extends HookConsumerWidget {
                 transcribed.value = recognizedText;
               },
             )
+            ..localId = 'ja-JP'
             ..enableHapticFeedback = true;
 
       debugPrint('STT Controller initialized');
