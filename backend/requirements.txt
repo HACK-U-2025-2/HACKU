@@ -15,3 +15,5 @@ python-dotenv
 psycopg2-binary
 SQLAlchemy
 starlette
+python-jose[cryptography]
+python-multipart
