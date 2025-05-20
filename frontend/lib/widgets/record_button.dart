@@ -3,8 +3,13 @@ import 'package:frontend/providers/recording_provider.dart';
 import 'package:frontend/widgets/dialogs/record_dialog.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+typedef OnTranscribed = void Function(String? transcription);
+
 class RecordButton extends HookConsumerWidget {
-  const RecordButton({super.key});
+  const RecordButton({super.key, this.onTranscribed, this.iconSize = 80});
+
+  final double iconSize;
+  final OnTranscribed? onTranscribed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,11 +19,11 @@ class RecordButton extends HookConsumerWidget {
 
     return IconButton.filled(
       padding: const EdgeInsets.all(24),
-      onPressed: () {
-        final transcription = pickTranscribed(context, ref);
-        debugPrint('Transcription: $transcription');
+      onPressed: () async {
+        final transcription = await pickTranscribed(context, ref);
+        onTranscribed?.call(transcription);
       },
-      icon: Icon(iconData, size: 80),
+      icon: Icon(iconData, size: iconSize),
     );
   }
 }
