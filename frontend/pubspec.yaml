@@ -39,6 +39,7 @@ dependencies:
   riverpod_annotation: ^2.6.1
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
+  manual_speech_to_text: ^1.0.4
   gpt_markdown: ^1.0.19
 
 dev_dependencies:

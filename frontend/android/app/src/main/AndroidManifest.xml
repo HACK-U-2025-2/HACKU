@@ -1,4 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- manual_speech_to_textに必要な権限 -->
+    <!-- [manual_speech_to_text | Flutter package](https://pub.dev/packages/manual_speech_to_text) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <!-- ここまで -->
+
     <application
         android:label="frontend"
         android:name="${applicationName}"
@@ -42,4 +51,13 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+
+    <!-- manual_speech_to_textに必要なクエリ -->
+    <!-- [manual_speech_to_text | Flutter package](https://pub.dev/packages/manual_speech_to_text) -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
 </manifest>
