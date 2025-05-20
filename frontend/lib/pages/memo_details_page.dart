@@ -52,9 +52,7 @@ class MemoDetailsPage extends HookConsumerWidget {
       floatingActionButton:
           showFab
               ? FloatingActionButton(
-                onPressed: () {
-                  ref.read(isEditingModeProvider.notifier).toggle();
-                },
+                onPressed: ref.read(isEditingModeProvider.notifier).toggle,
                 child: const Icon(Icons.edit),
               )
               : null,
