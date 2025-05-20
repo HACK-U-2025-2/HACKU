@@ -17,5 +17,4 @@ class Memos(Base):
 
     tags = relationship("MemoTags", back_populates="memo")
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}

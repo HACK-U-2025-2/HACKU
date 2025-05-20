@@ -36,6 +36,13 @@
     docker-compose -f docker-compose.yml up -d
 ```
 
+### データベースの更新(テーブル変更時)
+- サーバを起動した状態で以下を実行
+```bash
+    docker exec -it backend-backend-1 sh  
+    alembic upgrade head
+```
+
 ### Cloudflare Tunnelの実行
 ```bash
     cloudflared tunnel --url http://localhost:8000
