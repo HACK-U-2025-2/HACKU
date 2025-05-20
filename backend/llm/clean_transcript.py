@@ -1,5 +1,6 @@
 from llm.loader import load_model
 
+
 def clean_transcript(text: str) -> str:
     """
     与えられた文章の誤字脱字を修正して返す
@@ -26,14 +27,14 @@ def clean_transcript(text: str) -> str:
         messages,
         tokenize=False,
         add_generation_prompt=True,
-        enable_thinking=True  # thinking-mode を有効化
+        enable_thinking=True,  # thinking-mode を有効化
     )
 
     # トークナイズしてモデルに渡す
     inputs = tokenizer([prepared], return_tensors="pt", padding=True).to(model.device)
     output_ids = model.generate(
         **inputs,
-        max_new_tokens=8192, # 必要に応じて調整
+        max_new_tokens=8192,  # 必要に応じて調整
         do_sample=True,
     )[0]
 

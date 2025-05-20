@@ -1,5 +1,6 @@
 from llm.loader import load_model
 
+
 def summarize_text(text: str) -> str:
     """
     与えられた文章 text を要約してMarkdown形式で返す。
@@ -17,18 +18,15 @@ def summarize_text(text: str) -> str:
 """
     messages = [{"role": "user", "content": prompt}]
     prepared = tokenizer.apply_chat_template(
-        messages,
-        tokenize=False,
-        add_generation_prompt=True,
-        enable_thinking=False
+        messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
     )
 
     # トークナイズしてモデルに渡す
     inputs = tokenizer([prepared], return_tensors="pt", padding=True).to(model.device)
     output_ids = model.generate(
         **inputs,
-        max_new_tokens=256, # 要調整
-        do_sample=True, # 要検討
+        max_new_tokens=256,  # 要調整
+        do_sample=True,  # 要検討
     )[0]
 
     # 入力部分を除いた生成トークンだけをデコード

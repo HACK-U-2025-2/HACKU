@@ -1,5 +1,6 @@
 from llm.loader import load_model
 
+
 def generate_title(text: str) -> str:
     """
     与えられた文章 text からタイトルを1文で生成して返す。
@@ -19,19 +20,16 @@ def generate_title(text: str) -> str:
 """
     messages = [{"role": "user", "content": prompt}]
     prepared = tokenizer.apply_chat_template(
-        messages,
-        tokenize=False,
-        add_generation_prompt=True,
-        enable_thinking=False
+        messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
     )
 
     # トークナイズしてモデルに渡す
     inputs = tokenizer([prepared], return_tensors="pt", padding=True).to(model.device)
     output_ids = model.generate(
         **inputs,
-        max_new_tokens=12, # 最低限
-        do_sample=True, # 要検討
-        )[0]
+        max_new_tokens=12,  # 最低限
+        do_sample=True,  # 要検討
+    )[0]
 
     # 入力部分を除いた生成トークンだけをデコード
     input_len = inputs.input_ids.shape[1]
