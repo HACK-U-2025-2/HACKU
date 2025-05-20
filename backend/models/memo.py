@@ -2,6 +2,7 @@ from datetime import datetime
 
 from database import Base
 from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy.orm import relationship
 
 
 class Memos(Base):
@@ -12,3 +13,5 @@ class Memos(Base):
     body = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+    tags = relationship("MemoTags", back_populates="memo")
