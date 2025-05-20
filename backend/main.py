@@ -15,5 +15,6 @@ async def lifespan(app: FastAPI):
 # FastAPI インスタンスに lifespan を渡す
 app = FastAPI(lifespan=lifespan)
 
+
 app.include_router(auth.router)
 app.include_router(memo.router)
