@@ -4,9 +4,12 @@ on:
   pull_request:
     branches:
       - '**'
+    paths:
+      - 'backend/**'
 
 jobs:
   backend:
+    if: contains(join(github.event.pull_request.changed_files.*.filename, ','), '.py')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
