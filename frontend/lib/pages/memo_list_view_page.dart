@@ -41,7 +41,7 @@ class MemoListViewPage extends HookWidget {
       appBar: AppBar(title: const Text('メモ一覧')),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
           child: Column(
             spacing: 20,
             children: [
@@ -55,6 +55,7 @@ class MemoListViewPage extends HookWidget {
               ),
               Expanded(
                 child: ListView.separated(
+                  padding: const EdgeInsets.only(bottom: 20),
                   separatorBuilder:
                       (context, index) => const SizedBox(height: 20),
                   itemCount: mockMemoList.length,
