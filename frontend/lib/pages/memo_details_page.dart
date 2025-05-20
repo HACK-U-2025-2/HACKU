@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:frontend/providers/memo_edit_provider.dart';
@@ -15,7 +16,7 @@ enum MemoDetailsTab {
   final String label;
 }
 
-class MemoDetailsPage extends ConsumerWidget {
+class MemoDetailsPage extends HookConsumerWidget {
   const MemoDetailsPage({super.key});
 
   @override
@@ -30,45 +31,58 @@ class MemoDetailsPage extends ConsumerWidget {
     }
 
     final memo = memoAsyncValue.requireValue;
+
+    final currentTab = useState(MemoDetailsTab.body);
+    final tabController = useTabController(
+      initialLength: MemoDetailsTab.values.length,
+    );
+
+    useEffect(() {
+      tabController.addListener(() {
+        currentTab.value = MemoDetailsTab.values[tabController.index];
+      });
+      return tabController.dispose;
+    }, [tabController]);
+
     final isEditingMode = ref.watch(isEditingModeProvider);
+    final showFab = !isEditingMode && currentTab.value == MemoDetailsTab.body;
 
     return Scaffold(
       appBar: AppBar(title: Text(memo.title)),
       floatingActionButton:
-          isEditingMode
-              ? null
-              : FloatingActionButton(
+          showFab
+              ? FloatingActionButton(
                 onPressed: () {
                   ref.read(isEditingModeProvider.notifier).toggle();
                 },
                 child: const Icon(Icons.edit),
-              ),
-      body: DefaultTabController(
-        length: MemoDetailsTab.values.length,
-        child: SafeArea(
-          child: Column(
-            spacing: 8,
-            children: [
-              const SizedBox(height: 8),
-              _TagsHorizontalListView(tags: memo.tags),
-              TabBar(
-                tabs: [
-                  for (final tab in MemoDetailsTab.values) Tab(text: tab.label),
+              )
+              : null,
+      body: SafeArea(
+        child: Column(
+          spacing: 8,
+          children: [
+            const SizedBox(height: 8),
+            _TagsHorizontalListView(tags: memo.tags),
+            TabBar(
+              controller: tabController,
+              tabs: [
+                for (final tab in MemoDetailsTab.values) Tab(text: tab.label),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: tabController,
+                children: [
+                  for (final tab in MemoDetailsTab.values)
+                    switch (tab) {
+                      MemoDetailsTab.body => MemoBodyView(memo: memo),
+                      MemoDetailsTab.raw => MemoRawView(memo: memo),
+                    },
                 ],
               ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    for (final tab in MemoDetailsTab.values)
-                      switch (tab) {
-                        MemoDetailsTab.body => MemoBodyView(memo: memo),
-                        MemoDetailsTab.raw => MemoRawView(memo: memo),
-                      },
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
