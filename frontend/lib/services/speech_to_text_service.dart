@@ -85,7 +85,7 @@ class SimpleSpeechToTextService implements SpeechToTextService {
     await speechToText.listen(
       onResult:
           (result) => _emit(SpeechToTextResultEvent(result.recognizedWords)),
-      pauseFor: const Duration(seconds: 3), // 一部Androidでは、より短くなる可能性あり
+      pauseFor: const Duration(seconds: 5), // 一部Androidでは、より短くなる可能性あり
       localeId: 'ja-JP',
       listenOptions: SpeechListenOptions(listenMode: ListenMode.dictation),
     );
