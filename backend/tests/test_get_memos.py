@@ -25,7 +25,7 @@ def test_format(test_db, client):
     assert isinstance(memo["updated_at"], str)
 
 
-# 指定されたユーザのメモのみが帰ってくるか
+# 指定されたユーザのメモのみが返ってくるか
 def test_normal_get(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
