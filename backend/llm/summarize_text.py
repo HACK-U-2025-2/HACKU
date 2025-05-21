@@ -1,6 +1,7 @@
 from llm.utils.generator import generate_text
 from llm.utils.parser import parse_json
 
+
 def summarize_text(text: str) -> str:
     prompt = f"""
 # 指示

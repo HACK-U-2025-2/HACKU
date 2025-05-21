@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from typing import Annotated
 
-from config import get_settings
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
-from schemas.auth import DecodedToken
 from starlette.status import HTTP_401_UNAUTHORIZED
+
+from config import get_settings
+from schemas.auth import DecodedToken
 
 SECRET_KEY = get_settings().secret_key
 SECRET_ALGORITHM = get_settings().secret_algorithm

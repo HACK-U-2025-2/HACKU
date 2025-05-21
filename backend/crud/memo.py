@@ -1,7 +1,8 @@
 from typing import List, Optional
 
-from models.memo import Memos
 from sqlalchemy.orm import Session
+
+from models.memo import Memos
 
 
 def fetch_memos(db: Session, user_id: str, search_word: Optional[str] = None):

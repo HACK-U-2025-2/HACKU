@@ -1,5 +1,6 @@
 from llm.utils.loader import load_model
 
+
 def generate_text(prompt: str, enable_thinking: bool, max_new_tokens: int) -> str:
     model, tokenizer = load_model()
 
@@ -20,7 +21,7 @@ JSON以外のテキストを絶対に出力してはいけません。
         messages,
         tokenize=False,
         add_generation_prompt=True,
-        enable_thinking=enable_thinking
+        enable_thinking=enable_thinking,
     )
 
     inputs = tokenizer([prepared], return_tensors="pt", padding=True).to(model.device)
