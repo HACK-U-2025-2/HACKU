@@ -10,11 +10,11 @@ class InMemoryMemoRepository implements MemoRepository {
 
   final Map<MemoId, Memo> _memos = {};
   final Map<TagId, Tag> _tags = {
-    const TagId(0): const Tag(id: TagId(0), name: 'tag1'),
-    const TagId(1): const Tag(id: TagId(1), name: 'tag2'),
-    const TagId(2): const Tag(id: TagId(2), name: 'tag3'),
+    const TagId(1): const Tag(id: TagId(1), name: 'tag1'),
+    const TagId(2): const Tag(id: TagId(2), name: 'tag2'),
+    const TagId(3): const Tag(id: TagId(3), name: 'tag3'),
   };
-  int _idHeader = 0;
+  int _nextId = 0;
 
   @override
   Future<List<MemoPreview>> getMemos() async =>
@@ -36,10 +36,10 @@ class InMemoryMemoRepository implements MemoRepository {
 
   @override
   Future<void> addMemo(String rawMemo) async {
-    final memoId = MemoId(++_idHeader);
+    final memoId = MemoId(++_nextId);
     _memos[memoId] = Memo(
       id: memoId,
-      title: 'Memo $_idHeader',
+      title: 'Memo $_nextId',
       body: '$rawMemoの要約',
       raw: rawMemo,
       createdAt: DateTime.now(),
