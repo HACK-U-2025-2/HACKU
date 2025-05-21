@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/widgets/dialogs/record_dialog.dart';
 
-typedef OnTranscribed = void Function(String transcription);
+typedef TranscriptionCallback = void Function(String transcription);
 
 class RecordButton extends HookWidget {
   const RecordButton({super.key, this.onTranscribed, this.iconSize = 80});
 
   final double iconSize;
-  final OnTranscribed? onTranscribed;
+  final TranscriptionCallback? onTranscribed;
 
   @override
   Widget build(BuildContext context) {

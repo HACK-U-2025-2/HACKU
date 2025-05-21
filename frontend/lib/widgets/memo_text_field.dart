@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-typedef OnSubmit = void Function(String raw);
+typedef MemoSubmitCallback = void Function(String raw);
 
 class MemoTextField extends HookWidget {
   const MemoTextField({
@@ -11,7 +11,7 @@ class MemoTextField extends HookWidget {
     super.key,
   });
 
-  final OnSubmit? onSubmit;
+  final MemoSubmitCallback? onSubmit;
   final TextEditingController controller;
   final FocusNode? focusNode;
 
