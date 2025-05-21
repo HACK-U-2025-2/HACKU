@@ -27,6 +27,7 @@ class MemoBodyView extends HookConsumerWidget {
   }
 }
 
+// TODO(tyPhoon-collab): MemoRawViewと共通化
 class _EditView extends HookWidget {
   const _EditView(this.memo);
 
