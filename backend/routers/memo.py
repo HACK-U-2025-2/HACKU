@@ -1,18 +1,30 @@
-from typing import List
+from typing import Annotated, List, Optional
 
+from crud.auth import get_current_user
 from crud.memo import fetch_memos
 from database import get_db
-from fastapi import APIRouter, Depends
-from schemas.memo import MemoResponse
+from fastapi import APIRouter, Depends, Header, Query, status
+from schemas.auth import DecodedToken
+from schemas.memo import MemoPreviewResponse
 from sqlalchemy.orm import Session
 from starlette import status
 
-router = APIRouter(tags=["Memos"])
+DbDependency = Annotated[Session, Depends(get_db)]
+
+UserDependency = Annotated[DecodedToken, Depends(get_current_user)]
+
+router = APIRouter(prefix="/memos", tags=["Memos"])
 
 
-@router.get("/", response_model=List[MemoResponse], status_code=status.HTTP_200_OK)
+@router.get(
+    "/", response_model=List[MemoPreviewResponse], status_code=status.HTTP_200_OK
+)
 async def read_root(
-    db: Session = Depends(get_db),
+    db: DbDependency,
+    user: UserDependency,
+    keyword: Optional[str] = Query(None, description="検索キーワード"),
+    tag: Optional[str] = Query(None, description="タグでの絞り込み(別issue)"),
+    sort: Optional[str] = Query(None, description="ソート順(別issue)"),
 ):
-    user_id = "a"  # ログインに成功していると仮定
-    return fetch_memos(db=db, user_id=user_id)
+    memos = fetch_memos(db=db, user_id=user.user_id, search_word=keyword)
+    return [MemoPreviewResponse.model_validate(m) for m in memos]

@@ -1,29 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
+typedef MemoSubmitCallback = void Function(String raw);
+
 class MemoTextField extends HookWidget {
-  const MemoTextField({super.key});
+  const MemoTextField({
+    required this.controller,
+    required this.onSubmit,
+    this.focusNode,
+    super.key,
+  });
+
+  final MemoSubmitCallback? onSubmit;
+  final TextEditingController controller;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
     final formKey = useMemoized(GlobalKey<FormState>.new);
-    final textController = useTextEditingController();
 
     void submit() {
       if (formKey.currentState?.validate() ?? false) {
-        // TODO: サーバに送信
-        final text = textController.text.trim();
-        textController.clear();
-        debugPrint('Memo submitted: $text');
+        final text = controller.text.trim();
+        onSubmit?.call(text);
       }
     }
 
     return Form(
       key: formKey,
       child: TextFormField(
-        controller: textController,
+        focusNode: focusNode,
+        controller: controller,
         keyboardType: TextInputType.multiline,
         textInputAction: TextInputAction.newline,
         maxLines: null,
