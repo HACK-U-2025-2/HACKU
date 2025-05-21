@@ -6,6 +6,8 @@ import 'package:frontend/repositories/memo_repository/memo_repository.dart';
 
 /// メモのリポジトリのインメモリ実装。Dockerを起動しない場合のデバッグ時のみ使用する。
 class InMemoryMemoRepository implements MemoRepository {
+  static const int _pickTagsCount = 2;
+
   final Map<MemoId, Memo> _memos = {};
   final Map<TagId, Tag> _tags = {
     const TagId(0): const Tag(id: TagId(0), name: 'tag1'),
@@ -92,6 +94,6 @@ class InMemoryMemoRepository implements MemoRepository {
   // タグ選択の仮実装
   List<Tag> _pickTags() {
     final shuffled = _tags.values.toList()..shuffle();
-    return shuffled.sublist(0, 2); // 2つのタグをランダムに選択
+    return shuffled.sublist(0, _pickTagsCount); // タグをランダムに選択
   }
 }
