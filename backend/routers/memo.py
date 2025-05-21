@@ -23,8 +23,8 @@ async def read_root(
     db: DbDependency,
     user: UserDependency,
     keyword: Optional[str] = Query(None, description="検索キーワード"),
-    tag: Optional[str] = Query(None, description="タグでの絞り込み(別issue)"),
+    tags: Optional[List[str]] = Query(None, description="タグでの絞り込み"),
     sort: Optional[str] = Query(None, description="ソート順(別issue)"),
 ):
-    memos = fetch_memos(db=db, user_id=user.user_id, search_word=keyword)
+    memos = fetch_memos(db=db, user_id=user.user_id, search_word=keyword, tags=tags)
     return [MemoPreviewResponse.model_validate(m) for m in memos]
