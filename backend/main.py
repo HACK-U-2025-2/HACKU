@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from llm.loader import load_model
+from llm.utils.loader import load_model
 from routers import auth, memo, tag
 
 
@@ -14,7 +14,6 @@ async def lifespan(app: FastAPI):
 
 # FastAPI インスタンスに lifespan を渡す
 app = FastAPI(lifespan=lifespan)
-
 
 app.include_router(auth.router)
 app.include_router(memo.router)
