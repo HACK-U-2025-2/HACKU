@@ -1,9 +1,9 @@
 from typing import Annotated, List, Optional
 
 from crud.auth import get_current_user
-from crud.memo import fetch_memos
+from crud.memo import delete_memo_by_id, fetch_memos
 from database import get_db
-from fastapi import APIRouter, Depends, Header, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from schemas.auth import DecodedToken
 from schemas.memo import MemoPreviewResponse
 from sqlalchemy.orm import Session
@@ -28,3 +28,16 @@ async def read_root(
 ):
     memos = fetch_memos(db=db, user_id=user.user_id, search_word=keyword)
     return [MemoPreviewResponse.model_validate(m) for m in memos]
+
+
+@router.delete("/{memo_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def read_root(
+    db: DbDependency,
+    user: UserDependency,
+    memo_id: int,
+):
+    memo = delete_memo_by_id(db=db, user_id=user.user_id, memo_id=memo_id)
+
+    if memo is None:
+        raise HTTPException(status_code=404, detail="Memo not found")
+    return
