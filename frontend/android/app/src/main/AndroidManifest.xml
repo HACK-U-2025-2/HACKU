@@ -1,4 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- [speech_to_text | Flutter パッケージ](https://pub.dev/packages/speech_to_text#android) -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <!-- ここまで -->
+
     <application
         android:label="frontend"
         android:name="${applicationName}"
@@ -42,4 +50,12 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+
+    <!-- [speech_to_text | Flutter パッケージ](https://pub.dev/packages/speech_to_text#android) -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
 </manifest>
