@@ -71,18 +71,18 @@ class _EditToolBar extends ConsumerWidget {
           (context, _) => Row(
             spacing: 16,
             children: [
-              IconButton.filled(
+              IconButton.filledTonal(
                 icon: const Icon(Icons.undo),
                 onPressed: controller.hasUndo ? controller.undo : null,
                 tooltip: 'Undo',
               ),
-              IconButton.filled(
+              IconButton.filledTonal(
                 icon: const Icon(Icons.redo),
                 onPressed: controller.hasRedo ? controller.redo : null,
                 tooltip: 'Redo',
               ),
               const Spacer(),
-              IconButton.filled(
+              IconButton.outlined(
                 icon: const Icon(Icons.close),
                 onPressed: () {
                   ref.read(isEditingModeProvider.notifier).toggle();
