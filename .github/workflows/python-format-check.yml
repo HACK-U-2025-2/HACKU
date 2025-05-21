@@ -34,4 +34,4 @@ jobs:
 
       - name: Check code formatting with isort
         run: |
-          isort --check-only backend/  # isortでインポートの順序が正しいか確認
+          isort --profile black --check-only backend/  # isortでインポートの順序が正しいか確認
