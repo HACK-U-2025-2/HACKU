@@ -5,7 +5,12 @@ from crud.memo import fetch_memos, update_memo_by_id
 from database import get_db
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from schemas.auth import DecodedToken
-from schemas.memo import MemoPreviewResponse
+from schemas.memo import (
+    MemoBodyUpdateRequest,
+    MemoPreviewResponse,
+    MemoTagsUpdateRequest,
+    MemoTitleUpdateRequest,
+)
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -31,8 +36,15 @@ async def read_root(
 
 
 @router.put("/{memo_id}/title", status_code=status.HTTP_200_OK)
-async def read_root(db: DbDependency, user: UserDependency, memo_id: int, title: str):
-    memo = update_memo_by_id(db=db, user_id=user.user_id, memo_id=memo_id, title=title)
+async def read_root(
+    db: DbDependency,
+    user: UserDependency,
+    memo_id: int,
+    request: MemoTitleUpdateRequest,
+):
+    memo = update_memo_by_id(
+        db=db, user_id=user.user_id, memo_id=memo_id, title=request.title
+    )
 
     if memo is None:
         raise HTTPException(status_code=404, detail="Memo not found")
@@ -41,8 +53,15 @@ async def read_root(db: DbDependency, user: UserDependency, memo_id: int, title:
 
 
 @router.put("/{memo_id}/body", status_code=status.HTTP_200_OK)
-async def read_root(db: DbDependency, user: UserDependency, memo_id: int, body: str):
-    memo = update_memo_by_id(db=db, user_id=user.user_id, memo_id=memo_id, body=body)
+async def read_root(
+    db: DbDependency,
+    user: UserDependency,
+    memo_id: int,
+    request: MemoBodyUpdateRequest,
+):
+    memo = update_memo_by_id(
+        db=db, user_id=user.user_id, memo_id=memo_id, body=request.body
+    )
 
     if memo is None:
         raise HTTPException(status_code=404, detail="Memo not found")
@@ -52,9 +71,14 @@ async def read_root(db: DbDependency, user: UserDependency, memo_id: int, body: 
 
 @router.put("/{memo_id}/tags", status_code=status.HTTP_200_OK)
 async def read_root(
-    db: DbDependency, user: UserDependency, memo_id: int, tags: List[int]
+    db: DbDependency,
+    user: UserDependency,
+    memo_id: int,
+    request: MemoTagsUpdateRequest,
 ):
-    memo = update_memo_by_id(db=db, user_id=user.user_id, memo_id=memo_id, tags=tags)
+    memo = update_memo_by_id(
+        db=db, user_id=user.user_id, memo_id=memo_id, tag_names=request.tag_names
+    )
 
     if memo is None:
         raise HTTPException(status_code=404, detail="Memo not found")

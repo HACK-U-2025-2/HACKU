@@ -1,19 +1,21 @@
 from models.memotag import MemoTags
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 
 def fetch_tag_ids_by_memo_id(db: Session, memo_id: int):
-    query = db.query(MemoTags.tag_id)
-    query = query.filter(MemoTags.memo_id == memo_id)
-    query = query.scalars()
-    return set(query.all())
+    query = select(MemoTags.tag_id)
+    query = query.where(MemoTags.memo_id == memo_id)
+    result = db.execute(query)
+    tag_ids = result.scalars()
+    return set(tag_ids.all())
 
 
 def delete_memotags_by_tags(db: Session, memo_id: int, tags_to_delete: set):
-    query = db.query(MemoTags)
-    query = query.filter(MemoTags.memo_id == memo_id)
-    query = query.filter(MemoTags.tag_id.in_(tags_to_delete))
-    query.delete(synchronize_session=False)
+    query = delete(MemoTags)
+    query = query.where(MemoTags.memo_id == memo_id)
+    query = query.where(MemoTags.tag_id.in_(tags_to_delete))
+    db.execute(query)
 
 
 def add_memotags_by_tags(db: Session, memo_id: int, tags_to_add: set):

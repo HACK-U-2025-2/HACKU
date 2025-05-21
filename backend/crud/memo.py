@@ -7,17 +7,19 @@ from crud.memotag import (
 )
 from crud.tag import fetch_tag_ids_by_names, upsert_tags
 from models.memo import Memos
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 
 def fetch_memos(db: Session, user_id: str, search_word: Optional[str] = None):
-    query = db.query(Memos)
-    query = query.filter(Memos.user_id == user_id)
+    query = select(Memos)
+    query = query.where(Memos.user_id == user_id)
 
     if search_word:
-        query = query.filter(Memos.title.ilike(f"%{search_word}%"))
+        query = query.where(Memos.title.ilike(f"%{search_word}%"))
 
-    return query.all()
+    result = db.execute(query)
+    return result.scalars().all()
 
 
 def update_memo_by_id(
@@ -28,10 +30,12 @@ def update_memo_by_id(
     body: Optional[str] = None,
     tag_names: Optional[List[str]] = None,
 ):
-    query = db.query(Memos)
-    query = query.filter(Memos.user_id == user_id)
-    query = query.filter(Memos.id == memo_id)
-    memo = query.one_or_none()
+    query = select(Memos)
+    query = query.where(Memos.user_id == user_id)
+    query = query.where(Memos.id == memo_id)
+
+    result = db.execute(query)
+    memo = result.scalars().one_or_none()
 
     if memo is None:
         return None
