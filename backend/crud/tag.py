@@ -1,10 +1,9 @@
 from typing import Optional
 
-from sqlalchemy.orm import Session
-
 from models.memo import Memos
 from models.memotag import MemoTags
 from models.tag import Tags
+from sqlalchemy.orm import Session
 
 
 def fetch_tags(db: Session, user_id: str, search_word: Optional[str] = None):

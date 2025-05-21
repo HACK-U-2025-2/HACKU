@@ -1,14 +1,13 @@
 from typing import Annotated, List, Optional
 
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-from starlette import status
-
 from crud.auth import get_current_user
 from crud.tag import fetch_tags
 from database import get_db
+from fastapi import APIRouter, Depends, Query
 from schemas.auth import DecodedToken
 from schemas.tag import TagResponse
+from sqlalchemy.orm import Session
+from starlette import status
 
 DbDependency = Annotated[Session, Depends(get_db)]
 
