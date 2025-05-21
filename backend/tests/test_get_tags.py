@@ -1,5 +1,4 @@
 import pytest
-
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
