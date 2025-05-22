@@ -54,14 +54,16 @@ class MemoListViewPage extends HookWidget {
                 },
               ),
               Expanded(
-                child: ListView.separated(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  separatorBuilder:
-                      (context, index) => const SizedBox(height: 20),
-                  itemCount: mockMemoList.length,
-                  itemBuilder:
-                      (context, index) =>
-                          MemoCard(memoPreview: mockMemoList[index]),
+                child: Scrollbar(
+                  child: ListView.separated(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    separatorBuilder:
+                        (context, index) => const SizedBox(height: 20),
+                    itemCount: mockMemoList.length,
+                    itemBuilder:
+                        (context, index) =>
+                            MemoCard(memoPreview: mockMemoList[index]),
+                  ),
                 ),
               ),
             ],
