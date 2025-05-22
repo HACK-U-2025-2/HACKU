@@ -10,16 +10,32 @@ class DestinationNavigationDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
-    final destination = context.router.current.toDestination();
+    final current = context.router.current.toDestination();
 
-    if (destination == null) {
+    if (current == null) {
       return const Center(child: Text('ルートが見つかりません'));
     }
 
     return NavigationDrawer(
-      selectedIndex: destination.index,
-      onDestinationSelected:
-          (value) => _onDestinationSelected(ref, Destination.values[value]),
+      selectedIndex: current.index,
+      onDestinationSelected: (value) {
+        final destination = Destination.values[value];
+        // Drawerを閉じる。popでも可能だが、明示的に閉じる
+        Scaffold.of(context).closeDrawer();
+
+        if (current == destination) return;
+
+        // 入れ子にしないため、ホームまで戻る
+        context.router.popUntilRoot();
+
+        switch (destination) {
+          case Destination.home:
+            // 何もしない
+            break;
+          case Destination.memoList:
+            context.router.push(const MemoListViewRoute());
+        }
+      },
       children: [
         Padding(
           padding: const EdgeInsets.all(16),
@@ -35,23 +51,5 @@ class DestinationNavigationDrawer extends ConsumerWidget {
           ),
       ],
     );
-  }
-
-  void _onDestinationSelected(WidgetRef ref, Destination destination) {
-    final context = ref.context;
-    // Drawerを閉じる。popでも可能だが、明示的に閉じる
-    Scaffold.of(context).closeDrawer();
-
-    // ホームまで戻る
-    // これをしないと、入れ子になってしまう
-    context.router.popUntilRoot();
-
-    switch (destination) {
-      case Destination.home:
-        // 何もしない
-        break;
-      case Destination.memoList:
-        context.router.push(const MemoListViewRoute());
-    }
   }
 }
