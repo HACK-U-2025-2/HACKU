@@ -1,7 +1,12 @@
 from typing import Annotated, List, Optional
 
 from crud.auth import get_current_user
-from crud.memo import fetch_memo_by_id, fetch_memos, update_memo_by_id
+from crud.memo import (
+    delete_memo_by_id,
+    fetch_memo_by_id,
+    fetch_memos,
+    update_memo_by_id,
+)
 from database import get_db
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from schemas.auth import DecodedToken
@@ -102,4 +107,17 @@ async def write_tags(
     if memo is None:
         raise HTTPException(status_code=404, detail="Memo not found")
 
+    return
+
+
+@router.delete("/{memo_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_memo(
+    db: DbDependency,
+    user: UserDependency,
+    memo_id: int,
+):
+    memo = delete_memo_by_id(db=db, user_id=user.user_id, memo_id=memo_id)
+
+    if memo is None:
+        raise HTTPException(status_code=404, detail="Memo not found")
     return
