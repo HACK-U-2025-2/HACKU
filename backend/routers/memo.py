@@ -227,13 +227,13 @@ async def receive_valid_body(  # WebSocketから受け取ったbodyの形式を�
     try:
         data = await websocket.receive_json()
     except ValueError:
-        await websocket.send_json({"status": "error2", "detail": "Invalid JSON format"})
+        await websocket.send_json({"status": "error", "detail": "Invalid JSON format"})
         return None
 
     new_body = data.get("body")
 
     if not isinstance(new_body, str):
-        await websocket.send_json({"status": "error3", "detail": "Invalid JSON format"})
+        await websocket.send_json({"status": "error", "detail": "Invalid JSON format"})
         return None
 
     return new_body

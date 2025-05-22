@@ -66,5 +66,5 @@ def get_current_user_websocket(websocket: WebSocket):
         return DecodedToken(user_id=user_id)
     except JWTError:
         raise HTTPException(
-            status_code=HTTP_401_UNAUTHORIZED, detail="IInvalid Authorization"
+            status_code=HTTP_401_UNAUTHORIZED, detail="Invalid Authorization"
         )
