@@ -9,7 +9,7 @@ from crud.tag import fetch_tag_ids_by_names, upsert_tags
 from models.memo import Memos
 from models.memotag import MemoTags
 from models.tag import Tags
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 
@@ -19,7 +19,7 @@ def fetch_memos(
     search_word: Optional[str] = None,
     tags: Optional[List[str]] = None,
 ):
-    query = db.query(Memos)
+    query = select(Memos)
     query = query.filter(Memos.user_id == user_id)
 
     if search_word:
