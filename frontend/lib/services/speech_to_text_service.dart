@@ -52,7 +52,7 @@ class SimpleSpeechToTextService implements SpeechToTextService {
 
   // speech_to_text: 7.0.0, iOSにて、doneが即座に2回呼ばれることがある
   // eventが2回発火するのを防ぐためのフラグ
-  bool _wasDone = false;
+  bool _hasEmittedDoneEvent = false;
 
   @override
   Stream<SpeechToTextEvent> get events => _controller.stream;
@@ -73,15 +73,15 @@ class SimpleSpeechToTextService implements SpeechToTextService {
       return;
     }
 
-    _wasDone = false;
+    _hasEmittedDoneEvent = false;
 
     final isAvailable = await speechToText.initialize(
       onStatus: (status) async {
         debugPrint('Speech recognition status: $status');
         if (status == 'done') {
-          if (!_wasDone) {
+          if (!_hasEmittedDoneEvent) {
             _emitStop();
-            _wasDone = true;
+            _hasEmittedDoneEvent = true;
           } else {
             debugPrint('Duplicate done event, ignoring');
           }
