@@ -6,6 +6,7 @@ import 'package:frontend/providers/memo_edit_provider.dart';
 import 'package:frontend/providers/memo_provider.dart';
 import 'package:frontend/widgets/memo_details/memo_body_view.dart';
 import 'package:frontend/widgets/memo_details/memo_raw_view.dart';
+import 'package:frontend/widgets/memo_details/memo_title_menu.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 enum MemoDetailsTab {
@@ -48,7 +49,7 @@ class MemoDetailsPage extends HookConsumerWidget {
     final showFab = !isEditingMode && currentTab.value == MemoDetailsTab.body;
 
     return Scaffold(
-      appBar: AppBar(title: Text(memo.title)),
+      appBar: AppBar(title: MemoTitleMenu(memo: memo)),
       floatingActionButton:
           showFab
               ? FloatingActionButton(
