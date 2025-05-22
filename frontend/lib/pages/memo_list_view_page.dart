@@ -58,7 +58,8 @@ class MemoListViewPage extends HookWidget {
               Expanded(
                 child: Scrollbar(
                   child: ListView.separated(
-                    padding: const EdgeInsets.only(bottom: 20),
+                    // FABの分大きめにpaddingをとる
+                    padding: const EdgeInsets.only(bottom: 160),
                     separatorBuilder:
                         (context, index) => const SizedBox(height: 20),
                     itemCount: mockMemoList.length,
