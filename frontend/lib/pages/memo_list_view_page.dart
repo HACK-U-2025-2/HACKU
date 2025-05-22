@@ -59,7 +59,7 @@ class MemoListViewPage extends HookWidget {
                 child: Scrollbar(
                   child: ListView.separated(
                     // FABの分大きめにpaddingをとる
-                    padding: const EdgeInsets.only(bottom: 160),
+                    padding: const EdgeInsets.only(bottom: 180),
                     separatorBuilder:
                         (context, index) => const SizedBox(height: 20),
                     itemCount: mockMemoList.length,
@@ -95,7 +95,7 @@ class _AddMemoFab extends HookWidget {
       curve: Curves.easeOut,
     );
     final editButtonAnimation = Tween<Offset>(
-      begin: const Offset(0, 2.5),
+      begin: const Offset(0, 2.9),
       end: Offset.zero,
     ).animate(slideAnimation);
     final micButtonAnimation = Tween<Offset>(
@@ -126,7 +126,7 @@ class _AddMemoFab extends HookWidget {
             child: const Icon(Icons.edit),
           ),
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 10),
         SlideTransition(
           position: micButtonAnimation,
           child: FloatingActionButton(
@@ -143,7 +143,7 @@ class _AddMemoFab extends HookWidget {
           ),
         ),
 
-        const SizedBox(height: 10),
+        const SizedBox(height: 20),
 
         FloatingActionButton(
           backgroundColor:
