@@ -6,11 +6,11 @@ part of 'router_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appRouterHash() => r'ccde8baa9931259ce70cb1e422bda7d5a0116ccb';
+String _$appRouterHash() => r'8866baf2a5ecdfdd64b68d50e3dd0cd0f70fb0e3';
 
 /// See also [appRouter].
 @ProviderFor(appRouter)
-final appRouterProvider = Provider<AppRouter>.internal(
+final appRouterProvider = Provider<Raw<AppRouter>>.internal(
   appRouter,
   name: r'appRouterProvider',
   debugGetCreateSourceHash:
@@ -21,6 +21,6 @@ final appRouterProvider = Provider<AppRouter>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef AppRouterRef = ProviderRef<AppRouter>;
+typedef AppRouterRef = ProviderRef<Raw<AppRouter>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

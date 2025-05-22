@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/router.dart';
@@ -38,7 +40,7 @@ class DestinationNavigationDrawer extends StatelessWidget {
             // 何もしない
             break;
           case Destination.memoList:
-            context.router.push(const MemoListViewRoute());
+            unawaited(context.router.push(const MemoListViewRoute()));
         }
       },
       children: [
