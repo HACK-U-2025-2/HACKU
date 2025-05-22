@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:frontend/constant.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -98,7 +99,9 @@ class SimpleSpeechToTextService implements SpeechToTextService {
 
     await speechToText.listen(
       onResult: (result) => _emitResult(result.recognizedWords),
-      pauseFor: const Duration(seconds: 5), // 一部Androidでは、より短くなる可能性あり
+      pauseFor: const Duration(
+        seconds: speechToTextAutoPauseSeconds,
+      ), // 一部Androidでは、より短くなる可能性あり
       localeId: 'ja-JP',
       listenOptions: SpeechListenOptions(listenMode: ListenMode.dictation),
     );
