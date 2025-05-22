@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:frontend/constant.dart';
 
 class InputDialog extends HookWidget {
   const InputDialog({
@@ -8,6 +9,7 @@ class InputDialog extends HookWidget {
     this.hintText,
     this.initialValue,
     this.validator,
+    this.maxLength,
     super.key,
   });
 
@@ -16,6 +18,7 @@ class InputDialog extends HookWidget {
   final String? initialValue;
   final String? Function(String?)? validator;
   final String actionLabel;
+  final int? maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +30,14 @@ class InputDialog extends HookWidget {
       content: Form(
         key: formKey,
         child: TextFormField(
+          maxLength: maxLength,
           validator: validator,
           autofocus: true,
           controller: textController,
-          decoration: InputDecoration(hintText: hintText),
+          decoration: InputDecoration(
+            hintText: hintText,
+            border: const OutlineInputBorder(),
+          ),
         ),
       ),
       actions: [
@@ -65,6 +72,7 @@ class MemoTitleUpdateDialog extends StatelessWidget {
       actionLabel: '変更',
       hintText: 'メモのタイトル',
       initialValue: initialValue,
+      maxLength: memoTitleMaxLength,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'タイトルを入力してください';
