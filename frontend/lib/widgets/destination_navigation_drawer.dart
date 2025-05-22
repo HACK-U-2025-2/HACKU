@@ -1,7 +1,7 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/pages/memo_list_view_page.dart';
-import 'package:frontend/providers/router_provider.dart';
-import 'package:frontend/types/destination.dart';
+import 'package:frontend/router.dart';
+import 'package:frontend/router.gr.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class DestinationNavigationDrawer extends ConsumerWidget {
@@ -9,10 +9,15 @@ class DestinationNavigationDrawer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedDestination = ref.watch(selectedDestinationProvider);
     final textTheme = Theme.of(context).textTheme;
+    final destination = context.router.current.toDestination();
+
+    if (destination == null) {
+      return const Center(child: Text('ルートが見つかりません'));
+    }
+
     return NavigationDrawer(
-      selectedIndex: selectedDestination.index,
+      selectedIndex: destination.index,
       onDestinationSelected:
           (value) => _onDestinationSelected(ref, Destination.values[value]),
       children: [
@@ -37,25 +42,16 @@ class DestinationNavigationDrawer extends ConsumerWidget {
     // Drawerを閉じる。popでも可能だが、明示的に閉じる
     Scaffold.of(context).closeDrawer();
 
-    final selectedDestination = ref.read(selectedDestinationProvider);
-    if (selectedDestination == destination) return;
-
-    ref.read(selectedDestinationProvider.notifier).setDestination(destination);
-
     // ホームまで戻る
     // これをしないと、入れ子になってしまう
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    context.router.popUntilRoot();
 
     switch (destination) {
       case Destination.home:
         // 何もしない
         break;
       case Destination.memoList:
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (context) => const MemoListViewPage(),
-          ),
-        );
+        context.router.push(const MemoListViewRoute());
     }
   }
 }

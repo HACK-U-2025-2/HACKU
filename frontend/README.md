@@ -89,9 +89,7 @@ Feature-FirstとLayeredがあるが、今回はわかりやすさのためにLay
 
 ### ルーティング
 
-ルーティングライブラリは一旦使用しない。将来的には使用予定。
-
-`Navigator.of(context)`を使用する。
+ルーティングライブラリは[AutoRoute](https://pub.dev/packages/auto_route)を採用。ドキュメントを参照しておくこと。
 
 ### Linter
 

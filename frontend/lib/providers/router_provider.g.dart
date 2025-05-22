@@ -6,23 +6,21 @@ part of 'router_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$selectedDestinationHash() =>
-    r'd333ce66bc08894f5068fda857015d8533a92a7a';
+String _$appRouterHash() => r'ccde8baa9931259ce70cb1e422bda7d5a0116ccb';
 
-/// See also [SelectedDestination].
-@ProviderFor(SelectedDestination)
-final selectedDestinationProvider =
-    NotifierProvider<SelectedDestination, Destination>.internal(
-      SelectedDestination.new,
-      name: r'selectedDestinationProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$selectedDestinationHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+/// See also [appRouter].
+@ProviderFor(appRouter)
+final appRouterProvider = Provider<AppRouter>.internal(
+  appRouter,
+  name: r'appRouterProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$appRouterHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-typedef _$SelectedDestination = Notifier<Destination>;
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef AppRouterRef = ProviderRef<AppRouter>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
