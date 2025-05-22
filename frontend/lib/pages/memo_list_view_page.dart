@@ -4,6 +4,7 @@ import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:frontend/widgets/destination_navigation_drawer.dart';
+import 'package:frontend/widgets/dialogs/input_dialog.dart';
 import 'package:frontend/widgets/dialogs/record_dialog.dart';
 import 'package:frontend/widgets/memo_card.dart';
 
@@ -119,9 +120,15 @@ class _AddMemoFab extends HookWidget {
           child: FloatingActionButton(
             heroTag: 'add-memo-text-fab',
             mini: true,
-            onPressed: () {
-              // TODO(Rozelin-dc): メモ追加のダイアログ表示
-              debugPrint('メモ追加');
+            onPressed: () async {
+              final rawMemo = await showDialog<String>(
+                context: context,
+                builder: (context) => const AddMemoFromTextDialog(),
+              );
+              if (rawMemo != null) {
+                // TODO(Rozelin-dc): メモ追加処理
+                debugPrint('テキストメモ追加: $rawMemo');
+              }
             },
             child: const Icon(Icons.edit),
           ),
