@@ -3,6 +3,8 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from unittest.mock import patch
+
 import pytest
 from database import Base, get_db
 from fastapi.testclient import TestClient
@@ -38,3 +40,11 @@ def client(test_db):
 
     app.dependency_overrides[get_db] = override_get_db
     yield TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def mock_ai_functions():
+    with patch("crud.memo.clean_transcript", return_value="校正原文"), patch(
+        "crud.memo.summarize_text", return_value="要約ボディ"
+    ), patch("crud.memo.generate_title", return_value="生成タイトル"):
+        yield

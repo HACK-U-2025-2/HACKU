@@ -32,10 +32,10 @@ def upsert_tags(db: Session, tag_names: List[str]):
     db.flush()
 
 
-def fetch_tag_ids_by_names(db: Session, tag_names: List[str]):
-    query = select(Tags.id)
+def fetch_tags_by_names(db: Session, tag_names: List[str]):
+    query = select(Tags)
     query = query.where(Tags.name.in_(tag_names))
 
     result = db.execute(query)
 
-    return set(result.scalars().all())
+    return result.scalars().all()

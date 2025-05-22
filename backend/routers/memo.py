@@ -3,6 +3,7 @@ from typing import Annotated, List, Optional
 
 from crud.auth import get_current_user, get_current_user_websocket
 from crud.memo import (
+    create_memo,
     delete_memo_by_id,
     fetch_memo_by_id,
     fetch_memos,
@@ -22,6 +23,7 @@ from fastapi import (
 from schemas.auth import DecodedToken
 from schemas.memo import (
     MemoBodyUpdateRequest,
+    MemoCreateRequest,
     MemoPreviewResponse,
     MemoResponse,
     MemoSortOrder,
@@ -37,6 +39,26 @@ DbDependency = Annotated[Session, Depends(get_db)]
 UserDependency = Annotated[DecodedToken, Depends(get_current_user)]
 
 router = APIRouter(prefix="/memos", tags=["Memos"])
+
+
+@router.post("/", response_model=MemoResponse, status_code=status.HTTP_201_CREATED)
+async def read_memos(
+    db: DbDependency,
+    user: UserDependency,
+    request: MemoCreateRequest,
+):
+    memo, tags = create_memo(
+        db=db,
+        user_id=user.user_id,
+        raw=request.raw,
+        tag_names=request.tag_names,
+        need_proofreading=request.need_proofreading,
+    )
+
+    tag_response = [TagResponse.model_validate(tag) for tag in tags]
+    memo_response = MemoResponse.model_validate({**memo.__dict__, "tags": tag_response})
+
+    return memo_response
 
 
 @router.get(

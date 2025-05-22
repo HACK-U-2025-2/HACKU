@@ -5,13 +5,41 @@ from crud.memotag import (
     delete_memotags_by_tags,
     fetch_tag_ids_by_memo_id,
 )
-from crud.tag import fetch_tag_ids_by_names, upsert_tags
+from crud.tag import fetch_tags_by_names, upsert_tags
+from llm.clean_transcript import clean_transcript
+from llm.generate_title import generate_title
+from llm.summarize_text import summarize_text
 from models.memo import Memos
 from models.memotag import MemoTags
 from models.tag import Tags
 from schemas.memo import MemoSortOrder
 from sqlalchemy import asc, desc, func, select
 from sqlalchemy.orm import Session, joinedload
+
+
+def create_memo(
+    db: Session, user_id: str, raw: str, tag_names: List[str], need_proofreading: bool
+):
+    if need_proofreading:
+        raw = clean_transcript(raw)
+
+    body = summarize_text(raw)
+    title = generate_title(body)
+
+    upsert_tags(db, tag_names)
+    tags = fetch_tags_by_names(db, tag_names)
+    tag_ids = {tag.id for tag in tags}
+
+    new_memo = Memos(title=title, user_id=user_id, body=body, raw=raw)
+
+    db.add(new_memo)
+    db.commit()
+
+    add_memotags_by_tags(db, new_memo.id, tag_ids)
+
+    db.refresh(new_memo)
+
+    return new_memo, tags
 
 
 def fetch_memos(
@@ -84,7 +112,8 @@ def update_memo_by_id(
 
     if tag_names is not None:
         upsert_tags(db, tag_names)
-        new_tag_ids = fetch_tag_ids_by_names(db, tag_names)
+        new_tags = fetch_tags_by_names(db, tag_names)
+        new_tag_ids = {tag.id for tag in new_tags}
         current_tag_ids = fetch_tag_ids_by_memo_id(db, memo_id)
 
         tags_to_delete = current_tag_ids - new_tag_ids
