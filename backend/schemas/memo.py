@@ -27,3 +27,21 @@ class MemoResponse(BaseModel):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class MemoTitleUpdateRequest(BaseModel):
+    title: str
+
+    model_config = {"from_attributes": True}
+
+
+class MemoBodyUpdateRequest(BaseModel):
+    body: str
+
+    model_config = {"from_attributes": True}
+
+
+class MemoTagsUpdateRequest(BaseModel):
+    tag_names: List[str]
+
+    model_config = {"from_attributes": True}
