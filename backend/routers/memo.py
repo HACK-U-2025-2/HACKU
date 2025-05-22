@@ -1,6 +1,7 @@
+import asyncio
 from typing import Annotated, List, Optional
 
-from crud.auth import get_current_user
+from crud.auth import get_current_user, get_current_user_websocket
 from crud.memo import (
     delete_memo_by_id,
     fetch_memo_by_id,
@@ -8,7 +9,16 @@ from crud.memo import (
     update_memo_by_id,
 )
 from database import get_db
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    Header,
+    HTTPException,
+    Query,
+    WebSocket,
+    WebSocketDisconnect,
+    status,
+)
 from schemas.auth import DecodedToken
 from schemas.memo import (
     MemoBodyUpdateRequest,
@@ -124,3 +134,109 @@ async def delete_memo(
     if memo is None:
         raise HTTPException(status_code=404, detail="Memo not found")
     return
+
+
+@router.websocket("/{memo_id}/body")
+async def websocket_memo_body(websocket: WebSocket, db: DbDependency, memo_id: int):
+    await websocket.accept()
+
+    try:
+        user = get_current_user_websocket(websocket)
+    except HTTPException:
+        await websocket.close(code=1008)
+        return
+
+    memo = fetch_memo_by_id(db, user.user_id, memo_id)
+
+    if memo is None:
+        await websocket.send_json({"status": "error", "detail": "Memo not found"})
+        await websocket.close()
+        return
+
+    latest_body_ref = {"body": memo.body}
+    db_body_hash_ref = {"hash": hash(memo.body)}
+
+    lock = asyncio.Lock()
+
+    async def batch_update_loop():  # 1秒ごとにbodyの変更をDBに反映
+        while True:
+            await asyncio.sleep(1)
+            await update_if_changed(
+                db=db,
+                user_id=user.user_id,
+                memo_id=memo_id,
+                latest_body_ref=latest_body_ref,
+                db_body_hash_ref=db_body_hash_ref,
+                lock=lock,
+            )
+
+    batch_task = asyncio.create_task(batch_update_loop())
+
+    try:
+        while True:
+            new_body = await receive_valid_body(websocket=websocket)
+            if new_body is None:
+                continue
+
+            async with lock:
+                if hash(new_body) == db_body_hash_ref["hash"]:
+                    continue
+                latest_body_ref["body"] = new_body
+
+            await websocket.send_json({"status": "success", "memo_id": memo_id})
+
+    except WebSocketDisconnect:  # 通信終了時に最終状態をDBに反映
+        batch_task.cancel()
+        try:
+            await batch_task
+        except asyncio.CancelledError:
+            pass
+
+        await update_if_changed(
+            db=db,
+            user_id=user.user_id,
+            memo_id=memo_id,
+            latest_body_ref=latest_body_ref,
+            db_body_hash_ref=db_body_hash_ref,
+            lock=lock,
+        )
+        await websocket.close()
+
+
+async def update_if_changed(  # 最新のbodyとDBのハッシュを比較し、変更があればDBを更新
+    db: DbDependency,
+    user_id: int,
+    memo_id: int,
+    latest_body_ref: dict,
+    db_body_hash_ref: dict,
+    lock: asyncio.Lock,
+):
+    async with lock:
+        latest_body_hash = hash(latest_body_ref["body"])
+        if latest_body_hash != db_body_hash_ref["hash"]:
+            await asyncio.to_thread(
+                update_memo_by_id,
+                db=db,
+                user_id=user_id,
+                memo_id=memo_id,
+                body=latest_body_ref["body"],
+            )
+            db_body_hash_ref["hash"] = latest_body_hash
+
+
+async def receive_valid_body(  # WebSocketから受け取ったbodyの形式を検証
+    websocket: WebSocket,
+):
+    try:
+        data = await websocket.receive_json()
+    except ValueError:
+        await websocket.send_json({"status": "error", "detail": "Invalid JSON format"})
+        return None
+
+    new_body = data.get("body")
+
+    if not isinstance(new_body, str):
+        await websocket.send_json({"status": "error", "detail": "Invalid JSON format"})
+        return None
+
+    return new_body
