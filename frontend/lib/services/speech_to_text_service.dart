@@ -49,32 +49,46 @@ class SimpleSpeechToTextService implements SpeechToTextService {
 
   final _lock = Lock();
 
+  // speech_to_text: 7.0.0, iOSにて、doneが即座に2回呼ばれることがある
+  // eventが2回発火するのを防ぐためのフラグ
+  bool _wasDone = false;
+
   @override
   Stream<SpeechToTextEvent> get events => _controller.stream;
 
-  // startやstopを連続で呼び出せないようにする
-  SpeechToTextEvent? _lastEvent;
+  @override
+  Future<void> start() {
+    return _lock.synchronized(_start);
+  }
 
   @override
-  Future<void> start() async {
-    if (_lastEvent is SpeechToTextStartEvent) {
+  Future<void> stop() {
+    return _lock.synchronized(_stop);
+  }
+
+  Future<void> _start() async {
+    if (speechToText.isListening) {
+      debugPrint('Already started');
       return;
     }
+
+    _wasDone = false;
 
     final isAvailable = await speechToText.initialize(
       onStatus: (status) async {
         debugPrint('Speech recognition status: $status');
         if (status == 'done') {
-          // speech_to_text: 7.0.0, iOSにて、doneが即座に2回呼ばれることがある
-          // 連続で呼び出すと予期しない動作をすることがあるので、ロックをかける
-          await _lock.synchronized(() async {
-            await stop();
-          });
+          if (!_wasDone) {
+            _emitStop();
+            _wasDone = true;
+          } else {
+            debugPrint('Duplicate done event, ignoring');
+          }
         }
       },
       onError: (error) {
         debugPrint('Speech recognition error: $error');
-        _emit(SpeechToTextErrorEvent(error.errorMsg));
+        _emitError(error.errorMsg);
       },
     );
 
@@ -83,22 +97,20 @@ class SimpleSpeechToTextService implements SpeechToTextService {
     }
 
     await speechToText.listen(
-      onResult:
-          (result) => _emit(SpeechToTextResultEvent(result.recognizedWords)),
+      onResult: (result) => _emitResult(result.recognizedWords),
       pauseFor: const Duration(seconds: 5), // 一部Androidでは、より短くなる可能性あり
       localeId: 'ja-JP',
       listenOptions: SpeechListenOptions(listenMode: ListenMode.dictation),
     );
-    _emit(const SpeechToTextStartEvent());
+    _emitStart();
   }
 
-  @override
-  Future<void> stop() async {
-    if (_lastEvent is SpeechToTextStopEvent) {
+  Future<void> _stop() async {
+    if (speechToText.isNotListening) {
+      debugPrint('Already stopped');
       return;
     }
     await speechToText.stop();
-    _emit(const SpeechToTextStopEvent());
   }
 
   @override
@@ -107,7 +119,15 @@ class SimpleSpeechToTextService implements SpeechToTextService {
   }
 
   void _emit(SpeechToTextEvent event) {
-    _lastEvent = event;
     _controller.add(event);
+    // debugPrint('Emit event: $event');
   }
+
+  void _emitStart() => _emit(const SpeechToTextStartEvent());
+
+  void _emitStop() => _emit(const SpeechToTextStopEvent());
+
+  void _emitError(String message) => _emit(SpeechToTextErrorEvent(message));
+
+  void _emitResult(String result) => _emit(SpeechToTextResultEvent(result));
 }
