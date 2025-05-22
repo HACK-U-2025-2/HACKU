@@ -45,12 +45,12 @@ class MemoTitleMenu extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           onTap: () => controller.open(),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.all(8),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               spacing: 8,
               children: [
-                const SizedBox(width: 16),
+                const SizedBox(width: 16), // バランスを取るためのスペース
                 child!,
                 const Icon(Icons.arrow_drop_down),
               ],
