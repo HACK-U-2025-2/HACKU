@@ -1,7 +1,7 @@
 import asyncio
 from typing import Annotated, List, Optional
 
-from crud.auth import get_current_user
+from crud.auth import get_current_user, get_current_user_websocket
 from crud.memo import (
     delete_memo_by_id,
     fetch_memo_by_id,
@@ -134,10 +134,14 @@ async def delete_memo(
 
 
 @router.websocket("/{memo_id}/body")
-async def websocket_memo_body(
-    websocket: WebSocket, db: DbDependency, user: UserDependency, memo_id: int
-):
+async def websocket_memo_body(websocket: WebSocket, db: DbDependency, memo_id: int):
     await websocket.accept()
+
+    try:
+        user = get_current_user_websocket(websocket)
+    except HTTPException:
+        await websocket.close(code=1008)
+        return
 
     memo = fetch_memo_by_id(db, user.user_id, memo_id)
 
@@ -167,7 +171,7 @@ async def websocket_memo_body(
 
     try:
         while True:
-            new_body = receive_valid_body(websocket=websocket)
+            new_body = await receive_valid_body(websocket=websocket)
             if new_body is None:
                 continue
 
@@ -223,13 +227,13 @@ async def receive_valid_body(  # WebSocketから受け取ったbodyの形式を�
     try:
         data = await websocket.receive_json()
     except ValueError:
-        await websocket.send_json({"status": "error", "detail": "Invalid JSON format"})
+        await websocket.send_json({"status": "error2", "detail": "Invalid JSON format"})
         return None
 
     new_body = data.get("body")
 
     if not isinstance(new_body, str):
-        await websocket.send_json({"status": "error", "detail": "Invalid JSON format"})
+        await websocket.send_json({"status": "error3", "detail": "Invalid JSON format"})
         return None
 
     return new_body
