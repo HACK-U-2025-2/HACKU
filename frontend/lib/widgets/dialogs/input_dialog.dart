@@ -60,8 +60,8 @@ class InputDialog extends HookWidget {
   }
 }
 
-class MemoTitleUpdateDialog extends StatelessWidget {
-  const MemoTitleUpdateDialog({required this.initialValue, super.key});
+class MemoTitleInputDialog extends StatelessWidget {
+  const MemoTitleInputDialog({required this.initialValue, super.key});
 
   final String initialValue;
 

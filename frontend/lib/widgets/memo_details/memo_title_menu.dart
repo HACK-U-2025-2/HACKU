@@ -13,21 +13,23 @@ class MemoTitleMenu extends StatelessWidget {
     return MenuAnchor(
       style: const MenuStyle(alignment: Alignment.bottomCenter),
       menuChildren: [
-        MenuItemButton(
-          child: const _MenuActionItem(icon: Icons.edit, label: 'タイトル編集'),
+        _MenuItemButton(
+          icon: Icons.edit,
+          label: 'タイトル編集',
           onPressed: () async {
             final newTitle = await showDialog<String>(
               context: context,
               builder:
-                  (context) => MemoTitleUpdateDialog(initialValue: memo.title),
+                  (context) => MemoTitleInputDialog(initialValue: memo.title),
             );
             if (newTitle != null) {
               // TODO(tyPhoon-collab): メモタイトル更新の処理を実装する
             }
           },
         ),
-        MenuItemButton(
-          child: const _MenuActionItem(icon: Icons.delete, label: '削除'),
+        _MenuItemButton(
+          icon: Icons.delete,
+          label: '削除',
           onPressed: () async {
             final isDeletionSelected = await showDialog<bool>(
               context: context,
@@ -65,18 +67,23 @@ class MemoTitleMenu extends StatelessWidget {
   }
 }
 
-class _MenuActionItem extends StatelessWidget {
-  const _MenuActionItem({required this.icon, required this.label});
+class _MenuItemButton extends StatelessWidget {
+  const _MenuItemButton({
+    required this.icon,
+    required this.label,
+    this.onPressed,
+  });
 
   final IconData icon;
   final String label;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      spacing: 8,
-      mainAxisSize: MainAxisSize.min,
-      children: [Icon(icon), Text(label)],
+    return MenuItemButton(
+      leadingIcon: Icon(icon),
+      onPressed: onPressed,
+      child: Text(label),
     );
   }
 }
