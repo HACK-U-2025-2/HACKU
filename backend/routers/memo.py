@@ -186,7 +186,12 @@ async def websocket_memo_body(
             pass
 
         await update_if_changed(
-            db, user.user_id, memo_id, latest_body_ref, db_body_hash_ref, lock
+            db=db,
+            user_id=user.user_id,
+            memo_id=memo_id,
+            latest_body_ref=latest_body_ref,
+            db_body_hash_ref=db_body_hash_ref,
+            lock=lock,
         )
         await websocket.close()
 
@@ -218,13 +223,13 @@ async def receive_valid_body(  # WebSocketから受け取ったbodyの形式を�
     try:
         data = await websocket.receive_json()
     except ValueError:
-        await websocket.send_json({"error": "Invalid JSON format"})
+        await websocket.send_json({"status": "error", "detail": "Invalid JSON format"})
         return None
 
     new_body = data.get("body")
 
     if not isinstance(new_body, str):
-        await websocket.send_json({"error": "Invalid payload"})
+        await websocket.send_json({"status": "error", "detail": "Invalid JSON format"})
         return None
 
     return new_body
