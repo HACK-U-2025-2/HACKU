@@ -29,6 +29,14 @@ class MemoResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class MemoCreateRequest(BaseModel):
+    raw: str
+    tag_names: List[str]
+    need_proofreading: bool
+
+    model_config = {"from_attributes": True}
+
+
 class MemoTitleUpdateRequest(BaseModel):
     title: str
 

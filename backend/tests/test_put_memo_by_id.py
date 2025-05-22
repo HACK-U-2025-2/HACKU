@@ -147,6 +147,44 @@ def test_normal_update_title(test_db, client):
         assert tag.name != "Tag 2"
 
 
+# 重複するタグを送った際にメモが正常に変更されるか(tags)
+def test_normal_update_title(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_tags(test_db, SHORT_TAGS)
+    create_test_memotags(test_db, SHORT_MEMOTAGS)
+    create_test_tags
+
+    memo_id = 1
+    tag_names = ["成功", "成功", "成功"]
+
+    response = client.put(
+        f"/memos/{memo_id}/tags", headers=headers, json={"tag_names": tag_names}
+    )
+    assert response.status_code == 200
+
+    updated_memotags = test_db.query(MemoTags).filter_by(memo_id=memo_id).all()
+    assert len(updated_memotags) == 1
+
+    updated_tags = (
+        test_db.query(Tags)
+        .join(MemoTags, MemoTags.tag_id == Tags.id)
+        .filter(MemoTags.memo_id == memo_id)
+        .all()
+    )
+
+    assert len(updated_tags) == 1
+
+    tags = test_db.query(Tags).all()
+
+    assert len(tags) == 4
+
+    for tag in updated_tags:
+        assert tag.name in tag_names
+        assert tag.name != "Tag 2"
+
+
 # 存在しないメモを指定した場合に正常に通信が行われるか(tags)
 def test_empty_memo_body(test_db, client):
     user_id = "a"

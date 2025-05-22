@@ -21,3 +21,4 @@ def delete_memotags_by_tags(db: Session, memo_id: int, tags_to_delete: set):
 def add_memotags_by_tags(db: Session, memo_id: int, tags_to_add: set):
     new_tags_list = [{"memo_id": memo_id, "tag_id": tag_id} for tag_id in tags_to_add]
     db.bulk_insert_mappings(MemoTags, new_tags_list)
+    db.commit()
