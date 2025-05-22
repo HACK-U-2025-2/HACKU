@@ -1,19 +1,15 @@
 from typing import List, Optional
 
-from models.memo import Memos
-from models.memotag import MemoTags
+from crud.query.filter_tags_by_user_id import filter_tags_by_user_id_query
 from models.tag import Tags
-from sqlalchemy import distinct, select
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
 
 def fetch_tags(db: Session, user_id: str, search_word: Optional[str] = None):
     query = select(Tags)
-    query = query.distinct()
-    query = query.join(MemoTags, Tags.id == MemoTags.tag_id)
-    query = query.join(Memos, Memos.id == MemoTags.memo_id)
-    query = query.where(Memos.user_id == user_id)
+    query = filter_tags_by_user_id_query(query, user_id)
 
     if search_word:
         query = query.where(Tags.name.ilike(f"%{search_word}%"))

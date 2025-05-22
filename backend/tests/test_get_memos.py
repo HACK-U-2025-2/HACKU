@@ -1,4 +1,3 @@
-import pytest
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
@@ -57,7 +56,7 @@ def test_empty_data(test_db, client):
 
 
 # キーワード検索が正常に行われているか
-def test_normal_search(test_db, client):
+def test_normal_keyword_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
@@ -73,7 +72,7 @@ def test_normal_search(test_db, client):
 
 
 # 対象のキーワードを含むメモが存在しない場合検索が正常に行われているか
-def test_empty_search(test_db, client):
+def test_empty_keyword_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, EMPTY_MEMOS)
@@ -86,7 +85,7 @@ def test_empty_search(test_db, client):
 
 
 # タグ検索が正常に行われているか
-def test_normal_search(test_db, client):
+def test_normal_tags_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
@@ -109,7 +108,7 @@ def test_normal_search(test_db, client):
 
 
 # 対象のキーワードを含むメモが存在しない場合検索が正常に行われているか
-def test_empty_search(test_db, client):
+def test_empty_tags_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)

@@ -1,7 +1,7 @@
-import pytest
 from models.memo import Memos
 from models.memotag import MemoTags
 from models.tag import Tags
+from sqlalchemy import select
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
@@ -23,9 +23,9 @@ def test_normal_update_title(test_db, client):
     )
     assert response.status_code == 200
 
-    updated_memo = (
-        test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
-    )
+    query = select(Memos).where(Memos.id == memo_id, Memos.user_id == user_id)
+    updated_memo = test_db.execute(query).scalar_one_or_none()
+
     assert updated_memo is not None
 
     assert updated_memo.title == title
@@ -75,9 +75,9 @@ def test_normal_update_body(test_db, client):
     )
     assert response.status_code == 200
 
-    updated_memo = (
-        test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
-    )
+    query = select(Memos).where(Memos.id == memo_id, Memos.user_id == user_id)
+    updated_memo = test_db.execute(query).scalar_one_or_none()
+
     assert updated_memo is not None
 
     assert updated_memo.body == body
@@ -114,13 +114,12 @@ def test_failure_id_body(test_db, client):
 
 
 # 指定したメモが正常に変更されるか(tags)
-def test_normal_update_title(test_db, client):
+def test_normal_update_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
-    create_test_tags
 
     memo_id = 1
     tag_names = ["成功", "タグ1", "タグ3"]
@@ -130,15 +129,17 @@ def test_normal_update_title(test_db, client):
     )
     assert response.status_code == 200
 
-    updated_memotags = test_db.query(MemoTags).filter_by(memo_id=memo_id).all()
+    query = select(MemoTags).where(MemoTags.memo_id == memo_id)
+    updated_memotags = test_db.execute(query).scalars().all()
+
     assert len(updated_memotags) == 3
 
-    updated_tags = (
-        test_db.query(Tags)
+    query = (
+        select(Tags)
         .join(MemoTags, MemoTags.tag_id == Tags.id)
-        .filter(MemoTags.memo_id == memo_id)
-        .all()
+        .where(MemoTags.memo_id == memo_id)
     )
+    updated_tags = test_db.execute(query).scalars().all()
 
     assert len(updated_tags) == 3
 
@@ -148,7 +149,7 @@ def test_normal_update_title(test_db, client):
 
 
 # 存在しないメモを指定した場合に正常に通信が行われるか(tags)
-def test_empty_memo_body(test_db, client):
+def test_empty_memo_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, EMPTY_MEMOS)
@@ -163,7 +164,7 @@ def test_empty_memo_body(test_db, client):
 
 
 # 異なるユーザのメモを指定した場合に正常に通信が行われるか(tags)
-def test_failure_id_body(test_db, client):
+def test_failure_id_tags(test_db, client):
     user_id = "b"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)

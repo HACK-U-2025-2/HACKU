@@ -17,7 +17,8 @@ security = HTTPBearer(auto_error=False)
 def create_access_token(user_id: str, expires_delta: timedelta):
     expires = datetime.now() + expires_delta
     payload = {"id": user_id, "exp": expires}
-    return jwt.encode(payload, SECRET_KEY, algorithm=SECRET_ALGORITHM)
+    token = jwt.encode(payload, SECRET_KEY, algorithm=SECRET_ALGORITHM)
+    return token, expires
 
 
 def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(security)]):
@@ -31,7 +32,9 @@ def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(secu
         )
         user_id = payload.get("id")
         if user_id is None:
-            return None
+            raise HTTPException(
+                status_code=HTTP_401_UNAUTHORIZED, detail="Invalid Authorization"
+            )
         return DecodedToken(user_id=user_id)
     except JWTError:
         raise HTTPException(

@@ -3,12 +3,12 @@ from typing import Annotated, List, Optional
 from crud.auth import get_current_user
 from crud.memo import (
     delete_memo_by_id,
-    fetch_memo_by_id,
+    fetch_memo_by_ids,
     fetch_memos,
     update_memo_by_id,
 )
 from database import get_db
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query, Response, status
 from schemas.auth import DecodedToken
 from schemas.memo import (
     MemoBodyUpdateRequest,
@@ -19,7 +19,7 @@ from schemas.memo import (
 )
 from schemas.tag import TagResponse
 from sqlalchemy.orm import Session
-from starlette import status
+from utils.exceptions import raise_if_none
 
 DbDependency = Annotated[Session, Depends(get_db)]
 
@@ -43,19 +43,17 @@ async def read_memos(
 
 
 @router.get("/{memo_id}", response_model=MemoResponse, status_code=status.HTTP_200_OK)
-async def read_memo(
+async def read_memo_by_id(
     db: DbDependency,
     user: UserDependency,
     memo_id: int,
 ):
-    memo = fetch_memo_by_id(db=db, user_id=user.user_id, memo_id=memo_id)
-    if memo is None:
-        raise HTTPException(status_code=404, detail="Memo not found")
+    memo = fetch_memo_by_ids(db=db, user_id=user.user_id, memo_id=memo_id)
+
+    raise_if_none(memo, "Memo")
 
     tag_response = [TagResponse.model_validate(memo_tag.tag) for memo_tag in memo.tags]
-    memo_response = MemoResponse.model_validate({**memo.__dict__, "tags": tag_response})
-
-    return memo_response
+    return MemoResponse.model_validate({**memo.__dict__, "tags": tag_response})
 
 
 @router.put("/{memo_id}/title", status_code=status.HTTP_200_OK)
@@ -65,15 +63,13 @@ async def write_title(
     memo_id: int,
     request: MemoTitleUpdateRequest,
 ):
-
     memo = update_memo_by_id(
         db=db, user_id=user.user_id, memo_id=memo_id, title=request.title
     )
 
-    if memo is None:
-        raise HTTPException(status_code=404, detail="Memo not found")
+    raise_if_none(memo, "Memo")
 
-    return
+    return Response(status_code=status.HTTP_200_OK)
 
 
 @router.put("/{memo_id}/body", status_code=status.HTTP_200_OK)
@@ -87,10 +83,9 @@ async def write_body(
         db=db, user_id=user.user_id, memo_id=memo_id, body=request.body
     )
 
-    if memo is None:
-        raise HTTPException(status_code=404, detail="Memo not found")
+    raise_if_none(memo, "Memo")
 
-    return
+    return Response(status_code=status.HTTP_200_OK)
 
 
 @router.put("/{memo_id}/tags", status_code=status.HTTP_200_OK)
@@ -104,10 +99,9 @@ async def write_tags(
         db=db, user_id=user.user_id, memo_id=memo_id, tag_names=request.tag_names
     )
 
-    if memo is None:
-        raise HTTPException(status_code=404, detail="Memo not found")
+    raise_if_none(memo, "Memo")
 
-    return
+    return Response(status_code=status.HTTP_200_OK)
 
 
 @router.delete("/{memo_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -118,6 +112,6 @@ async def delete_memo(
 ):
     memo = delete_memo_by_id(db=db, user_id=user.user_id, memo_id=memo_id)
 
-    if memo is None:
-        raise HTTPException(status_code=404, detail="Memo not found")
-    return
+    raise_if_none(memo, "Memo")
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
