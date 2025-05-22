@@ -1,7 +1,9 @@
 import pytest
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
+from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
+from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
 from tests.utils.auth import get_headers
-from tests.utils.post import create_test_memos
+from tests.utils.post import create_test_memos, create_test_memotags, create_test_tags
 
 
 # データ型の確認
@@ -77,6 +79,44 @@ def test_empty_search(test_db, client):
     create_test_memos(test_db, EMPTY_MEMOS)
 
     response = client.get("/memos/", headers=headers, params={"keyword": "3"})
+    assert response.status_code == 200
+    data = response.json()
+
+    assert len(data) == 0
+
+
+# タグ検索が正常に行われているか
+def test_normal_search(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_tags(test_db, SHORT_TAGS)
+    create_test_memotags(test_db, SHORT_MEMOTAGS)
+
+    response = client.get("/memos/", headers=headers, params={"tags": ["タグ1"]})
+    assert response.status_code == 200
+    data = response.json()
+
+    assert len(data) == 2
+
+    response = client.get(
+        "/memos/", headers=headers, params={"tags": ["タグ1", "Tag 2"]}
+    )
+    assert response.status_code == 200
+    data = response.json()
+
+    assert len(data) == 1
+
+
+# 対象のキーワードを含むメモが存在しない場合検索が正常に行われているか
+def test_empty_search(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_tags(test_db, EMPTY_TAGS)
+    create_test_memotags(test_db, EMPTY_MEMOTAGS)
+
+    response = client.get("/memos/", headers=headers, params={"tags": ["タグ1"]})
     assert response.status_code == 200
     data = response.json()
 

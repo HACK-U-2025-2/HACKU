@@ -53,7 +53,7 @@
 ### テストコードの実行
 ```bash
     cd backend
-    docker-compose run --rm backend pytest -s
+    docker-compose -f docker-compose.yml run --rm backend pytest -s
 ```
 
 ### サーバへのアクセス方法
