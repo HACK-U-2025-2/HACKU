@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/tag.dart';
+import 'package:frontend/providers/memo_edit_provider.dart';
 import 'package:frontend/providers/memo_provider.dart';
+import 'package:frontend/widgets/memo_details/memo_body_view.dart';
+import 'package:frontend/widgets/memo_details/memo_raw_view.dart';
 import 'package:frontend/widgets/memo_details/memo_title_menu.dart';
-import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 enum MemoDetailsTab {
@@ -14,7 +17,7 @@ enum MemoDetailsTab {
   final String label;
 }
 
-class MemoDetailsPage extends ConsumerWidget {
+class MemoDetailsPage extends HookConsumerWidget {
   const MemoDetailsPage({super.key});
 
   @override
@@ -30,64 +33,57 @@ class MemoDetailsPage extends ConsumerWidget {
 
     final memo = memoAsyncValue.requireValue;
 
+    final currentTab = useState(MemoDetailsTab.body);
+    final tabController = useTabController(
+      initialLength: MemoDetailsTab.values.length,
+    );
+
+    useEffect(() {
+      tabController.addListener(() {
+        currentTab.value = MemoDetailsTab.values[tabController.index];
+      });
+      return tabController.dispose;
+    }, [tabController]);
+
+    final isEditingMode = ref.watch(isEditingModeProvider);
+    final showFab = !isEditingMode && currentTab.value == MemoDetailsTab.body;
+
     return Scaffold(
       appBar: AppBar(title: MemoTitleMenu(memo: memo)),
-      body: DefaultTabController(
-        length: MemoDetailsTab.values.length,
-        child: SafeArea(
-          child: Column(
-            spacing: 8,
-            children: [
-              const SizedBox(height: 8),
-              _TagsHorizontalListView(tags: memo.tags),
-              TabBar(
-                tabs: [
-                  for (final tab in MemoDetailsTab.values) Tab(text: tab.label),
+      floatingActionButton:
+          showFab
+              ? FloatingActionButton(
+                onPressed: ref.read(isEditingModeProvider.notifier).toggle,
+                child: const Icon(Icons.edit),
+              )
+              : null,
+      body: SafeArea(
+        child: Column(
+          spacing: 8,
+          children: [
+            const SizedBox(height: 8),
+            _TagsHorizontalListView(tags: memo.tags),
+            TabBar(
+              controller: tabController,
+              tabs: [
+                for (final tab in MemoDetailsTab.values) Tab(text: tab.label),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: tabController,
+                children: [
+                  for (final tab in MemoDetailsTab.values)
+                    switch (tab) {
+                      MemoDetailsTab.body => MemoBodyView(memo: memo),
+                      MemoDetailsTab.raw => MemoRawView(memo: memo),
+                    },
                 ],
               ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    for (final tab in MemoDetailsTab.values)
-                      switch (tab) {
-                        MemoDetailsTab.body => _MemoBodyView(memo: memo),
-                        MemoDetailsTab.raw => _MemoRawView(memo: memo),
-                      },
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
-  }
-}
-
-class _MemoBodyView extends StatelessWidget {
-  const _MemoBodyView({required this.memo});
-
-  final Memo memo;
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: GptMarkdown(memo.body),
-    );
-  }
-}
-
-class _MemoRawView extends StatelessWidget {
-  const _MemoRawView({required this.memo});
-
-  final Memo memo;
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Text(memo.raw),
     );
   }
 }
