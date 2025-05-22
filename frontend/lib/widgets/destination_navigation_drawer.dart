@@ -2,13 +2,12 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/router.dart';
 import 'package:frontend/router.gr.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class DestinationNavigationDrawer extends ConsumerWidget {
+class DestinationNavigationDrawer extends StatelessWidget {
   const DestinationNavigationDrawer({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final current = context.router.current.toDestination();
 
@@ -18,12 +17,18 @@ class DestinationNavigationDrawer extends ConsumerWidget {
 
     return NavigationDrawer(
       selectedIndex: current.index,
-      onDestinationSelected: (value) {
+      onDestinationSelected: (value) async {
         final destination = Destination.values[value];
         // Drawerを閉じる。popでも可能だが、明示的に閉じる
         Scaffold.of(context).closeDrawer();
 
         if (current == destination) return;
+
+        // Drawerが残ってしまうので、Drawerが閉じるのを待つ
+        // https://github.com/flutter/flutter/issues/26954#issuecomment-1642416265
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+
+        if (!context.mounted) return;
 
         // 入れ子にしないため、ホームまで戻る
         context.router.popUntilRoot();
