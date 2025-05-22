@@ -47,7 +47,7 @@ def test_empty_data(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
-    create_test_tags(test_db, EMPTY_TAGS)
+    create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, EMPTY_MEMOTAGS)
 
     response = client.get("/tags/", headers=headers)
