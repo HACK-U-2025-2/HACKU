@@ -10,36 +10,35 @@ class MemoTitleMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> updateTitle() async {
+      final newTitle = await showDialog<String>(
+        context: context,
+        builder: (context) => MemoTitleInputDialog(initialValue: memo.title),
+      );
+      if (newTitle != null) {
+        // TODO(tyPhoon-collab): メモタイトル更新の処理を実装する
+      }
+    }
+
+    Future<void> delete() async {
+      final isDeletionSelected = await showDialog<bool>(
+        context: context,
+        builder: (context) => const MemoDeleteDialog(),
+      );
+      if (isDeletionSelected ?? false) {
+        // TODO(tyPhoon-collab): メモ削除の処理を実装する
+      }
+    }
+
     return MenuAnchor(
       style: const MenuStyle(alignment: Alignment.bottomCenter),
       menuChildren: [
         _MenuItemButton(
           icon: Icons.edit,
           label: 'タイトル編集',
-          onPressed: () async {
-            final newTitle = await showDialog<String>(
-              context: context,
-              builder:
-                  (context) => MemoTitleInputDialog(initialValue: memo.title),
-            );
-            if (newTitle != null) {
-              // TODO(tyPhoon-collab): メモタイトル更新の処理を実装する
-            }
-          },
+          onPressed: updateTitle,
         ),
-        _MenuItemButton(
-          icon: Icons.delete,
-          label: '削除',
-          onPressed: () async {
-            final isDeletionSelected = await showDialog<bool>(
-              context: context,
-              builder: (context) => const MemoDeleteDialog(),
-            );
-            if (isDeletionSelected ?? false) {
-              // TODO(tyPhoon-collab): メモ削除の処理を実装する
-            }
-          },
-        ),
+        _MenuItemButton(icon: Icons.delete, label: '削除', onPressed: delete),
       ],
       builder: (context, controller, child) {
         return InkWell(
