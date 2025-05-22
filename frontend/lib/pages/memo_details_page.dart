@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:frontend/providers/memo_provider.dart';
+import 'package:frontend/widgets/memo_details/memo_title_menu.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -30,7 +31,7 @@ class MemoDetailsPage extends ConsumerWidget {
     final memo = memoAsyncValue.requireValue;
 
     return Scaffold(
-      appBar: AppBar(title: Text(memo.title)),
+      appBar: AppBar(title: MemoTitleMenu(memo: memo)),
       body: DefaultTabController(
         length: MemoDetailsTab.values.length,
         child: SafeArea(
