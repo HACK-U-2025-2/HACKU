@@ -184,7 +184,7 @@ paths:
         '422':
           description: リクエストが不正
 
-  /memos/{memo_id}/tag:
+  /memos/{memo_id}/tags:
     put:
       summary: メモのタグ修正
       parameters:
@@ -204,12 +204,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [tags]
+              required: [tag_names]
               properties:
                 tags:
                   type: array
                   items:
-                    type: string
+                    type: str
       responses:
         '200':
           description: なし
