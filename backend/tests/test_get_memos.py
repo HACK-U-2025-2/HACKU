@@ -121,3 +121,73 @@ def test_empty_search(test_db, client):
     data = response.json()
 
     assert len(data) == 0
+
+
+# ソート順が正常に機能するか(作成日時昇順)
+def test_sort_order_created_asc(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+
+    response = client.get("/memos/", headers=headers, params={"sort": "created_at_asc"})
+    assert response.status_code == 200
+    data = response.json()
+
+    created_times = [memo["created_at"] for memo in data]
+    assert created_times == sorted(created_times)
+
+
+# ソート順が正常に機能するか(作成日時降順)
+def test_sort_order_created_desc(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+
+    response = client.get(
+        "/memos/", headers=headers, params={"sort": "created_at_desc"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+
+    created_times = [memo["created_at"] for memo in data]
+    assert created_times == sorted(created_times, reverse=True)
+
+
+# ソート順が正常に機能するか(更新日時昇順)
+def test_sort_order_updated_asc(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+
+    response = client.get("/memos/", headers=headers, params={"sort": "updated_at_asc"})
+    assert response.status_code == 200
+    data = response.json()
+
+    updated_times = [memo["updated_at"] for memo in data]
+    assert updated_times == sorted(updated_times)
+
+
+# ソート順が正常に機能するか(更新日時降順)
+def test_sort_order_updated_desc(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+
+    response = client.get(
+        "/memos/", headers=headers, params={"sort": "updated_at_desc"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+
+    updated_times = [memo["updated_at"] for memo in data]
+    assert updated_times == sorted(updated_times, reverse=True)
+
+
+# ソート方式が不正な場合に正常に機能するか
+def test_sort_order_updated_desc(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+
+    response = client.get("/memos/", headers=headers, params={"sort": "error"})
+    assert response.status_code == 422

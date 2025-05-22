@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from typing import List
 
 from pydantic import BaseModel, Field
@@ -45,3 +46,10 @@ class MemoTagsUpdateRequest(BaseModel):
     tag_names: List[str]
 
     model_config = {"from_attributes": True}
+
+
+class MemoSortOrder(str, Enum):
+    CREATED_AT_ASC = "created_at_asc"
+    CREATED_AT_DESC = "created_at_desc"
+    UPDATED_AT_ASC = "updated_at_asc"
+    UPDATED_AT_DESC = "updated_at_desc"

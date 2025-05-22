@@ -14,6 +14,7 @@ from schemas.memo import (
     MemoBodyUpdateRequest,
     MemoPreviewResponse,
     MemoResponse,
+    MemoSortOrder,
     MemoTagsUpdateRequest,
     MemoTitleUpdateRequest,
 )
@@ -36,9 +37,11 @@ async def read_memos(
     user: UserDependency,
     keyword: Optional[str] = Query(None, description="検索キーワード"),
     tags: Optional[List[str]] = Query(None, description="タグでの絞り込み"),
-    sort: Optional[str] = Query(None, description="ソート順(別issue)"),
+    sort: Optional[MemoSortOrder] = Query(None, description="ソート順"),
 ):
-    memos = fetch_memos(db=db, user_id=user.user_id, search_word=keyword, tags=tags)
+    memos = fetch_memos(
+        db=db, user_id=user.user_id, search_word=keyword, tags=tags, sort=sort
+    )
     return [MemoPreviewResponse.model_validate(m) for m in memos]
 
 

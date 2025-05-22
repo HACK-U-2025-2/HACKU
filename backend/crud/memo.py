@@ -9,7 +9,8 @@ from crud.tag import fetch_tag_ids_by_names, upsert_tags
 from models.memo import Memos
 from models.memotag import MemoTags
 from models.tag import Tags
-from sqlalchemy import func, select
+from schemas.memo import MemoSortOrder
+from sqlalchemy import asc, desc, func, select
 from sqlalchemy.orm import Session, joinedload
 
 
@@ -18,6 +19,7 @@ def fetch_memos(
     user_id: str,
     search_word: Optional[str] = None,
     tags: Optional[List[str]] = None,
+    sort: Optional[MemoSortOrder] = None,
 ):
     query = select(Memos)
     query = query.filter(Memos.user_id == user_id)
@@ -33,6 +35,16 @@ def fetch_memos(
         query = query.having(func.count(func.distinct(Tags.name)) == len(tags))
     else:
         query = query.distinct()
+
+    if sort:
+        if sort == MemoSortOrder.CREATED_AT_ASC:
+            query = query.order_by(asc(Memos.created_at))
+        elif sort == MemoSortOrder.CREATED_AT_DESC:
+            query = query.order_by(desc(Memos.created_at))
+        elif sort == MemoSortOrder.UPDATED_AT_ASC:
+            query = query.order_by(asc(Memos.updated_at))
+        elif sort == MemoSortOrder.UPDATED_AT_DESC:
+            query = query.order_by(desc(Memos.updated_at))
 
     result = db.execute(query)
     return result.scalars().all()
