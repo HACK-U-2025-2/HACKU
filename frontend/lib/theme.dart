@@ -19,5 +19,10 @@ ThemeData buildThemeData(Brightness brightness) {
     searchBarTheme: const SearchBarThemeData(
       elevation: WidgetStatePropertyAll(0),
     ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      shape: const CircleBorder(),
+      backgroundColor: colorScheme.primary,
+      foregroundColor: colorScheme.onPrimary,
+    ),
   );
 }

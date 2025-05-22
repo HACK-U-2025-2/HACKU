@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/widgets/destination_navigation_drawer.dart';
 import 'package:frontend/widgets/memo_text_field.dart';
 import 'package:frontend/widgets/record_button.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends HookWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 16;
+    final textController = useTextEditingController();
+    final focusNode = useFocusNode();
+
+    void submit(String raw) {
+      // TODO(tyPhoon-collab): メモを保存する処理を実装
+      debugPrint('Submitted: $raw');
+      textController.clear();
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('ホーム')),
@@ -26,10 +35,14 @@ class HomePage extends StatelessWidget {
               const _MemoListHeaderLabel(),
               const SizedBox(height: 8),
               const SizedBox(height: 60, child: _MemoHorizontalListView()),
-              const Expanded(
+              Expanded(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: MemoTextField(),
+                  padding: const EdgeInsets.all(16),
+                  child: MemoTextField(
+                    controller: textController,
+                    onSubmit: submit,
+                    focusNode: focusNode,
+                  ),
                 ),
               ),
               // 表示スペースの関係上、キーボードが表示されていないときのみRecordButtonを表示
@@ -38,9 +51,16 @@ class HomePage extends StatelessWidget {
                 curve: Curves.easeInOut,
                 child:
                     (!isKeyboardVisible)
-                        ? const Padding(
-                          padding: EdgeInsets.all(16),
-                          child: RecordButton(),
+                        ? Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: RecordButton(
+                            onTranscribed: (transcription) {
+                              debugPrint('Transcription: $transcription');
+                              if (transcription.isEmpty) return;
+                              textController.text += ' $transcription';
+                              focusNode.requestFocus();
+                            },
+                          ),
                         )
                         : const SizedBox.shrink(),
               ),

@@ -12,7 +12,7 @@
 
 - Cloudflaredがインストール済みであること
 
-### 実行方法
+### 実行方法(GPU環境)
 - 初回実行時
 ```bash
     cd backend
@@ -22,6 +22,25 @@
 ```bash
     cd backend
     docker-compose up -d
+```
+
+### 実行方法(CPU環境)
+- 初回実行時
+```bash
+    cd backend
+    docker-compose -f docker-compose.yml up -d --build
+```
+- ２回目以降
+```bash
+    cd backend
+    docker-compose -f docker-compose.yml up -d
+```
+
+### データベースの更新(テーブル変更時)
+- サーバを起動した状態で以下を実行
+```bash
+    docker exec -it backend-backend-1 sh  
+    alembic upgrade head
 ```
 
 ### Cloudflare Tunnelの実行
@@ -34,7 +53,7 @@
 ### テストコードの実行
 ```bash
     cd backend
-    docker-compose run --rm backend pytest -s
+    docker-compose -f docker-compose.yml run --rm backend pytest -s
 ```
 
 ### サーバへのアクセス方法
@@ -43,6 +62,13 @@
 - DBサーバ: localhost:5432 (username: hacku, password: password, dbname: hacku_db)
   - GUI クライアントやpsqlを用いてアクセス
 - pgadmin: http://localhost:81 (email:  fastapi@example.com, password: password)
+
+### docs上で認証が必要なエンドポイントを確認する方法
+- POST /authから、確認したいuser_idを入力し、レスポンスを生成
+- レスポンスから"access_token"に該当する箇所の文字列を取得
+- 右上Authorizeボタンを押下
+- valueに先ほどの文字列を入れ、Authorizeボタンを押す
+- これにより、指定したuser_idとして他エンドポイントを参照可能になる
 
 ### pgadminの初期設定
 - pgadminにアクセス
