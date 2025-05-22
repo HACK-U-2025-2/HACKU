@@ -139,7 +139,7 @@ async def websocket_memo_body(
 ):
     await websocket.accept()
 
-    memo = get_memo_by_id(db, user.user_id, memo_id)
+    memo = fetch_memo_by_id(db, user.user_id, memo_id)
 
     if memo is None:
         await websocket.send_json({"status": "error", "detail": "Memo not found"})
