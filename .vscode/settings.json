@@ -34,4 +34,7 @@
     "--profile",
     "black"
   ],
+  "cSpell.words": [
+    "prefs"
+  ],
 }

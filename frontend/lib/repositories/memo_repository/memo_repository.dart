@@ -33,3 +33,11 @@ class MemoNotFoundException implements Exception {
   @override
   String toString() => 'Memo with id $id not found';
 }
+
+class MemoUnknownException implements Exception {
+  MemoUnknownException(this.error);
+  final Object error;
+
+  @override
+  String toString() => 'Unknown error occurred: $error';
+}

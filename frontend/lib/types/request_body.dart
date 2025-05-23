@@ -52,25 +52,51 @@ class UpdateTagsRequest {
   Map<String, dynamic> toJson() => _$UpdateTagsRequestToJson(this);
 }
 
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+class AuthRequest {
+  const AuthRequest({required this.userId});
+
+  factory AuthRequest.fromJson(Map<String, dynamic> json) =>
+      _$AuthRequestFromJson(json);
+  final String userId;
+
+  Map<String, dynamic> toJson() => _$AuthRequestToJson(this);
+}
+
 enum TokenType {
   bearer;
 
-  @override
-  String toString() => switch (this) {
-    TokenType.bearer => 'Bearer',
-  };
+  String toHeaderValue(String value) {
+    switch (this) {
+      case TokenType.bearer:
+        return 'Bearer $value';
+    }
+  }
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class AuthResponse {
-  const AuthResponse({required this.accessToken, required this.tokenType});
+  const AuthResponse({
+    required this.accessToken,
+    required this.tokenType,
+    this.expiredAt,
+  });
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) =>
       _$AuthResponseFromJson(json);
   final String accessToken;
   final TokenType tokenType;
+  final DateTime? expiredAt;
 
   Map<String, dynamic> toJson() => _$AuthResponseToJson(this);
 
-  String get token => '$tokenType $accessToken';
+  /// ヘッダーに渡す値
+  String get token => tokenType.toHeaderValue(accessToken);
+
+  /// トークンが有効かどうか
+  bool validate() {
+    if (expiredAt == null) return true;
+    final now = DateTime.now();
+    return now.isBefore(expiredAt!);
+  }
 }

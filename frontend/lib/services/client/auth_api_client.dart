@@ -10,5 +10,5 @@ abstract class AuthApiClient {
 
   /// ユーザIDからトークン発行
   @POST('/auth')
-  Future<AuthResponse> getAuthToken({@Query('user_id') required String userId});
+  Future<AuthResponse> getAuthToken({@Body() required AuthRequest request});
 }

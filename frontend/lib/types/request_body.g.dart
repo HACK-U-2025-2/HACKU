@@ -45,15 +45,26 @@ UpdateTagsRequest _$UpdateTagsRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$UpdateTagsRequestToJson(UpdateTagsRequest instance) =>
     <String, dynamic>{'tag_names': instance.tagNames};
 
+AuthRequest _$AuthRequestFromJson(Map<String, dynamic> json) =>
+    AuthRequest(userId: json['user_id'] as String);
+
+Map<String, dynamic> _$AuthRequestToJson(AuthRequest instance) =>
+    <String, dynamic>{'user_id': instance.userId};
+
 AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) => AuthResponse(
   accessToken: json['access_token'] as String,
   tokenType: $enumDecode(_$TokenTypeEnumMap, json['token_type']),
+  expiredAt:
+      json['expired_at'] == null
+          ? null
+          : DateTime.parse(json['expired_at'] as String),
 );
 
 Map<String, dynamic> _$AuthResponseToJson(AuthResponse instance) =>
     <String, dynamic>{
       'access_token': instance.accessToken,
       'token_type': _$TokenTypeEnumMap[instance.tokenType]!,
+      'expired_at': instance.expiredAt?.toIso8601String(),
     };
 
 const _$TokenTypeEnumMap = {TokenType.bearer: 'bearer'};
