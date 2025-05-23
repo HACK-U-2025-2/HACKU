@@ -16,10 +16,10 @@ security = HTTPBearer(auto_error=False)
 
 
 def create_access_token(user_id: str, expires_delta: timedelta):
-    expires = datetime.now() + expires_delta
-    payload = {"id": user_id, "exp": expires}
+    expired = datetime.now() + expires_delta
+    payload = {"id": user_id, "exp": expired}
     token = jwt.encode(payload, SECRET_KEY, algorithm=SECRET_ALGORITHM)
-    return token, expires
+    return token, expired
 
 
 def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(security)]):

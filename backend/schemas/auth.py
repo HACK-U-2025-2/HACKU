@@ -12,7 +12,7 @@ class LoginRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
-    expires_at: datetime
+    expired_at: datetime
 
     model_config = {"from_attributes": True}
 
