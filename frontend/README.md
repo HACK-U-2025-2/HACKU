@@ -91,6 +91,38 @@ Feature-FirstとLayeredがあるが、今回はわかりやすさのためにLay
 
 ルーティングライブラリは[AutoRoute](https://pub.dev/packages/auto_route)を採用。ドキュメントを参照しておくこと。
 
+以下に簡易的なルーティングの例を示す。
+
+```dart
+// 画面遷移
+context.router.push(const XXXRoute());
+
+// 戻る
+context.router.pop()
+
+// 新しい画面作成時
+// 1. RoutePageをつける
+// AutoRouteにこのWidgetが画面であることを伝える役割
+@RoutePage()  // これを追加
+class XXXPage extends StatelessWidget {}
+
+// 2. `dart run build_runner watch -d`を実行
+// router.gr.dartが更新される
+
+// 3. router.dartにルーティングを追加
+// 宣言的なルーティングがメリット
+@AutoRouterConfig()
+class AppRouter extends RootStackRouter {
+  @override
+  routes: <AutoRoute>[
+    ...
+    // 〜Pageから〜Routeというクラスが生成される
+    AutoRoute(page: XXXRoute.page),  // これを追加
+    ...
+  ],
+}
+```
+
 ### Linter
 
 very_good_analysisを採用。
