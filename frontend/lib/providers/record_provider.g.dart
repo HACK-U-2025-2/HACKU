@@ -7,7 +7,7 @@ part of 'record_provider.dart';
 // **************************************************************************
 
 String _$speechToTextServiceHash() =>
-    r'1b313d1be7ffef593066a891a7c95da4a8e08796';
+    r'bc50cc7ce0c110f622d72971b7de6c6f0b060363';
 
 /// See also [speechToTextService].
 @ProviderFor(speechToTextService)
