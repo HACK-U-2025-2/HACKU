@@ -106,7 +106,7 @@ def test_ai_generate(test_db, client):
 
 
 # タグ名が重複する際にDBに正しく保存されているか
-def test_db_save_dupulicate_tags(test_db, client):
+def test_db_save_duplicate_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, EMPTY_MEMOS)

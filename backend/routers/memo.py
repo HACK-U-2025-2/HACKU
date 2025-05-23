@@ -12,6 +12,7 @@ from database import get_db
 from fastapi import APIRouter, Depends, Query, Response, status
 from schemas.auth import DecodedToken
 from schemas.memo import (
+    MemoAllUpdateRequest,
     MemoBodyUpdateRequest,
     MemoCreateRequest,
     MemoPreviewResponse,
@@ -79,7 +80,28 @@ async def handle_create_memo(
     return MemoResponse.model_validate({**memo.__dict__, "tags": tag_response})
 
 
-@router.put("/{memo_id}/title", status_code=status.HTTP_200_OK)
+@router.put("/{memo_id}", status_code=status.HTTP_200_OK)
+async def handle_update_tags(
+    db: DbDependency,
+    user: UserDependency,
+    memo_id: int,
+    request: MemoAllUpdateRequest,
+):
+    memo = update_memo_by_id(
+        db=db,
+        user_id=user.user_id,
+        memo_id=memo_id,
+        title=request.title,
+        body=request.body,
+        tag_names=request.tag_names,
+    )
+
+    raise_if_none(memo, "Memo")
+
+    return Response(status_code=status.HTTP_200_OK)
+
+
+@router.patch("/{memo_id}/title", status_code=status.HTTP_200_OK)
 async def handle_update_title(
     db: DbDependency,
     user: UserDependency,
@@ -95,7 +117,7 @@ async def handle_update_title(
     return Response(status_code=status.HTTP_200_OK)
 
 
-@router.put("/{memo_id}/body", status_code=status.HTTP_200_OK)
+@router.patch("/{memo_id}/body", status_code=status.HTTP_200_OK)
 async def handle_update_body(
     db: DbDependency,
     user: UserDependency,
@@ -111,7 +133,7 @@ async def handle_update_body(
     return Response(status_code=status.HTTP_200_OK)
 
 
-@router.put("/{memo_id}/tags", status_code=status.HTTP_200_OK)
+@router.patch("/{memo_id}/tags", status_code=status.HTTP_200_OK)
 async def handle_update_tags(
     db: DbDependency,
     user: UserDependency,
