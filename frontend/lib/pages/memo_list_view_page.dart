@@ -88,37 +88,16 @@ class _AddMemoFab extends HookWidget {
     final isOpen = useState(false);
 
     const animationDuration = Duration(milliseconds: 300);
-    final animationController = useAnimationController(
-      duration: animationDuration,
-    );
-    final slideAnimation = CurvedAnimation(
-      parent: animationController,
-      curve: Curves.easeOut,
-    );
-    final editButtonAnimation = Tween<Offset>(
-      begin: const Offset(0, 2.9),
-      end: Offset.zero,
-    ).animate(slideAnimation);
-    final micButtonAnimation = Tween<Offset>(
-      begin: const Offset(0, 1.5),
-      end: Offset.zero,
-    ).animate(slideAnimation);
-    useEffect(() {
-      if (isOpen.value) {
-        animationController.forward();
-      } else {
-        animationController.reverse();
-      }
-      return null;
-    }, [isOpen.value]);
+    const animationCurve = Curves.easeOut;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SlideTransition(
-          position: editButtonAnimation,
+        AnimatedSlide(
+          offset: isOpen.value ? Offset.zero : const Offset(0, 2.9),
+          duration: animationDuration,
+          curve: animationCurve,
           child: FloatingActionButton(
-            heroTag: 'add-memo-text-fab',
             mini: true,
             onPressed: () async {
               final rawMemo = await showDialog<String>(
@@ -134,10 +113,11 @@ class _AddMemoFab extends HookWidget {
           ),
         ),
         const SizedBox(height: 10),
-        SlideTransition(
-          position: micButtonAnimation,
+        AnimatedSlide(
+          offset: isOpen.value ? Offset.zero : const Offset(0, 1.6),
+          duration: animationDuration,
+          curve: animationCurve,
           child: FloatingActionButton(
-            heroTag: 'add-memo-voice-fab',
             mini: true,
             onPressed: () async {
               final transcription = await pickTranscribed(context);
@@ -162,8 +142,10 @@ class _AddMemoFab extends HookWidget {
                   ? theme.colorScheme.onSecondaryContainer
                   : theme.colorScheme.onPrimary,
           onPressed: () => isOpen.value = !isOpen.value,
-          child: RotationTransition(
-            turns: animationController,
+          child: AnimatedRotation(
+            turns: isOpen.value ? 0.5 : 0,
+            duration: animationDuration,
+            curve: animationCurve,
             child: Icon(isOpen.value ? Icons.close : Icons.add),
           ),
         ),
