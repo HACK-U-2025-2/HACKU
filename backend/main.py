@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from llm.utils.loader import load_model
-from routers import auth, memo, tag
+from routers import auth, memo, memo_websocket, tag
 
 
 @asynccontextmanager
@@ -23,3 +23,4 @@ app = FastAPI(
 app.include_router(auth.router)
 app.include_router(tag.router)
 app.include_router(memo.router)
+app.include_router(memo_websocket.router)

@@ -1,6 +1,6 @@
 from typing import List
 
-from crud.tag import fetch_tag_ids_by_names, upsert_tags
+from crud.tag import fetch_tags_by_names, upsert_tags
 from models.memotag import MemoTags
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
@@ -33,7 +33,9 @@ def add_memotags_by_tags(db: Session, memo_id: int, tags_to_add: set):
 
 def update_memo_tags(db: Session, memo_id: int, tag_names: List[str]):
     upsert_tags(db, tag_names)
-    new_tag_ids = fetch_tag_ids_by_names(db, tag_names)
+    new_tags = fetch_tags_by_names(db, tag_names)
+    new_tag_ids = {tag.id for tag in new_tags}
+
     current_tag_ids = fetch_tag_ids_by_memo_id(db, memo_id)
 
     tags_to_delete = set(current_tag_ids) - set(new_tag_ids)

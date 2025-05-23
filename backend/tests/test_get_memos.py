@@ -1,3 +1,4 @@
+import pytest
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
@@ -120,3 +121,36 @@ def test_empty_tags_search(test_db, client):
     data = response.json()
 
     assert len(data) == 0
+
+
+# ソート順が正常に機能するか
+@pytest.mark.parametrize(
+    "sort_key",
+    ["created_at_asc", "created_at_desc", "updated_at_asc", "updated_at_desc"],
+)
+def test_sort_order(test_db, client, sort_key):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+
+    response = client.get("/memos/", headers=headers, params={"sort": sort_key})
+    assert response.status_code == 200
+    data = response.json()
+
+    key = "created_at" if "created" in sort_key else "updated_at"
+    timestamps = [memo[key] for memo in data]
+
+    if "desc" in sort_key:
+        assert timestamps == sorted(timestamps, reverse=True)
+    else:
+        assert timestamps == sorted(timestamps)
+
+
+# ソート方式が不正な場合に正常に機能するか
+def test_sort_order_invalid(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+
+    response = client.get("/memos/", headers=headers, params={"sort": "error"})
+    assert response.status_code == 422

@@ -2,8 +2,9 @@ from datetime import datetime, timedelta
 from typing import Annotated
 
 from config import get_settings
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, WebSocket
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from schemas.auth import DecodedToken
 from starlette.status import HTTP_401_UNAUTHORIZED
@@ -26,14 +27,35 @@ def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(secu
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED, detail="Invalid Authorization"
         )
-    try:
-        payload = jwt.decode(
-            token.credentials, SECRET_KEY, algorithms=[SECRET_ALGORITHM]
+    return decode_token(token.credentials)
+
+
+def get_current_user_websocket(websocket: WebSocket):
+    auth_header = websocket.headers.get("Authorization")
+    if not auth_header:
+        raise HTTPException(
+            status_code=HTTP_401_UNAUTHORIZED,
+            detail="Invalid Authorization",
         )
+
+    scheme, credentials = get_authorization_scheme_param(auth_header)
+    if scheme.lower() != "bearer" or not credentials:
+        raise HTTPException(
+            status_code=HTTP_401_UNAUTHORIZED,
+            detail="Invalid Authorization",
+        )
+
+    return decode_token(credentials)
+
+
+def decode_token(credentials: str):
+    try:
+        payload = jwt.decode(credentials, SECRET_KEY, algorithms=[SECRET_ALGORITHM])
         user_id = payload.get("id")
-        if user_id is None:
+        if not user_id:
             raise HTTPException(
-                status_code=HTTP_401_UNAUTHORIZED, detail="Invalid Authorization"
+                status_code=HTTP_401_UNAUTHORIZED,
+                detail="Invalid Authorization",
             )
         return DecodedToken(user_id=user_id)
     except JWTError:

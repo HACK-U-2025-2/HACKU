@@ -1,11 +1,48 @@
 from typing import List, Optional
 
-from crud.memotag import update_memo_tags
+from crud.memotag import add_memotags_by_tags, update_memo_tags
 from crud.query.filter_memos_by_tags import filter_memos_by_tags
+from crud.tag import fetch_tags_by_names, upsert_tags
+from llm.clean_transcript import clean_transcript
+from llm.generate_title import generate_title
+from llm.summarize_text import summarize_text
 from models.memo import Memos
-from sqlalchemy import select
+from schemas.memo import MemoSortOrder
+from sqlalchemy import asc, desc, select
 from sqlalchemy.orm import Session, joinedload
 from utils.exceptions import raise_if_none
+
+sort_mapping = {
+    MemoSortOrder.CREATED_AT_ASC: asc(Memos.created_at),
+    MemoSortOrder.CREATED_AT_DESC: desc(Memos.created_at),
+    MemoSortOrder.UPDATED_AT_ASC: asc(Memos.updated_at),
+    MemoSortOrder.UPDATED_AT_DESC: desc(Memos.updated_at),
+}
+
+
+def create_memo(
+    db: Session, user_id: str, raw: str, tag_names: List[str], need_proofreading: bool
+):
+    if need_proofreading:
+        raw = clean_transcript(raw)
+
+    body = summarize_text(raw)
+    title = generate_title(body)
+
+    upsert_tags(db, tag_names)
+    tags = fetch_tags_by_names(db, tag_names)
+    tag_ids = {tag.id for tag in tags}
+
+    new_memo = Memos(title=title, user_id=user_id, body=body, raw=raw)
+
+    db.add(new_memo)
+    db.commit()
+
+    add_memotags_by_tags(db, new_memo.id, tag_ids)
+
+    db.refresh(new_memo)
+
+    return new_memo, tags
 
 
 def fetch_memos(
@@ -13,6 +50,7 @@ def fetch_memos(
     user_id: str,
     search_word: Optional[str] = None,
     tags: Optional[List[str]] = None,
+    sort: Optional[MemoSortOrder] = None,
 ):
     query = select(Memos)
     query = query.filter(Memos.user_id == user_id)
@@ -24,6 +62,9 @@ def fetch_memos(
         query = filter_memos_by_tags(query, tags)
 
     query = query.distinct()
+
+    if sort in sort_mapping:
+        query = query.order_by(sort_mapping[sort])
 
     result = db.execute(query)
     return result.scalars().all()

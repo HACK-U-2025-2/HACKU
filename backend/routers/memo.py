@@ -2,6 +2,7 @@ from typing import Annotated, List, Optional
 
 from crud.auth import get_current_user
 from crud.memo import (
+    create_memo,
     delete_memo_by_id,
     fetch_memo_by_ids,
     fetch_memos,
@@ -12,8 +13,10 @@ from fastapi import APIRouter, Depends, Query, Response, status
 from schemas.auth import DecodedToken
 from schemas.memo import (
     MemoBodyUpdateRequest,
+    MemoCreateRequest,
     MemoPreviewResponse,
     MemoResponse,
+    MemoSortOrder,
     MemoTagsUpdateRequest,
     MemoTitleUpdateRequest,
 )
@@ -36,9 +39,11 @@ async def read_memos(
     user: UserDependency,
     keyword: Optional[str] = Query(None, description="検索キーワード"),
     tags: Optional[List[str]] = Query(None, description="タグでの絞り込み"),
-    sort: Optional[str] = Query(None, description="ソート順(別issue)"),
+    sort: Optional[MemoSortOrder] = Query(None, description="ソート順"),
 ):
-    memos = fetch_memos(db=db, user_id=user.user_id, search_word=keyword, tags=tags)
+    memos = fetch_memos(
+        db=db, user_id=user.user_id, search_word=keyword, tags=tags, sort=sort
+    )
     return [MemoPreviewResponse.model_validate(m) for m in memos]
 
 
@@ -53,6 +58,24 @@ async def read_memo_by_id(
     raise_if_none(memo, "Memo")
 
     tag_response = [TagResponse.model_validate(memo_tag.tag) for memo_tag in memo.tags]
+    return MemoResponse.model_validate({**memo.__dict__, "tags": tag_response})
+
+
+@router.post("/", response_model=MemoResponse, status_code=status.HTTP_201_CREATED)
+async def create_memos(
+    db: DbDependency,
+    user: UserDependency,
+    request: MemoCreateRequest,
+):
+    memo, tags = create_memo(
+        db=db,
+        user_id=user.user_id,
+        raw=request.raw,
+        tag_names=request.tag_names,
+        need_proofreading=request.need_proofreading,
+    )
+
+    tag_response = [TagResponse.model_validate(tag) for tag in tags]
     return MemoResponse.model_validate({**memo.__dict__, "tags": tag_response})
 
 
@@ -113,5 +136,3 @@ async def delete_memo(
     memo = delete_memo_by_id(db=db, user_id=user.user_id, memo_id=memo_id)
 
     raise_if_none(memo, "Memo")
-
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
