@@ -74,9 +74,9 @@ def test_db_save(test_db, client):
     memotags = test_db.query(MemoTags).all()
     tags = test_db.query(Tags).all()
 
-    assert len(memos) == 1
-    assert len(memotags) == 2
-    assert len(tags) == 4
+    assert len(memos) == len(EMPTY_MEMOS) + 1
+    assert len(memotags) == len(EMPTY_MEMOTAGS) + len(tag_names)
+    assert len(tags) == len(SHORT_TAGS) + 1
 
 
 # タイトル，要約，校正が行われているか
@@ -100,13 +100,13 @@ def test_ai_generate(test_db, client):
     assert response.status_code == 201
     data = response.json()
 
-    assert data["raw"] != raw
-    assert data["body"] != data["raw"]
-    assert data["title"] != ""
+    assert data["raw"] == "校正原文"
+    assert data["body"] == "要約ボディ"
+    assert data["title"] == "生成タイトル"
 
 
 # タグ名が重複する際にDBに正しく保存されているか
-def test_db_save_false(test_db, client):
+def test_db_save_duplicate_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, EMPTY_MEMOS)
@@ -130,4 +130,4 @@ def test_db_save_false(test_db, client):
 
     tags = test_db.query(Tags).all()
 
-    assert len(tags) == 4
+    assert len(tags) == len(SHORT_TAGS) + 1

@@ -1,20 +1,24 @@
 from typing import List, Optional
 
-from crud.memotag import (
-    add_memotags_by_tags,
-    delete_memotags_by_tags,
-    fetch_tag_ids_by_memo_id,
-)
+from crud.memotag import add_memotags_by_tags, update_memo_tags
+from crud.query.build_memo_by_id_query import build_memo_by_id_query
+from crud.query.filter_memos_by_tags import filter_memos_by_tags
 from crud.tag import fetch_tags_by_names, upsert_tags
 from llm.clean_transcript import clean_transcript
 from llm.generate_title import generate_title
 from llm.summarize_text import summarize_text
 from models.memo import Memos
-from models.memotag import MemoTags
-from models.tag import Tags
 from schemas.memo import MemoSortOrder
-from sqlalchemy import asc, desc, func, select
+from sqlalchemy import asc, desc, select
 from sqlalchemy.orm import Session, joinedload
+from utils.exceptions import raise_if_none
+
+sort_mapping = {
+    MemoSortOrder.CREATED_AT_ASC: asc(Memos.created_at),
+    MemoSortOrder.CREATED_AT_DESC: desc(Memos.created_at),
+    MemoSortOrder.UPDATED_AT_ASC: asc(Memos.updated_at),
+    MemoSortOrder.UPDATED_AT_DESC: desc(Memos.updated_at),
+}
 
 
 def create_memo(
@@ -56,34 +60,24 @@ def fetch_memos(
         query = query.filter(Memos.title.ilike(f"%{search_word}%"))
 
     if tags:
-        query = query.join(MemoTags, Memos.id == MemoTags.memo_id)
-        query = query.join(Tags, Tags.id == MemoTags.tag_id)
-        query = query.filter(Tags.name.in_(tags))
-        query = query.group_by(Memos.id)
-        query = query.having(func.count(func.distinct(Tags.name)) == len(tags))
-    else:
-        query = query.distinct()
+        query = filter_memos_by_tags(query, tags)
 
-    if sort:
-        if sort == MemoSortOrder.CREATED_AT_ASC:
-            query = query.order_by(asc(Memos.created_at))
-        elif sort == MemoSortOrder.CREATED_AT_DESC:
-            query = query.order_by(desc(Memos.created_at))
-        elif sort == MemoSortOrder.UPDATED_AT_ASC:
-            query = query.order_by(asc(Memos.updated_at))
-        elif sort == MemoSortOrder.UPDATED_AT_DESC:
-            query = query.order_by(desc(Memos.updated_at))
+    query = query.distinct()
+
+    if sort in sort_mapping:
+        query = query.order_by(sort_mapping[sort])
 
     result = db.execute(query)
     return result.scalars().all()
 
 
-def fetch_memo_by_id(db: Session, user_id: str, memo_id: int):
-    query = db.query(Memos)
-    query = query.filter(Memos.user_id == user_id)
-    query = query.filter(Memos.id == memo_id)
-    query = query.options(joinedload(Memos.tags).joinedload(MemoTags.tag))
-    return query.one_or_none()
+def fetch_memo_by_ids(db: Session, user_id: str, memo_id: int):
+    query = build_memo_by_id_query(user_id, memo_id)
+
+    result = db.execute(query)
+    memo = result.unique().scalars().one_or_none()
+
+    return memo
 
 
 def update_memo_by_id(
@@ -94,15 +88,9 @@ def update_memo_by_id(
     body: Optional[str] = None,
     tag_names: Optional[List[str]] = None,
 ):
-    query = select(Memos)
-    query = query.where(Memos.user_id == user_id)
-    query = query.where(Memos.id == memo_id)
+    memo = fetch_memo_by_ids(db, user_id, memo_id)
 
-    result = db.execute(query)
-    memo = result.scalars().one_or_none()
-
-    if memo is None:
-        return None
+    raise_if_none(memo, "Memo")
 
     if title is not None:
         memo.title = title
@@ -111,33 +99,18 @@ def update_memo_by_id(
         memo.body = body
 
     if tag_names is not None:
-        upsert_tags(db, tag_names)
-        new_tags = fetch_tags_by_names(db, tag_names)
-        new_tag_ids = {tag.id for tag in new_tags}
-        current_tag_ids = fetch_tag_ids_by_memo_id(db, memo_id)
-
-        tags_to_delete = current_tag_ids - new_tag_ids
-        tags_to_add = new_tag_ids - current_tag_ids
-
-        if tags_to_delete:
-            delete_memotags_by_tags(db, memo_id, tags_to_delete)
-
-        if tags_to_add:
-            add_memotags_by_tags(db, memo_id, tags_to_add)
+        update_memo_tags(db, memo_id, tag_names)
 
     db.commit()
     return memo
 
 
 def delete_memo_by_id(db: Session, user_id: str, memo_id: int):
-    query = db.query(Memos)
-    query = query.filter(Memos.user_id == user_id)
-    query = query.filter(Memos.id == memo_id)
-    memo = query.one_or_none()
+    memo = fetch_memo_by_ids(db, user_id, memo_id)
 
-    if memo is None:
-        return None
+    raise_if_none(memo, "Memo")
 
     db.delete(memo)
+
     db.commit()
     return memo
