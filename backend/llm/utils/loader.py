@@ -11,6 +11,7 @@ _tokenizer = None
 _model_name = "Qwen/Qwen3-4B"
 _small_model_name = "Qwen/Qwen3-0.6B"
 
+
 def load_model():
     """
     モデルとトークナイザーを一度だけロードしてキャッシュし、返す
@@ -28,8 +29,6 @@ def load_model():
         # トークナイザーとモデルをロード
         _tokenizer = AutoTokenizer.from_pretrained(model_name)
         _model = AutoModelForCausalLM.from_pretrained(
-            model_name,
-            torch_dtype="auto",
-            device_map="auto"
+            model_name, torch_dtype="auto", device_map="auto"
         )
     return _model, _tokenizer
