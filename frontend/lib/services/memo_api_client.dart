@@ -71,8 +71,4 @@ abstract class MemoApiClient {
     @Header('Authorization') required String token,
     @Query('keyword') String? keyword,
   });
-
-  /// ユーザIDからトークン発行
-  @POST('/auth')
-  Future<AuthResponse> getAuthToken({@Query('user_id') required String userId});
 }
