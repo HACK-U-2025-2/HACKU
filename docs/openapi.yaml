@@ -354,7 +354,7 @@ paths:
       parameters:
       - in: path
         name: memo_id
-        required: true"
+        required: true
         schema:
           title: Memo Id
           type: integer
