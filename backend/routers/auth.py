@@ -13,7 +13,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post("", response_model=Token, status_code=status.HTTP_200_OK)
-async def login(request: LoginRequest):
+async def handle_login(request: LoginRequest):
     token, expired_at = create_access_token(
         user_id=request.user_id, expires_delta=timedelta(days=1)
     )

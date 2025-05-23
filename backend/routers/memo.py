@@ -34,7 +34,7 @@ router = APIRouter(prefix="/memos", tags=["Memos"])
 @router.get(
     "/", response_model=List[MemoPreviewResponse], status_code=status.HTTP_200_OK
 )
-async def read_memos(
+async def handle_read_memos(
     db: DbDependency,
     user: UserDependency,
     keyword: Optional[str] = Query(None, description="検索キーワード"),
@@ -48,7 +48,7 @@ async def read_memos(
 
 
 @router.get("/{memo_id}", response_model=MemoResponse, status_code=status.HTTP_200_OK)
-async def read_memo_by_id(
+async def hangle_read_memo_by_id(
     db: DbDependency,
     user: UserDependency,
     memo_id: int,
@@ -62,7 +62,7 @@ async def read_memo_by_id(
 
 
 @router.post("/", response_model=MemoResponse, status_code=status.HTTP_201_CREATED)
-async def create_memos(
+async def handle_create_memo(
     db: DbDependency,
     user: UserDependency,
     request: MemoCreateRequest,
@@ -80,7 +80,7 @@ async def create_memos(
 
 
 @router.put("/{memo_id}/title", status_code=status.HTTP_200_OK)
-async def write_title(
+async def handle_update_title(
     db: DbDependency,
     user: UserDependency,
     memo_id: int,
@@ -96,7 +96,7 @@ async def write_title(
 
 
 @router.put("/{memo_id}/body", status_code=status.HTTP_200_OK)
-async def write_body(
+async def handle_update_body(
     db: DbDependency,
     user: UserDependency,
     memo_id: int,
@@ -112,7 +112,7 @@ async def write_body(
 
 
 @router.put("/{memo_id}/tags", status_code=status.HTTP_200_OK)
-async def write_tags(
+async def handle_update_tags(
     db: DbDependency,
     user: UserDependency,
     memo_id: int,
@@ -128,7 +128,7 @@ async def write_tags(
 
 
 @router.delete("/{memo_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_memo(
+async def handle_delete_memo(
     db: DbDependency,
     user: UserDependency,
     memo_id: int,

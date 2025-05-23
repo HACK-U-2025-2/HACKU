@@ -16,7 +16,7 @@ router = APIRouter(prefix="/tags", tags=["Tags"])
 
 
 @router.get("", response_model=List[TagResponse], status_code=status.HTTP_200_OK)
-async def get_tags(
+async def handle_get_tags(
     db: DbDependency,
     user: UserDependency,
     keyword: Optional[str] = Query(None, description="検索キーワード"),

@@ -1,4 +1,5 @@
 import pytest
+from schemas.memo import MemoSortOrder
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
@@ -126,7 +127,7 @@ def test_empty_tags_search(test_db, client):
 # ソート順が正常に機能するか
 @pytest.mark.parametrize(
     "sort_key",
-    ["created_at_asc", "created_at_desc", "updated_at_asc", "updated_at_desc"],
+    [item.value for item in MemoSortOrder],
 )
 def test_sort_order(test_db, client, sort_key):
     user_id = "a"

@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from crud.memotag import add_memotags_by_tags, update_memo_tags
+from crud.query.build_memo_by_id_query import build_memo_by_id_query
 from crud.query.filter_memos_by_tags import filter_memos_by_tags
 from crud.tag import fetch_tags_by_names, upsert_tags
 from llm.clean_transcript import clean_transcript
@@ -71,10 +72,7 @@ def fetch_memos(
 
 
 def fetch_memo_by_ids(db: Session, user_id: str, memo_id: int):
-    query = select(Memos)
-    query = query.options(joinedload(Memos.tags))
-    query = query.where(Memos.id == memo_id)
-    query = query.where(Memos.user_id == user_id)
+    query = build_memo_by_id_query(user_id, memo_id)
 
     result = db.execute(query)
     memo = result.unique().scalars().one_or_none()
