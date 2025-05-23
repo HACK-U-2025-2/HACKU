@@ -5,6 +5,8 @@ import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:frontend/widgets/destination_navigation_drawer.dart';
+import 'package:frontend/widgets/dialogs/input_dialog.dart';
+import 'package:frontend/widgets/dialogs/record_dialog.dart';
 import 'package:frontend/widgets/memo_card.dart';
 
 @RoutePage()
@@ -41,6 +43,7 @@ class MemoListViewPage extends HookWidget {
     return Scaffold(
       drawer: const DestinationNavigationDrawer(),
       appBar: AppBar(title: const Text('メモ一覧')),
+      floatingActionButton: const _AddMemoFab(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -58,7 +61,8 @@ class MemoListViewPage extends HookWidget {
               Expanded(
                 child: Scrollbar(
                   child: ListView.separated(
-                    padding: const EdgeInsets.only(bottom: 20),
+                    // FABの分大きめにpaddingをとる
+                    padding: const EdgeInsets.only(bottom: 180),
                     separatorBuilder:
                         (context, index) => const SizedBox(height: 20),
                     itemCount: mockMemoList.length,
@@ -72,6 +76,82 @@ class MemoListViewPage extends HookWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _AddMemoFab extends HookWidget {
+  const _AddMemoFab();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final isOpen = useState(false);
+
+    const animationDuration = Duration(milliseconds: 300);
+    const animationCurve = Curves.easeOut;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnimatedSlide(
+          offset: isOpen.value ? Offset.zero : const Offset(0, 2.9),
+          duration: animationDuration,
+          curve: animationCurve,
+          child: FloatingActionButton.small(
+            heroTag: null,
+            onPressed: () async {
+              final rawMemo = await showDialog<String>(
+                context: context,
+                builder: (context) => const AddMemoFromTextDialog(),
+              );
+              if (rawMemo != null) {
+                // TODO(Rozelin-dc): メモ追加処理
+                debugPrint('テキストメモ追加: $rawMemo');
+              }
+            },
+            child: const Icon(Icons.edit),
+          ),
+        ),
+        const SizedBox(height: 10),
+        AnimatedSlide(
+          offset: isOpen.value ? Offset.zero : const Offset(0, 1.6),
+          duration: animationDuration,
+          curve: animationCurve,
+          child: FloatingActionButton.small(
+            heroTag: null,
+            onPressed: () async {
+              final transcription = await pickTranscribed(context);
+              if (transcription == null) return;
+
+              // TODO(Rozelin-dc): メモ追加処理
+              debugPrint('音声メモ追加: $transcription');
+            },
+            child: const Icon(Icons.mic),
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        FloatingActionButton(
+          backgroundColor:
+              isOpen.value
+                  ? theme.colorScheme.secondaryContainer
+                  : theme.colorScheme.primary,
+          foregroundColor:
+              isOpen.value
+                  ? theme.colorScheme.onSecondaryContainer
+                  : theme.colorScheme.onPrimary,
+          onPressed: () => isOpen.value = !isOpen.value,
+          child: AnimatedRotation(
+            turns: isOpen.value ? 0.5 : 0,
+            duration: animationDuration,
+            curve: animationCurve,
+            child: Icon(isOpen.value ? Icons.close : Icons.add),
+          ),
+        ),
+      ],
     );
   }
 }
