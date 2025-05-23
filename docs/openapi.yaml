@@ -18,6 +18,25 @@ components:
       - user_id
       title: LoginRequest
       type: object
+    MemoAllUpdateRequest:
+      properties:
+        body:
+          title: Body
+          type: string
+        tag_names:
+          items:
+            type: string
+          title: Tag Names
+          type: array
+        title:
+          title: Title
+          type: string
+      required:
+      - title
+      - body
+      - tag_names
+      title: MemoAllUpdateRequest
+      type: object
     MemoBodyUpdateRequest:
       properties:
         body:
@@ -242,7 +261,7 @@ openapi: 3.1.0
 paths:
   /auth:
     post:
-      operationId: login_auth_post
+      operationId: handle_login_auth_post
       requestBody:
         content:
           application/json:
@@ -262,12 +281,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Login
+      summary: Handle Login
       tags:
       - Auth
   /memos/:
     get:
-      operationId: read_memos_memos__get
+      operationId: handle_read_memos_memos__get
       parameters:
       - description: 検索キーワード
         in: query
@@ -308,7 +327,7 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/MemoPreviewResponse'
-                title: Response Read Memos Memos  Get
+                title: Response Handle Read Memos Memos  Get
                 type: array
           description: Successful Response
         '422':
@@ -319,11 +338,11 @@ paths:
           description: Validation Error
       security:
       - HTTPBearer: []
-      summary: Read Memos
+      summary: Handle Read Memos
       tags:
       - Memos
     post:
-      operationId: create_memos_memos__post
+      operationId: handle_create_memo_memos__post
       requestBody:
         content:
           application/json:
@@ -345,12 +364,12 @@ paths:
           description: Validation Error
       security:
       - HTTPBearer: []
-      summary: Create Memos
+      summary: Handle Create Memo
       tags:
       - Memos
   /memos/{memo_id}:
     delete:
-      operationId: delete_memo_memos__memo_id__delete
+      operationId: handle_delete_memo_memos__memo_id__delete
       parameters:
       - in: path
         name: memo_id
@@ -369,11 +388,11 @@ paths:
           description: Validation Error
       security:
       - HTTPBearer: []
-      summary: Delete Memo
+      summary: Handle Delete Memo
       tags:
       - Memos
     get:
-      operationId: read_memo_by_id_memos__memo_id__get
+      operationId: hangle_read_memo_by_id_memos__memo_id__get
       parameters:
       - in: path
         name: memo_id
@@ -396,12 +415,44 @@ paths:
           description: Validation Error
       security:
       - HTTPBearer: []
-      summary: Read Memo By Id
+      summary: Hangle Read Memo By Id
+      tags:
+      - Memos
+    put:
+      operationId: handle_update_tags_memos__memo_id__put
+      parameters:
+      - in: path
+        name: memo_id
+        required: true
+        schema:
+          title: Memo Id
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemoAllUpdateRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Handle Update Tags
       tags:
       - Memos
   /memos/{memo_id}/body:
-    put:
-      operationId: write_body_memos__memo_id__body_put
+    patch:
+      operationId: handle_update_body_memos__memo_id__body_patch
       parameters:
       - in: path
         name: memo_id
@@ -429,12 +480,12 @@ paths:
           description: Validation Error
       security:
       - HTTPBearer: []
-      summary: Write Body
+      summary: Handle Update Body
       tags:
       - Memos
   /memos/{memo_id}/tags:
-    put:
-      operationId: write_tags_memos__memo_id__tags_put
+    patch:
+      operationId: handle_update_tags_memos__memo_id__tags_patch
       parameters:
       - in: path
         name: memo_id
@@ -462,12 +513,12 @@ paths:
           description: Validation Error
       security:
       - HTTPBearer: []
-      summary: Write Tags
+      summary: Handle Update Tags
       tags:
       - Memos
   /memos/{memo_id}/title:
-    put:
-      operationId: write_title_memos__memo_id__title_put
+    patch:
+      operationId: handle_update_title_memos__memo_id__title_patch
       parameters:
       - in: path
         name: memo_id
@@ -495,12 +546,12 @@ paths:
           description: Validation Error
       security:
       - HTTPBearer: []
-      summary: Write Title
+      summary: Handle Update Title
       tags:
       - Memos
   /tags:
     get:
-      operationId: get_tags_tags_get
+      operationId: handle_get_tags_tags_get
       parameters:
       - description: 検索キーワード
         in: query
@@ -519,7 +570,7 @@ paths:
               schema:
                 items:
                   $ref: '#/components/schemas/TagResponse'
-                title: Response Get Tags Tags Get
+                title: Response Handle Get Tags Tags Get
                 type: array
           description: Successful Response
         '422':
@@ -530,6 +581,6 @@ paths:
           description: Validation Error
       security:
       - HTTPBearer: []
-      summary: Get Tags
+      summary: Handle Get Tags
       tags:
       - Tags
