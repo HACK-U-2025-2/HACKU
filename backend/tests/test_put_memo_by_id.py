@@ -1,9 +1,7 @@
-import asyncio
-
-import pytest
 from models.memo import Memos
 from models.memotag import MemoTags
 from models.tag import Tags
+from sqlalchemy import select
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
@@ -20,14 +18,14 @@ def test_normal_update_title(test_db, client):
     memo_id = 1
     title = "成功"
 
-    response = client.put(
+    response = client.patch(
         f"/memos/{memo_id}/title", headers=headers, json={"title": title}
     )
     assert response.status_code == 200
 
-    updated_memo = (
-        test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
-    )
+    query = select(Memos).where(Memos.id == memo_id, Memos.user_id == user_id)
+    updated_memo = test_db.execute(query).scalar_one_or_none()
+
     assert updated_memo is not None
 
     assert updated_memo.title == title
@@ -42,7 +40,7 @@ def test_empty_memo_title(test_db, client):
     memo_id = 1
     title = "失敗"
 
-    response = client.put(
+    response = client.patch(
         f"/memos/{memo_id}/title", headers=headers, json={"title": title}
     )
     assert response.status_code == 404
@@ -57,7 +55,7 @@ def test_failure_id_title(test_db, client):
     memo_id = 1
     title = "失敗"
 
-    response = client.put(
+    response = client.patch(
         f"/memos/{memo_id}/title", headers=headers, json={"title": title}
     )
     assert response.status_code == 404
@@ -72,14 +70,14 @@ def test_normal_update_body(test_db, client):
     memo_id = 1
     body = "成功"
 
-    response = client.put(
+    response = client.patch(
         f"/memos/{memo_id}/body", headers=headers, json={"body": body}
     )
     assert response.status_code == 200
 
-    updated_memo = (
-        test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
-    )
+    query = select(Memos).where(Memos.id == memo_id, Memos.user_id == user_id)
+    updated_memo = test_db.execute(query).scalar_one_or_none()
+
     assert updated_memo is not None
 
     assert updated_memo.body == body
@@ -94,7 +92,7 @@ def test_empty_memo_body(test_db, client):
     memo_id = 1
     body = "失敗"
 
-    response = client.put(
+    response = client.patch(
         f"/memos/{memo_id}/body", headers=headers, json={"body": body}
     )
     assert response.status_code == 404
@@ -109,38 +107,44 @@ def test_failure_id_body(test_db, client):
     memo_id = 1
     body = "失敗"
 
-    response = client.put(
+    response = client.patch(
         f"/memos/{memo_id}/body", headers=headers, json={"body": body}
     )
     assert response.status_code == 404
 
 
 # 指定したメモが正常に変更されるか(tags)
-def test_normal_update_title(test_db, client):
+def test_normal_update_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
-    create_test_tags
 
     memo_id = 1
     tag_names = ["成功", "タグ1", "タグ3"]
 
-    response = client.put(
+    response = client.patch(
         f"/memos/{memo_id}/tags", headers=headers, json={"tag_names": tag_names}
     )
     assert response.status_code == 200
 
-    updated_memotags = test_db.query(MemoTags).filter_by(memo_id=memo_id).all()
-    assert len(updated_memotags) == 3
+    query = select(MemoTags).where(MemoTags.memo_id == memo_id)
+    updated_memotags = test_db.execute(query).scalars().all()
 
-    updated_tags = (
-        test_db.query(Tags)
+    query = select(Tags).where(Tags.name.in_(tag_names))
+    connected_tag_ids = {tag.id for tag in test_db.execute(query).scalars().all()}
+
+    assert len(updated_memotags) == 3
+    for updated_memotag in updated_memotags:
+        assert updated_memotag.tag_id in connected_tag_ids
+
+    query = (
+        select(Tags)
         .join(MemoTags, MemoTags.tag_id == Tags.id)
-        .filter(MemoTags.memo_id == memo_id)
-        .all()
+        .where(MemoTags.memo_id == memo_id)
     )
+    updated_tags = test_db.execute(query).scalars().all()
 
     assert len(updated_tags) == 3
 
@@ -149,46 +153,33 @@ def test_normal_update_title(test_db, client):
         assert tag.name != "Tag 2"
 
 
-# 重複するタグを送った際にメモが正常に変更されるか(tags)
-def test_normal_update_title(test_db, client):
+# タグ名が重複する際に正常に通信が行われるか(tags)
+def test_failure_id_duplicate_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
-    create_test_tags(test_db, SHORT_TAGS)
-    create_test_memotags(test_db, SHORT_MEMOTAGS)
-    create_test_tags
 
     memo_id = 1
-    tag_names = ["成功", "成功", "成功"]
+    tag_names = ["成功", "成功"]
 
-    response = client.put(
+    response = client.patch(
         f"/memos/{memo_id}/tags", headers=headers, json={"tag_names": tag_names}
     )
     assert response.status_code == 200
 
-    updated_memotags = test_db.query(MemoTags).filter_by(memo_id=memo_id).all()
+    query = select(MemoTags).where(MemoTags.memo_id == memo_id)
+    updated_memotags = test_db.execute(query).scalars().all()
+
     assert len(updated_memotags) == 1
 
-    updated_tags = (
-        test_db.query(Tags)
-        .join(MemoTags, MemoTags.tag_id == Tags.id)
-        .filter(MemoTags.memo_id == memo_id)
-        .all()
-    )
+    query = select(Tags)
+    updated_tags = test_db.execute(query).scalars().all()
 
     assert len(updated_tags) == 1
 
-    tags = test_db.query(Tags).all()
-
-    assert len(tags) == 4
-
-    for tag in updated_tags:
-        assert tag.name in tag_names
-        assert tag.name != "Tag 2"
-
 
 # 存在しないメモを指定した場合に正常に通信が行われるか(tags)
-def test_empty_memo_body(test_db, client):
+def test_empty_memo_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, EMPTY_MEMOS)
@@ -196,14 +187,14 @@ def test_empty_memo_body(test_db, client):
     memo_id = 1
     tag_names = ["失敗"]
 
-    response = client.put(
+    response = client.patch(
         f"/memos/{memo_id}/tags", headers=headers, json={"tag_names": tag_names}
     )
     assert response.status_code == 404
 
 
 # 異なるユーザのメモを指定した場合に正常に通信が行われるか(tags)
-def test_failure_id_body(test_db, client):
+def test_failure_id_tags(test_db, client):
     user_id = "b"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
@@ -211,130 +202,93 @@ def test_failure_id_body(test_db, client):
     memo_id = 1
     tag_names = ["失敗"]
 
-    response = client.put(
+    response = client.patch(
         f"/memos/{memo_id}/tags", headers=headers, json={"tag_names": tag_names}
     )
     assert response.status_code == 404
 
 
-# 指定されたメモが正常に変更されるか(websocket)
-def test_normal_update_websocket(test_db, client):
+# 指定したメモが正常に変更されるか(all)
+def test_normal_update_all(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
+    create_test_tags(test_db, SHORT_TAGS)
+    create_test_memotags(test_db, SHORT_MEMOTAGS)
 
     memo_id = 1
+    title = "成功"
     body = "成功"
+    tag_names = ["成功", "タグ1", "タグ3"]
 
-    with client.websocket_connect(
-        f"/memos/{memo_id}/body", headers=headers
-    ) as websocket:
-        websocket.send_json({"body": body})
+    response = client.put(
+        f"/memos/{memo_id}",
+        headers=headers,
+        json={
+            "title": title,
+            "body": body,
+            "tag_names": tag_names,
+        },
+    )
+    assert response.status_code == 200
 
-        response = websocket.receive_json()
-        assert response["status"] == "success"
-        assert response["memo_id"] == memo_id
+    query_memo = select(Memos).where(Memos.id == memo_id, Memos.user_id == user_id)
+    updated_memo = test_db.execute(query_memo).scalar_one_or_none()
 
-        asyncio.run(asyncio.sleep(1.2))
+    assert updated_memo is not None
+    assert updated_memo.title == title
+    assert updated_memo.body == body
 
-        updated_memo = (
-            test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
-        )
-        assert updated_memo is not None
-        assert updated_memo.body == body
+    query_memotags = select(MemoTags).where(MemoTags.memo_id == memo_id)
+    updated_memotags = test_db.execute(query_memotags).scalars().all()
+
+    assert len(updated_memotags) == 3
+
+    query_tags = (
+        select(Tags)
+        .join(MemoTags, MemoTags.tag_id == Tags.id)
+        .where(MemoTags.memo_id == memo_id)
+    )
+    updated_tags = test_db.execute(query_tags).scalars().all()
+    tag_names_in_db = [tag.name for tag in updated_tags]
+
+    for name in tag_names:
+        assert name in tag_names_in_db
 
 
-# 存在しないメモを指定した場合に正常に通信が行われるかwebsocket)
-def test_empty_memo_websocket(test_db, client):
+# 存在しないメモを指定した場合に正常に通信が行われるか(all)
+def test_empty_memo_all(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, EMPTY_MEMOS)
 
     memo_id = 1
-    body = "失敗"
+    response = client.put(
+        f"/memos/{memo_id}",
+        headers=headers,
+        json={
+            "title": "失敗",
+            "body": "失敗",
+            "tag_names": ["失敗"],
+        },
+    )
+    assert response.status_code == 404
 
-    with client.websocket_connect(
-        f"/memos/{memo_id}/body", headers=headers
-    ) as websocket:
-        websocket.send_json({"body": body})
 
-        response = websocket.receive_json()
-        assert response["status"] == "error"
-
-
-# 異なるユーザのメモを指定した場合に正常に通信が行われるか(websocket)
-def test_failure_id_websocket(test_db, client):
+# 異なるユーザのメモを指定した場合に正常に通信が行われるか(all)
+def test_update_all_fields_wrong_user(test_db, client):
     user_id = "b"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
-
-    memo_id = 1
-    body = "失敗"
-
-    with client.websocket_connect(
-        f"/memos/{memo_id}/body", headers=headers
-    ) as websocket:
-        websocket.send_json({"body": body})
-
-        response = websocket.receive_json()
-        assert response["status"] == "error"
-
-
-# 複数回更新したときに最後の更新が反映されるか(websocket)
-def test_multiple_updates_websocket(test_db, client):
-    user_id = "a"
-    headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
 
     memo_id = 1
-    bodies = ["更新1", "更新２", "成功"]
-
-    with client.websocket_connect(
-        f"/memos/{memo_id}/body", headers=headers
-    ) as websocket:
-        websocket.send_json({"body": bodies[0]})
-        response1 = websocket.receive_json()
-        assert response1["status"] == "success"
-
-        websocket.send_json({"body": bodies[1]})
-        response2 = websocket.receive_json()
-        assert response2["status"] == "success"
-
-        websocket.send_json({"body": bodies[2]})
-        response3 = websocket.receive_json()
-        assert response3["status"] == "success"
-
-    asyncio.run(asyncio.sleep(1.2))
-
-    updated_memo = (
-        test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
+    response = client.put(
+        f"/memos/{memo_id}",
+        headers=headers,
+        json={
+            "title": "失敗",
+            "body": "失敗",
+            "tag_names": ["失敗"],
+        },
     )
-
-    assert updated_memo.body == bodies[2]
-
-
-# WebSocketの途中で接続が切れた場合に問題なく処理される
-def test_websocket_disconnect_midway(test_db, client):
-    user_id = "a"
-    headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
-
-    memo_id = 1
-    body = "成功"
-
-    with client.websocket_connect(
-        f"/memos/{memo_id}/body", headers=headers
-    ) as websocket:
-        websocket.send_json({"body": body})
-        response = websocket.receive_json()
-        assert response["status"] == "success"
-
-        websocket.close()
-
-    asyncio.run(asyncio.sleep(1.2))
-
-    updated_memo = (
-        test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
-    )
-
-    assert updated_memo.body == body
+    assert response.status_code == 404

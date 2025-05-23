@@ -1,4 +1,3 @@
-import pytest
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
@@ -57,7 +56,7 @@ def test_normal_get(test_db, client):
     assert memo["id"] == memo_id
 
     for tag in memo["tags"]:
-        assert tag["id"] in [1, 2]
+        assert tag["id"] in {1, 2}
 
 
 # メモが存在しない場合に正常に通信が行われるか
