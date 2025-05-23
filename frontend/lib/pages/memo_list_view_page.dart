@@ -97,8 +97,8 @@ class _AddMemoFab extends HookWidget {
           offset: isOpen.value ? Offset.zero : const Offset(0, 2.9),
           duration: animationDuration,
           curve: animationCurve,
-          child: FloatingActionButton(
-            mini: true,
+          child: FloatingActionButton.small(
+            heroTag: null,
             onPressed: () async {
               final rawMemo = await showDialog<String>(
                 context: context,
@@ -117,8 +117,8 @@ class _AddMemoFab extends HookWidget {
           offset: isOpen.value ? Offset.zero : const Offset(0, 1.6),
           duration: animationDuration,
           curve: animationCurve,
-          child: FloatingActionButton(
-            mini: true,
+          child: FloatingActionButton.small(
+            heroTag: null,
             onPressed: () async {
               final transcription = await pickTranscribed(context);
               if (transcription == null) return;
