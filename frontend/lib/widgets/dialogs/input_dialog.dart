@@ -86,6 +86,31 @@ class MemoTitleInputDialog extends StatelessWidget {
   }
 }
 
+class AddMemoTagInputDialog extends StatelessWidget {
+  const AddMemoTagInputDialog({required this.existingTagNames, super.key});
+
+  final List<String> existingTagNames;
+
+  @override
+  Widget build(BuildContext context) {
+    return InputDialog(
+      title: 'タグを編集',
+      actionLabel: '変更',
+      hintText: 'メモのタグ',
+      maxLength: memoTagNameMaxLength,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'タグを入力してください';
+        }
+        if (existingTagNames.contains(value)) {
+          return 'このタグはすでに存在します';
+        }
+        return null;
+      },
+    );
+  }
+}
+
 class AddMemoFromTextDialog extends StatelessWidget {
   const AddMemoFromTextDialog({super.key});
 
