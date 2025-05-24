@@ -1,14 +1,16 @@
 from contextlib import asynccontextmanager
 
+from embedding.loader import load_embedding_model
 from fastapi import FastAPI
-from llm.utils.loader import load_model
+from llm.utils.loader import load_llm_model
 from routers import auth, memo, memo_websocket, tag
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # サーバ起動時に一度だけモデルをロード
-    load_model()
+    load_llm_model()
+    load_embedding_model()
     yield
 
 

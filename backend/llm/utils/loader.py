@@ -5,7 +5,7 @@ _tokenizer = None
 _model_name = "Qwen/Qwen3-4B"
 
 
-def load_model():
+def load_llm_model():
     """
     モデルとトークナイザーを一度だけロードしてキャッシュし、返す。
     """
