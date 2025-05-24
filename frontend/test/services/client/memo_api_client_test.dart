@@ -40,7 +40,7 @@ void main() {
 
   Future<Memo> createTestMemo({
     required String content,
-    required List<String> tags,
+    List<String> tags = const [],
   }) async {
     return memoClient.createMemo(
       request: CreateMemoRequest(raw: content, tagNames: tags),
@@ -52,11 +52,25 @@ void main() {
   }
 
   group('MemoApiClient', () {
-    test('Create and get memo', () async {
+    test('Create memo', () async {
       final createdMemo = await createTestMemo(
         content: 'これはテストメモです。',
         tags: ['テスト', 'メモ'],
       );
+
+      final fetchedMemo = await memoClient.getMemo(
+        memoId: createdMemo.id.value,
+      );
+
+      expect(fetchedMemo.id.value, createdMemo.id.value);
+      expect(fetchedMemo.title, createdMemo.title);
+      expect(fetchedMemo.body, createdMemo.body);
+
+      await deleteTestMemo(createdMemo.id.value);
+    });
+
+    test('Create empty tag memo', () async {
+      final createdMemo = await createTestMemo(content: 'これはテストメモです。');
 
       final fetchedMemo = await memoClient.getMemo(
         memoId: createdMemo.id.value,
