@@ -25,13 +25,13 @@ class ApiClientMemoRepository implements MemoRepository {
   }
 
   @override
-  Future<void> addMemo(String rawMemo) async {
+  Future<Memo> addMemo(String rawMemo) async {
     final request = CreateMemoRequest(
       raw: rawMemo,
       // tagNames: [],
     );
     try {
-      await _memoApiClient.createMemo(request: request);
+      return await _memoApiClient.createMemo(request: request);
     } on Exception catch (e) {
       throw MemoUnknownException(e);
     }

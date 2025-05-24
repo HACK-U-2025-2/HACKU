@@ -35,9 +35,9 @@ class InMemoryMemoRepository implements MemoRepository {
       _memos[id] ?? (throw MemoNotFoundException(id));
 
   @override
-  Future<void> addMemo(String rawMemo) async {
+  Future<Memo> addMemo(String rawMemo) async {
     final memoId = MemoId(++_nextId);
-    _memos[memoId] = Memo(
+    return _memos[memoId] = Memo(
       id: memoId,
       title: 'Memo $_nextId',
       body: '$rawMemoの要約',

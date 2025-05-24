@@ -11,7 +11,7 @@ abstract interface class MemoRepository {
   Future<Memo> getMemoById(MemoId id);
 
   /// メモを追加する。文字起こしなどの文字列を引数に取る
-  Future<void> addMemo(String rawMemo);
+  Future<Memo> addMemo(String rawMemo);
 
   /// メモのタイトルを更新する
   Future<void> updateMemoTitle(MemoId id, String newTitle);
