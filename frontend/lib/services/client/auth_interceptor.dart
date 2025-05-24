@@ -12,12 +12,12 @@ class JWTAuthInterceptor extends AuthInterceptor {
   JWTAuthInterceptor({
     required this.authRepository,
     required this.userIdRepository,
-    required this.client,
+    required this.authApiClient,
   });
 
   final AuthRepository authRepository;
   final UserIdRepository userIdRepository;
-  final AuthApiClient client;
+  final AuthApiClient authApiClient;
 
   @override
   Future<void> onRequest(
@@ -39,7 +39,7 @@ class JWTAuthInterceptor extends AuthInterceptor {
 
   Future<AuthResponse> _refresh(AuthResponse? auth) async {
     final userId = await userIdRepository.getUserId();
-    final newAuth = await client.getAuthToken(
+    final newAuth = await authApiClient.getAuthToken(
       request: AuthRequest(userId: userId),
     );
     await authRepository.setAuth(newAuth);

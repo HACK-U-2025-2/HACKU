@@ -29,7 +29,7 @@ void main() {
     final authDio = Dio(BaseOptions(baseUrl: baseUrl));
     authDio.interceptors.add(
       JWTAuthInterceptor(
-        client: client,
+        authApiClient: client,
         authRepository: authRepository,
         userIdRepository: userIdRepository,
       ),
