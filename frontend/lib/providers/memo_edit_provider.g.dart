@@ -23,5 +23,22 @@ final isEditingModeProvider =
     );
 
 typedef _$IsEditingMode = AutoDisposeNotifier<bool>;
+String _$memoTagNamesHash() => r'17635115a62ceb909164a2c1e9a0aae23a16cf88';
+
+/// See also [MemoTagNames].
+@ProviderFor(MemoTagNames)
+final memoTagNamesProvider =
+    AutoDisposeNotifierProvider<MemoTagNames, List<String>>.internal(
+      MemoTagNames.new,
+      name: r'memoTagNamesProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$memoTagNamesHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$MemoTagNames = AutoDisposeNotifier<List<String>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

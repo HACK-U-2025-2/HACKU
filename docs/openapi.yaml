@@ -1,0 +1,586 @@
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    LoginRequest:
+      properties:
+        user_id:
+          title: User Id
+          type: string
+      required:
+      - user_id
+      title: LoginRequest
+      type: object
+    MemoAllUpdateRequest:
+      properties:
+        body:
+          title: Body
+          type: string
+        tag_names:
+          items:
+            type: string
+          title: Tag Names
+          type: array
+        title:
+          title: Title
+          type: string
+      required:
+      - title
+      - body
+      - tag_names
+      title: MemoAllUpdateRequest
+      type: object
+    MemoBodyUpdateRequest:
+      properties:
+        body:
+          title: Body
+          type: string
+      required:
+      - body
+      title: MemoBodyUpdateRequest
+      type: object
+    MemoCreateRequest:
+      properties:
+        need_proofreading:
+          title: Need Proofreading
+          type: boolean
+        raw:
+          title: Raw
+          type: string
+        tag_names:
+          items:
+            type: string
+          title: Tag Names
+          type: array
+      required:
+      - raw
+      - tag_names
+      - need_proofreading
+      title: MemoCreateRequest
+      type: object
+    MemoPreviewResponse:
+      properties:
+        body:
+          examples:
+          - Body
+          minLength: 1
+          title: Body
+          type: string
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        id:
+          examples:
+          - 1
+          exclusiveMinimum: 0.0
+          title: Id
+          type: integer
+        title:
+          examples:
+          - Title
+          minLength: 1
+          title: Title
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+        user_id:
+          examples:
+          - User
+          minLength: 1
+          title: User Id
+          type: string
+      required:
+      - id
+      - title
+      - user_id
+      - body
+      - created_at
+      - updated_at
+      title: MemoPreviewResponse
+      type: object
+    MemoResponse:
+      properties:
+        body:
+          examples:
+          - Body
+          minLength: 1
+          title: Body
+          type: string
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        id:
+          examples:
+          - 1
+          exclusiveMinimum: 0.0
+          title: Id
+          type: integer
+        raw:
+          examples:
+          - Body
+          minLength: 1
+          title: Raw
+          type: string
+        tags:
+          items:
+            $ref: '#/components/schemas/TagResponse'
+          title: Tags
+          type: array
+        title:
+          examples:
+          - Title
+          minLength: 1
+          title: Title
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+        user_id:
+          examples:
+          - User
+          minLength: 1
+          title: User Id
+          type: string
+      required:
+      - id
+      - title
+      - user_id
+      - body
+      - raw
+      - created_at
+      - updated_at
+      title: MemoResponse
+      type: object
+    MemoSortOrder:
+      enum:
+      - created_at_asc
+      - created_at_desc
+      - updated_at_asc
+      - updated_at_desc
+      title: MemoSortOrder
+      type: string
+    MemoTagsUpdateRequest:
+      properties:
+        tag_names:
+          items:
+            type: string
+          title: Tag Names
+          type: array
+      required:
+      - tag_names
+      title: MemoTagsUpdateRequest
+      type: object
+    MemoTitleUpdateRequest:
+      properties:
+        title:
+          title: Title
+          type: string
+      required:
+      - title
+      title: MemoTitleUpdateRequest
+      type: object
+    TagResponse:
+      properties:
+        id:
+          examples:
+          - 1
+          exclusiveMinimum: 0.0
+          title: Id
+          type: integer
+        name:
+          examples:
+          - Name
+          minLength: 1
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: TagResponse
+      type: object
+    Token:
+      properties:
+        access_token:
+          title: Access Token
+          type: string
+        expired_at:
+          format: date-time
+          title: Expired At
+          type: string
+        token_type:
+          title: Token Type
+          type: string
+      required:
+      - access_token
+      - token_type
+      - expired_at
+      title: Token
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+  securitySchemes:
+    HTTPBearer:
+      scheme: bearer
+      type: http
+info:
+  description: アイデアを即時に記録・管理するためのAPI
+  title: mindly
+  version: 1.0.0
+openapi: 3.1.0
+paths:
+  /auth:
+    post:
+      operationId: handle_login_auth_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Handle Login
+      tags:
+      - Auth
+  /memos/:
+    get:
+      operationId: handle_read_memos_memos__get
+      parameters:
+      - description: 検索キーワード
+        in: query
+        name: keyword
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 検索キーワード
+          title: Keyword
+      - description: タグでの絞り込み
+        in: query
+        name: tags
+        required: false
+        schema:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: タグでの絞り込み
+          title: Tags
+      - description: ソート順
+        in: query
+        name: sort
+        required: false
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/MemoSortOrder'
+          - type: 'null'
+          description: ソート順
+          title: Sort
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/MemoPreviewResponse'
+                title: Response Handle Read Memos Memos  Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Handle Read Memos
+      tags:
+      - Memos
+    post:
+      operationId: handle_create_memo_memos__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemoCreateRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemoResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Handle Create Memo
+      tags:
+      - Memos
+  /memos/{memo_id}:
+    delete:
+      operationId: handle_delete_memo_memos__memo_id__delete
+      parameters:
+      - in: path
+        name: memo_id
+        required: true
+        schema:
+          title: Memo Id
+          type: integer
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Handle Delete Memo
+      tags:
+      - Memos
+    get:
+      operationId: hangle_read_memo_by_id_memos__memo_id__get
+      parameters:
+      - in: path
+        name: memo_id
+        required: true
+        schema:
+          title: Memo Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemoResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Hangle Read Memo By Id
+      tags:
+      - Memos
+    put:
+      operationId: handle_update_tags_memos__memo_id__put
+      parameters:
+      - in: path
+        name: memo_id
+        required: true
+        schema:
+          title: Memo Id
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemoAllUpdateRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Handle Update Tags
+      tags:
+      - Memos
+  /memos/{memo_id}/body:
+    patch:
+      operationId: handle_update_body_memos__memo_id__body_patch
+      parameters:
+      - in: path
+        name: memo_id
+        required: true
+        schema:
+          title: Memo Id
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemoBodyUpdateRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Handle Update Body
+      tags:
+      - Memos
+  /memos/{memo_id}/tags:
+    patch:
+      operationId: handle_update_tags_memos__memo_id__tags_patch
+      parameters:
+      - in: path
+        name: memo_id
+        required: true
+        schema:
+          title: Memo Id
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemoTagsUpdateRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Handle Update Tags
+      tags:
+      - Memos
+  /memos/{memo_id}/title:
+    patch:
+      operationId: handle_update_title_memos__memo_id__title_patch
+      parameters:
+      - in: path
+        name: memo_id
+        required: true
+        schema:
+          title: Memo Id
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemoTitleUpdateRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Handle Update Title
+      tags:
+      - Memos
+  /tags:
+    get:
+      operationId: handle_get_tags_tags_get
+      parameters:
+      - description: 検索キーワード
+        in: query
+        name: keyword
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 検索キーワード
+          title: Keyword
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/TagResponse'
+                title: Response Handle Get Tags Tags Get
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Handle Get Tags
+      tags:
+      - Tags

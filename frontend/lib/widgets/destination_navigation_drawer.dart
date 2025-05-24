@@ -1,20 +1,48 @@
-import 'package:flutter/material.dart';
-import 'package:frontend/pages/memo_list_view_page.dart';
-import 'package:frontend/providers/router_provider.dart';
-import 'package:frontend/types/destination.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'dart:async';
 
-class DestinationNavigationDrawer extends ConsumerWidget {
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:frontend/router.dart';
+import 'package:frontend/router.gr.dart';
+
+class DestinationNavigationDrawer extends StatelessWidget {
   const DestinationNavigationDrawer({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selectedDestination = ref.watch(selectedDestinationProvider);
+  Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final current = context.router.current.toDestination();
+
+    if (current == null) {
+      return const Center(child: Text('ルートが見つかりません'));
+    }
+
     return NavigationDrawer(
-      selectedIndex: selectedDestination.index,
-      onDestinationSelected:
-          (value) => _onDestinationSelected(ref, Destination.values[value]),
+      selectedIndex: current.index,
+      onDestinationSelected: (value) async {
+        final destination = Destination.values[value];
+        // Drawerを閉じる。popでも可能だが、明示的に閉じる
+        Scaffold.of(context).closeDrawer();
+
+        if (current == destination) return;
+
+        // Drawerが残ってしまうので、Drawerが閉じるのを待つ
+        // https://github.com/flutter/flutter/issues/26954#issuecomment-1642416265
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+
+        if (!context.mounted) return;
+
+        // 入れ子にしないため、ホームまで戻る
+        context.router.popUntilRoot();
+
+        switch (destination) {
+          case Destination.home:
+            // 何もしない
+            break;
+          case Destination.memoList:
+            unawaited(context.router.push(const MemoListViewRoute()));
+        }
+      },
       children: [
         Padding(
           padding: const EdgeInsets.all(16),
@@ -30,32 +58,5 @@ class DestinationNavigationDrawer extends ConsumerWidget {
           ),
       ],
     );
-  }
-
-  void _onDestinationSelected(WidgetRef ref, Destination destination) {
-    final context = ref.context;
-    // Drawerを閉じる。popでも可能だが、明示的に閉じる
-    Scaffold.of(context).closeDrawer();
-
-    final selectedDestination = ref.read(selectedDestinationProvider);
-    if (selectedDestination == destination) return;
-
-    ref.read(selectedDestinationProvider.notifier).setDestination(destination);
-
-    // ホームまで戻る
-    // これをしないと、入れ子になってしまう
-    Navigator.of(context).popUntil((route) => route.isFirst);
-
-    switch (destination) {
-      case Destination.home:
-        // 何もしない
-        break;
-      case Destination.memoList:
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (context) => const MemoListViewPage(),
-          ),
-        );
-    }
   }
 }

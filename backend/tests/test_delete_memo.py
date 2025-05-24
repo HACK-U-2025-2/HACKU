@@ -1,4 +1,3 @@
-import pytest
 from models.memo import Memos
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.utils.auth import get_headers

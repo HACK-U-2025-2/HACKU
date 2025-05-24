@@ -46,8 +46,10 @@ dependencies:
   speech_to_text: ^7.0.0
   synchronized: ^3.3.1
   flutter_quill: ^11.4.1
+  auto_route: ^10.0.1
 
 dev_dependencies:
+  auto_route_generator: ^10.0.1
   build_runner: ^2.4.15
   custom_lint: ^0.7.5
   flutter_test:

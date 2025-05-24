@@ -10,6 +10,7 @@ class InputDialog extends HookWidget {
     this.initialValue,
     this.validator,
     this.maxLength,
+    this.expandsWithInputText = false,
     super.key,
   });
 
@@ -19,6 +20,7 @@ class InputDialog extends HookWidget {
   final String? Function(String?)? validator;
   final String actionLabel;
   final int? maxLength;
+  final bool expandsWithInputText;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +33,7 @@ class InputDialog extends HookWidget {
         key: formKey,
         child: TextFormField(
           maxLength: maxLength,
+          maxLines: expandsWithInputText ? null : 1,
           validator: validator,
           autofocus: true,
           controller: textController,
@@ -76,6 +79,51 @@ class MemoTitleInputDialog extends StatelessWidget {
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'タイトルを入力してください';
+        }
+        return null;
+      },
+    );
+  }
+}
+
+class AddMemoTagInputDialog extends StatelessWidget {
+  const AddMemoTagInputDialog({required this.existingTagNames, super.key});
+
+  final List<String> existingTagNames;
+
+  @override
+  Widget build(BuildContext context) {
+    return InputDialog(
+      title: 'タグを追加',
+      actionLabel: '追加',
+      hintText: 'メモのタグ',
+      maxLength: memoTagNameMaxLength,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'タグを入力してください';
+        }
+        if (existingTagNames.contains(value)) {
+          return 'このタグはすでに存在します';
+        }
+        return null;
+      },
+    );
+  }
+}
+
+class AddMemoFromTextDialog extends StatelessWidget {
+  const AddMemoFromTextDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return InputDialog(
+      title: 'メモを追加',
+      actionLabel: '追加',
+      hintText: 'メモの内容',
+      expandsWithInputText: true,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'メモを入力してください';
         }
         return null;
       },
