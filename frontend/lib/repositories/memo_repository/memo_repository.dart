@@ -1,11 +1,16 @@
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
+import 'package:frontend/types/request_body.dart';
+
+export 'package:frontend/types/request_body.dart';
 
 abstract interface class MemoRepository {
   /// メモの一覧を取得する
-  ///
-  /// TODO: 引数にクエリ系のパラメータを追加。サーバーの実装に合わせてenumなどを用意する
-  Future<List<MemoPreview>> getMemos();
+  Future<List<MemoPreview>> getMemos({
+    String? keyword,
+    List<String>? tagNames,
+    MemoSort? sort,
+  });
 
   /// メモのIDからメモを取得する
   Future<Memo> getMemoById(MemoId id);
@@ -32,6 +37,22 @@ class MemoNotFoundException implements Exception {
 
   @override
   String toString() => 'Memo with id $id not found';
+}
+
+class MemoValidationException implements Exception {
+  MemoValidationException(this.error);
+  final Object error;
+
+  @override
+  String toString() => 'Validation error occurred: $error';
+}
+
+class MemoServerException implements Exception {
+  MemoServerException(this.error);
+  final Object error;
+
+  @override
+  String toString() => 'Server error occurred: $error';
 }
 
 class MemoUnknownException implements Exception {

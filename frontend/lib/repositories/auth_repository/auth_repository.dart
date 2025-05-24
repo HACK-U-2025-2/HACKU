@@ -7,3 +7,10 @@ abstract interface class AuthRepository {
   /// 認証情報を保存
   Future<void> setAuth(AuthResponse auth);
 }
+
+class UnauthenticatedException implements Exception {
+  UnauthenticatedException();
+
+  @override
+  String toString() => 'User is not authenticated';
+}

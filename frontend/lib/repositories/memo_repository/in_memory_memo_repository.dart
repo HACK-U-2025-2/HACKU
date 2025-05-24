@@ -17,8 +17,25 @@ class InMemoryMemoRepository implements MemoRepository {
   int _nextId = 0;
 
   @override
-  Future<List<MemoPreview>> getMemos() async =>
+  Future<List<MemoPreview>> getMemos({
+    String? keyword,
+    List<String>? tagNames,
+    MemoSort? sort,
+  }) async =>
       _memos.values
+          .where((memo) {
+            final matchesKeyword =
+                keyword == null ||
+                memo.title.contains(keyword) ||
+                memo.body.contains(keyword);
+            final matchesTags =
+                tagNames == null ||
+                tagNames.isEmpty ||
+                tagNames.every(
+                  (name) => memo.tags.any((tag) => tag.name == name),
+                );
+            return matchesKeyword && matchesTags;
+          })
           .map(
             (memo) => MemoPreview(
               id: memo.id,
@@ -27,6 +44,19 @@ class InMemoryMemoRepository implements MemoRepository {
               createdAt: memo.createdAt,
               updatedAt: memo.updatedAt,
             ),
+          )
+          .sorted(
+            (a, b) => switch (sort) {
+              MemoSort.createdAtAsc => a.createdAt.compareTo(b.createdAt),
+              MemoSort.createdAtDesc => b.createdAt.compareTo(a.createdAt),
+              MemoSort.updatedAtAsc => (a.updatedAt ?? a.createdAt).compareTo(
+                b.updatedAt ?? b.createdAt,
+              ),
+              MemoSort.updatedAtDesc => (b.updatedAt ?? b.createdAt).compareTo(
+                a.updatedAt ?? a.createdAt,
+              ),
+              _ => 0,
+            },
           )
           .toList();
 
