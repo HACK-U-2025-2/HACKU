@@ -94,8 +94,8 @@ class AddMemoTagInputDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InputDialog(
-      title: 'タグを編集',
-      actionLabel: '変更',
+      title: 'タグを追加',
+      actionLabel: '追加',
       hintText: 'メモのタグ',
       maxLength: memoTagNameMaxLength,
       validator: (value) {
