@@ -1,8 +1,15 @@
+import json
+
 from llm.utils.loader import load_model
 
 
 def generate_text(prompt: str, enable_thinking: bool, max_new_tokens: int) -> str:
     model, tokenizer = load_model()
+
+    if model == "mock_llm":
+        clean_prompt = prompt.replace("\n", "")
+        mock_result = f"モック応答（プロンプト: {clean_prompt[:25]}...）"
+        return json.dumps({"result": mock_result})
 
     # JSON形式の出力を強制するプロンプト設計
     json_prompt = f"""
