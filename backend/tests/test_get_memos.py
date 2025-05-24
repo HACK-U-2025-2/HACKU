@@ -1,4 +1,5 @@
 import pytest
+from schemas.memo import MemoSortOrder
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
@@ -57,7 +58,7 @@ def test_empty_data(test_db, client):
 
 
 # キーワード検索が正常に行われているか
-def test_normal_search(test_db, client):
+def test_normal_keyword_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
@@ -73,7 +74,7 @@ def test_normal_search(test_db, client):
 
 
 # 対象のキーワードを含むメモが存在しない場合検索が正常に行われているか
-def test_empty_search(test_db, client):
+def test_empty_keyword_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, EMPTY_MEMOS)
@@ -86,7 +87,7 @@ def test_empty_search(test_db, client):
 
 
 # タグ検索が正常に行われているか
-def test_normal_search(test_db, client):
+def test_normal_tags_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
@@ -109,7 +110,7 @@ def test_normal_search(test_db, client):
 
 
 # 対象のキーワードを含むメモが存在しない場合検索が正常に行われているか
-def test_empty_search(test_db, client):
+def test_empty_tags_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
@@ -123,68 +124,31 @@ def test_empty_search(test_db, client):
     assert len(data) == 0
 
 
-# ソート順が正常に機能するか(作成日時昇順)
-def test_sort_order_created_asc(test_db, client):
+# ソート順が正常に機能するか
+@pytest.mark.parametrize(
+    "sort_key",
+    [item.value for item in MemoSortOrder],
+)
+def test_sort_order(test_db, client, sort_key):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)
 
-    response = client.get("/memos/", headers=headers, params={"sort": "created_at_asc"})
+    response = client.get("/memos/", headers=headers, params={"sort": sort_key})
     assert response.status_code == 200
     data = response.json()
 
-    created_times = [memo["created_at"] for memo in data]
-    assert created_times == sorted(created_times)
+    key = "created_at" if "created" in sort_key else "updated_at"
+    timestamps = [memo[key] for memo in data]
 
-
-# ソート順が正常に機能するか(作成日時降順)
-def test_sort_order_created_desc(test_db, client):
-    user_id = "a"
-    headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
-
-    response = client.get(
-        "/memos/", headers=headers, params={"sort": "created_at_desc"}
-    )
-    assert response.status_code == 200
-    data = response.json()
-
-    created_times = [memo["created_at"] for memo in data]
-    assert created_times == sorted(created_times, reverse=True)
-
-
-# ソート順が正常に機能するか(更新日時昇順)
-def test_sort_order_updated_asc(test_db, client):
-    user_id = "a"
-    headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
-
-    response = client.get("/memos/", headers=headers, params={"sort": "updated_at_asc"})
-    assert response.status_code == 200
-    data = response.json()
-
-    updated_times = [memo["updated_at"] for memo in data]
-    assert updated_times == sorted(updated_times)
-
-
-# ソート順が正常に機能するか(更新日時降順)
-def test_sort_order_updated_desc(test_db, client):
-    user_id = "a"
-    headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
-
-    response = client.get(
-        "/memos/", headers=headers, params={"sort": "updated_at_desc"}
-    )
-    assert response.status_code == 200
-    data = response.json()
-
-    updated_times = [memo["updated_at"] for memo in data]
-    assert updated_times == sorted(updated_times, reverse=True)
+    if "desc" in sort_key:
+        assert timestamps == sorted(timestamps, reverse=True)
+    else:
+        assert timestamps == sorted(timestamps)
 
 
 # ソート方式が不正な場合に正常に機能するか
-def test_sort_order_updated_desc(test_db, client):
+def test_sort_order_invalid(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS)

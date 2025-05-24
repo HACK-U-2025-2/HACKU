@@ -38,6 +38,14 @@ class MemoCreateRequest(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class MemoAllUpdateRequest(BaseModel):
+    title: str
+    body: str
+    tag_names: List[str]
+
+    model_config = {"from_attributes": True}
+
+
 class MemoTitleUpdateRequest(BaseModel):
     title: str
 
