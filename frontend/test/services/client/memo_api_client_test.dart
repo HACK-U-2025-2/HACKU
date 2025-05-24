@@ -15,6 +15,7 @@ void main() {
 
   // APIのベースURL。ローカルDockerで動いていることを前提とする
   const baseUrl = 'http://localhost:8000';
+  const userId = 'test_user_id';
 
   setUp(() async {
     final dio = Dio(BaseOptions(baseUrl: baseUrl));
@@ -23,7 +24,7 @@ void main() {
     SharedPreferencesAsyncPlatform.instance =
         InMemorySharedPreferencesAsync.empty();
     final authRepository = SharedPreferencesAuthRepository();
-    final userIdRepository = ValueUserIdRepository('test_user_id');
+    final userIdRepository = ValueUserIdRepository(userId);
 
     final authDio = Dio(BaseOptions(baseUrl: baseUrl));
     authDio.interceptors.add(
@@ -37,7 +38,7 @@ void main() {
     memoClient = MemoApiClient(authDio);
   });
 
-  Future<Memo> createMemo({
+  Future<Memo> createTestMemo({
     required String content,
     required List<String> tags,
   }) async {
@@ -46,13 +47,13 @@ void main() {
     );
   }
 
-  Future<void> cleanupMemo(int memoId) async {
+  Future<void> deleteTestMemo(int memoId) async {
     await memoClient.deleteMemo(memoId: memoId);
   }
 
   group('MemoApiClient', () {
     test('Create and get memo', () async {
-      final createdMemo = await createMemo(
+      final createdMemo = await createTestMemo(
         content: 'これはテストメモです。',
         tags: ['テスト', 'メモ'],
       );
@@ -65,11 +66,14 @@ void main() {
       expect(fetchedMemo.title, createdMemo.title);
       expect(fetchedMemo.body, createdMemo.body);
 
-      await cleanupMemo(createdMemo.id.value);
+      await deleteTestMemo(createdMemo.id.value);
     });
 
     test('Get memo list', () async {
-      final memo = await createMemo(content: 'メモ一覧テスト用', tags: ['テスト', 'リスト']);
+      final memo = await createTestMemo(
+        content: 'メモ一覧テスト用',
+        tags: ['テスト', 'リスト'],
+      );
 
       final memos = await memoClient.getMemos();
 
@@ -80,11 +84,14 @@ void main() {
       );
       expect(createdMemo.title, memo.title);
 
-      await cleanupMemo(memo.id.value);
+      await deleteTestMemo(memo.id.value);
     });
 
     test('Update memo', () async {
-      final memo = await createMemo(content: '更新テスト用メモ', tags: ['更新', 'テスト']);
+      final memo = await createTestMemo(
+        content: '更新テスト用メモ',
+        tags: ['更新', 'テスト'],
+      );
 
       await memoClient.updateMemoTitle(
         memoId: memo.id.value,
@@ -108,11 +115,14 @@ void main() {
       expect(updatedMemo.tags.map((t) => t.name).toList(), contains('更新済み'));
       expect(updatedMemo.tags.map((t) => t.name).toList(), contains('テスト完了'));
 
-      await cleanupMemo(memo.id.value);
+      await deleteTestMemo(memo.id.value);
     });
 
     test('Get tag list', () async {
-      final memo = await createMemo(content: 'タグテスト用メモ', tags: ['タグ一覧', 'テスト']);
+      final memo = await createTestMemo(
+        content: 'タグテスト用メモ',
+        tags: ['タグ一覧', 'テスト'],
+      );
 
       final tags = await memoClient.getTags();
 
@@ -123,22 +133,117 @@ void main() {
       expect(filteredTags, isNotEmpty);
       expect(filteredTags.every((tag) => tag.name.contains('タグ一覧')), isTrue);
 
-      await cleanupMemo(memo.id.value);
+      await deleteTestMemo(memo.id.value);
     });
 
     test('Search memos', () async {
-      final memo = await createMemo(content: '検索ワード', tags: ['検索', 'テスト']);
+      final memo = await createTestMemo(content: '検索ワード', tags: ['検索', 'テスト']);
 
-      final searchResult = await memoClient.getMemos(keyword: 'ワード');
+      final searchResult = await memoClient.getMemos(
+        queries: const GetMemosQuery(keyword: 'ワード'),
+      );
 
       expect(searchResult, isNotEmpty);
       expect(searchResult.any((m) => m.id.value == memo.id.value), isTrue);
 
-      final tagSearchResult = await memoClient.getMemos(tags: ['検索']);
+      final tagSearchResult = await memoClient.getMemos(
+        queries: const GetMemosQuery(tags: ['検索']),
+      );
       expect(tagSearchResult, isNotEmpty);
       expect(tagSearchResult.any((m) => m.id.value == memo.id.value), isTrue);
 
-      await cleanupMemo(memo.id.value);
+      await deleteTestMemo(memo.id.value);
+    });
+
+    test('Get memos sorted by createdAt', () async {
+      final memo1 = await createTestMemo(
+        content: 'sort created 1',
+        tags: ['sort'],
+      );
+      final memo2 = await createTestMemo(
+        content: 'sort created 2',
+        tags: ['sort'],
+      );
+
+      final memosAsc = await memoClient.getMemos(
+        queries: const GetMemosQuery(
+          tags: ['sort'],
+          sort: MemoSort.createdAtAsc,
+        ),
+      );
+      final memosDesc = await memoClient.getMemos(
+        queries: const GetMemosQuery(
+          tags: ['sort'],
+          sort: MemoSort.createdAtDesc,
+        ),
+      );
+      expect(memosAsc, isNotEmpty);
+      expect(memosDesc, isNotEmpty);
+
+      final memoIdsAsc = memosAsc.map((m) => m.id.value).toList();
+      final memoIdsDesc = memosDesc.map((m) => m.id.value).toList();
+
+      expect(
+        memoIdsAsc.indexOf(memo1.id.value),
+        lessThan(memoIdsAsc.indexOf(memo2.id.value)),
+      );
+      expect(
+        memoIdsDesc.indexOf(memo1.id.value),
+        greaterThan(memoIdsDesc.indexOf(memo2.id.value)),
+      );
+
+      expect(memoIdsAsc, memoIdsDesc.reversed.toList());
+
+      await deleteTestMemo(memo1.id.value);
+      await deleteTestMemo(memo2.id.value);
+    });
+
+    test('Get memos sorted by updatedAt', () async {
+      final memo1 = await createTestMemo(
+        content: 'sort updated 1',
+        tags: ['sort'],
+      );
+      final memo2 = await createTestMemo(
+        content: 'sort updated 2',
+        tags: ['sort'],
+      );
+      await memoClient.updateMemoBody(
+        memoId: memo1.id.value,
+        request: const UpdateBodyRequest(body: 'updated body 1'),
+      );
+      await memoClient.updateMemoBody(
+        memoId: memo2.id.value,
+        request: const UpdateBodyRequest(body: 'updated body 2'),
+      );
+      final memosAsc = await memoClient.getMemos(
+        queries: const GetMemosQuery(
+          tags: ['sort'],
+          sort: MemoSort.updatedAtAsc,
+        ),
+      );
+      final memosDesc = await memoClient.getMemos(
+        queries: const GetMemosQuery(
+          tags: ['sort'],
+          sort: MemoSort.updatedAtDesc,
+        ),
+      );
+      expect(memosAsc, isNotEmpty);
+      expect(memosDesc, isNotEmpty);
+
+      final memoIdsAsc = memosAsc.map((m) => m.id.value).toList();
+      final memoIdsDesc = memosDesc.map((m) => m.id.value).toList();
+      expect(
+        memoIdsAsc.indexOf(memo1.id.value),
+        lessThan(memoIdsAsc.indexOf(memo2.id.value)),
+      );
+      expect(
+        memoIdsDesc.indexOf(memo1.id.value),
+        greaterThan(memoIdsDesc.indexOf(memo2.id.value)),
+      );
+      expect(memoIdsAsc, memoIdsDesc.reversed.toList());
+
+      await deleteTestMemo(memo1.id.value);
+      await deleteTestMemo(memo2.id.value);
     });
   });
 }

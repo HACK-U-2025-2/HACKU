@@ -20,11 +20,7 @@ abstract class MemoApiClient {
 
   /// メモ一覧を取得
   @GET('/memos/')
-  Future<List<MemoPreview>> getMemos({
-    @Query('keyword') String? keyword,
-    @Query('tags') List<String>? tags,
-    @Query('sort') String? sort,
-  });
+  Future<List<MemoPreview>> getMemos({@Queries() GetMemosQuery? queries});
 
   /// 新たなメモを投稿
   @POST('/memos/')

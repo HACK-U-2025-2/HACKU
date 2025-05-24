@@ -6,6 +6,27 @@ part of 'request_body.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+GetMemosQuery _$GetMemosQueryFromJson(Map<String, dynamic> json) =>
+    GetMemosQuery(
+      keyword: json['keyword'] as String?,
+      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      sort: $enumDecodeNullable(_$MemoSortEnumMap, json['sort']),
+    );
+
+Map<String, dynamic> _$GetMemosQueryToJson(GetMemosQuery instance) =>
+    <String, dynamic>{
+      'keyword': instance.keyword,
+      'tags': instance.tags,
+      'sort': _$MemoSortEnumMap[instance.sort],
+    };
+
+const _$MemoSortEnumMap = {
+  MemoSort.createdAtAsc: 'created_at_asc',
+  MemoSort.createdAtDesc: 'created_at_desc',
+  MemoSort.updatedAtAsc: 'updated_at_asc',
+  MemoSort.updatedAtDesc: 'updated_at_desc',
+};
+
 CreateMemoRequest _$CreateMemoRequestFromJson(Map<String, dynamic> json) =>
     CreateMemoRequest(
       raw: json['raw'] as String,

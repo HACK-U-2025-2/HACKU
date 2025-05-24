@@ -18,17 +18,10 @@ class _MemoApiClient implements MemoApiClient {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<List<MemoPreview>> getMemos({
-    String? keyword,
-    List<String>? tags,
-    String? sort,
-  }) async {
+  Future<List<MemoPreview>> getMemos({GetMemosQuery? queries}) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{
-      r'keyword': keyword,
-      r'tags': tags,
-      r'sort': sort,
-    };
+    final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(queries?.toJson() ?? <String, dynamic>{});
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;

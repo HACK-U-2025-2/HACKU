@@ -2,6 +2,22 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'request_body.g.dart';
 
+@JsonEnum(fieldRename: FieldRename.snake)
+enum MemoSort { createdAtAsc, createdAtDesc, updatedAtAsc, updatedAtDesc }
+
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+class GetMemosQuery {
+  const GetMemosQuery({this.keyword, this.tags, this.sort});
+
+  factory GetMemosQuery.fromJson(Map<String, dynamic> json) =>
+      _$GetMemosQueryFromJson(json);
+  final String? keyword;
+  final List<String>? tags;
+  final MemoSort? sort;
+
+  Map<String, dynamic> toJson() => _$GetMemosQueryToJson(this);
+}
+
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class CreateMemoRequest {
   const CreateMemoRequest({
