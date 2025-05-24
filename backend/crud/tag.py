@@ -20,12 +20,14 @@ def fetch_tags(db: Session, user_id: str, search_word: Optional[str] = None):
 
 
 def upsert_tags(db: Session, tag_names: List[str]):
+    if not tag_names:
+        return
+
     query = insert(Tags)
     query = query.values([{"name": name} for name in tag_names])
     query = query.on_conflict_do_nothing(index_elements=["name"])
 
     db.execute(query)
-    db.flush()
 
 
 def fetch_tags_by_names(db: Session, tag_names: List[str]):

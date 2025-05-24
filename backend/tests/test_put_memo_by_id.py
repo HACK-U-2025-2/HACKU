@@ -178,6 +178,33 @@ def test_failure_id_duplicate_tags(test_db, client):
     assert len(updated_tags) == 1
 
 
+# タグが空の際に正常に通信が行われるか(tags)
+def test_failure_id_empty_tags(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_tags(test_db, SHORT_TAGS)
+    create_test_memotags(test_db, SHORT_MEMOTAGS)
+
+    memo_id = 1
+    tag_names = []
+
+    response = client.patch(
+        f"/memos/{memo_id}/tags", headers=headers, json={"tag_names": tag_names}
+    )
+    assert response.status_code == 200
+
+    query = select(MemoTags).where(MemoTags.memo_id == memo_id)
+    updated_memotags = test_db.execute(query).scalars().all()
+
+    assert len(updated_memotags) == 0
+
+    query = select(Tags)
+    updated_tags = test_db.execute(query).scalars().all()
+
+    assert len(updated_tags) == len(SHORT_TAGS)
+
+
 # 存在しないメモを指定した場合に正常に通信が行われるか(tags)
 def test_empty_memo_tags(test_db, client):
     user_id = "a"
