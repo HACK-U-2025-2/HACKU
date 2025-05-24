@@ -42,9 +42,6 @@ def client(init_test_db):
         db = TestingSessionLocal()
         try:
             yield db
-        except:
-            db.rollback()
-            raise
         finally:
             db.close()
 
