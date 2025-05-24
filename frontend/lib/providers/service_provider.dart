@@ -5,6 +5,7 @@ import 'package:frontend/services/client/auth_interceptor.dart';
 import 'package:frontend/services/client/memo_api_client.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 part 'service_provider.g.dart';
 
@@ -36,5 +37,8 @@ Dio authDio(Ref ref) {
 
 @Riverpod(keepAlive: true)
 String baseUrl(Ref ref) {
-  return 'http://localhost:8000';
+  // AndroidエミュレータでのホストPCのlocalhostのIPアドレスは10.0.2.2にマッピングされる
+  final localhost = UniversalPlatform.isAndroid ? '10.0.2.2' : 'localhost';
+  const port = 8000;
+  return 'http://$localhost:$port';
 }
