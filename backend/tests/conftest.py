@@ -37,13 +37,9 @@ def test_db(init_test_db):
 
 
 @pytest.fixture(scope="function")
-def client(init_test_db):
+def client(test_db):
     def override_get_db():
-        db = TestingSessionLocal()
-        try:
-            yield db
-        finally:
-            db.close()
+        yield test_db
 
     app.dependency_overrides[get_db] = override_get_db
     yield TestClient(app)
