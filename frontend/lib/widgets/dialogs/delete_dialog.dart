@@ -36,3 +36,14 @@ class MemoDeleteDialog extends StatelessWidget {
     return const DeleteDialog(title: 'このメモを削除しますか？');
   }
 }
+
+class MemoTagDeleteDialog extends StatelessWidget {
+  const MemoTagDeleteDialog({required this.tagName, super.key});
+
+  final String tagName;
+
+  @override
+  Widget build(BuildContext context) {
+    return DeleteDialog(title: 'タグ「$tagName」を削除しますか？');
+  }
+}
