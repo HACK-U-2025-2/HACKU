@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/router.gr.dart';
 
@@ -15,8 +16,7 @@ class MemoCard extends HookWidget {
     final theme = Theme.of(context);
 
     void onTap() {
-      // TODO(anyone): memoPreview.idを渡す, https://github.com/HACK-U-2025-2/HACKU/issues/22
-      context.router.push(const MemoDetailsRoute());
+      context.router.push(MemoDetailsRoute(memoId: const MemoId(1)));
     }
 
     return GestureDetector(

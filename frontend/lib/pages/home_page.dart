@@ -1,24 +1,34 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:frontend/providers/repository_provider.dart';
+import 'package:frontend/router.gr.dart';
 import 'package:frontend/widgets/destination_navigation_drawer.dart';
 import 'package:frontend/widgets/memo_text_field.dart';
 import 'package:frontend/widgets/record_button.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 @RoutePage()
-class HomePage extends HookWidget {
+class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 16;
     final textController = useTextEditingController();
     final focusNode = useFocusNode();
 
-    void submit(String raw) {
-      // TODO(tyPhoon-collab): メモを保存する処理を実装
-      debugPrint('Submitted: $raw');
+    Future<void> submit(String raw) async {
       textController.clear();
+      context.loaderOverlay.show();
+      final memo = await ref.read(memoRepositoryProvider).addMemo(raw);
+      if (context.mounted) {
+        context.loaderOverlay.hide();
+        unawaited(context.router.push(MemoDetailsRoute(memoId: memo.id)));
+      }
     }
 
     return Scaffold(

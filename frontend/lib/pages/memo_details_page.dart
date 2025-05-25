@@ -21,17 +21,21 @@ enum MemoDetailsTab {
 
 @RoutePage()
 class MemoDetailsPage extends HookConsumerWidget {
-  const MemoDetailsPage({super.key});
+  const MemoDetailsPage({required this.memoId, super.key});
+
+  final MemoId memoId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memoAsyncValue = ref.watch(memoProvider(const MemoId(1)));
+    final memoAsyncValue = ref.watch(memoProvider(memoId));
 
     if (memoAsyncValue.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (memoAsyncValue.hasError) {
-      return const Scaffold(body: Center(child: Text('メモの取得に失敗しました')));
+      return Scaffold(
+        body: Center(child: Text(memoAsyncValue.error.toString())),
+      );
     }
 
     final memo = memoAsyncValue.requireValue;
@@ -42,6 +46,10 @@ class MemoDetailsPage extends HookConsumerWidget {
       initialLength: MemoDetailsTab.values.length,
     );
 
+    void updateCurrentTab() {
+      currentTab.value = MemoDetailsTab.values[tabController.index];
+    }
+
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(memoTagNamesProvider.notifier).setTags(memo.tags);
@@ -50,10 +58,10 @@ class MemoDetailsPage extends HookConsumerWidget {
     }, [memo]);
 
     useEffect(() {
-      tabController.addListener(() {
-        currentTab.value = MemoDetailsTab.values[tabController.index];
-      });
-      return tabController.dispose;
+      tabController.addListener(updateCurrentTab);
+      return () {
+        tabController.removeListener(updateCurrentTab);
+      };
     }, [tabController]);
 
     final isEditingMode = ref.watch(isEditingModeProvider);
