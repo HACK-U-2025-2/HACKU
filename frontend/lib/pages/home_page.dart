@@ -22,12 +22,24 @@ class HomePage extends HookConsumerWidget {
     final focusNode = useFocusNode();
 
     Future<void> submit(String raw) async {
-      textController.clear();
       context.loaderOverlay.show();
-      final memo = await ref.read(memoRepositoryProvider).addMemo(raw);
-      if (context.mounted) {
-        context.loaderOverlay.hide();
-        unawaited(context.router.push(MemoDetailsRoute(memoId: memo.id)));
+      try {
+        final memo = await ref.read(memoRepositoryProvider).addMemo(raw);
+        textController.clear();
+        if (context.mounted) {
+          unawaited(context.router.push(MemoDetailsRoute(memoId: memo.id)));
+        }
+      } on Exception catch (e) {
+        debugPrint('Error adding memo: $e');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('メモの追加に失敗しました。やり直してください')),
+          );
+        }
+      } finally {
+        if (context.mounted) {
+          context.loaderOverlay.hide();
+        }
       }
     }
 
