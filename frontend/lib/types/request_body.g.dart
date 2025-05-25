@@ -10,25 +10,25 @@ GetMemosQuery _$GetMemosQueryFromJson(Map<String, dynamic> json) =>
     GetMemosQuery(
       keyword: json['keyword'] as String?,
       tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      sort: $enumDecodeNullable(_$MemoSortEnumMap, json['sort']),
+      sort: $enumDecodeNullable(_$MemoSortOrderEnumMap, json['sort']),
     );
 
 Map<String, dynamic> _$GetMemosQueryToJson(GetMemosQuery instance) =>
     <String, dynamic>{
       'keyword': instance.keyword,
       'tags': instance.tags,
-      'sort': _$MemoSortEnumMap[instance.sort],
+      'sort': _$MemoSortOrderEnumMap[instance.sort],
     };
 
-const _$MemoSortEnumMap = {
-  MemoSort.createdAtAsc: 'created_at_asc',
-  MemoSort.createdAtDesc: 'created_at_desc',
-  MemoSort.updatedAtAsc: 'updated_at_asc',
-  MemoSort.updatedAtDesc: 'updated_at_desc',
+const _$MemoSortOrderEnumMap = {
+  MemoSortOrder.createdAtAsc: 'created_at_asc',
+  MemoSortOrder.createdAtDesc: 'created_at_desc',
+  MemoSortOrder.updatedAtAsc: 'updated_at_asc',
+  MemoSortOrder.updatedAtDesc: 'updated_at_desc',
 };
 
-CreateMemoRequest _$CreateMemoRequestFromJson(Map<String, dynamic> json) =>
-    CreateMemoRequest(
+MemoCreateRequest _$MemoCreateRequestFromJson(Map<String, dynamic> json) =>
+    MemoCreateRequest(
       raw: json['raw'] as String,
       tagNames:
           (json['tag_names'] as List<dynamic>?)
@@ -38,33 +38,39 @@ CreateMemoRequest _$CreateMemoRequestFromJson(Map<String, dynamic> json) =>
       needProofreading: json['need_proofreading'] as bool? ?? false,
     );
 
-Map<String, dynamic> _$CreateMemoRequestToJson(CreateMemoRequest instance) =>
+Map<String, dynamic> _$MemoCreateRequestToJson(MemoCreateRequest instance) =>
     <String, dynamic>{
       'raw': instance.raw,
       'tag_names': instance.tagNames,
       'need_proofreading': instance.needProofreading,
     };
 
-UpdateBodyRequest _$UpdateBodyRequestFromJson(Map<String, dynamic> json) =>
-    UpdateBodyRequest(body: json['body'] as String);
+MemoBodyUpdateRequest _$MemoBodyUpdateRequestFromJson(
+  Map<String, dynamic> json,
+) => MemoBodyUpdateRequest(body: json['body'] as String);
 
-Map<String, dynamic> _$UpdateBodyRequestToJson(UpdateBodyRequest instance) =>
-    <String, dynamic>{'body': instance.body};
+Map<String, dynamic> _$MemoBodyUpdateRequestToJson(
+  MemoBodyUpdateRequest instance,
+) => <String, dynamic>{'body': instance.body};
 
-UpdateTitleRequest _$UpdateTitleRequestFromJson(Map<String, dynamic> json) =>
-    UpdateTitleRequest(title: json['title'] as String);
+MemoTitleUpdateRequest _$MemoTitleUpdateRequestFromJson(
+  Map<String, dynamic> json,
+) => MemoTitleUpdateRequest(title: json['title'] as String);
 
-Map<String, dynamic> _$UpdateTitleRequestToJson(UpdateTitleRequest instance) =>
-    <String, dynamic>{'title': instance.title};
+Map<String, dynamic> _$MemoTitleUpdateRequestToJson(
+  MemoTitleUpdateRequest instance,
+) => <String, dynamic>{'title': instance.title};
 
-UpdateTagsRequest _$UpdateTagsRequestFromJson(Map<String, dynamic> json) =>
-    UpdateTagsRequest(
-      tagNames:
-          (json['tag_names'] as List<dynamic>).map((e) => e as String).toList(),
-    );
+MemoTagsUpdateRequest _$MemoTagsUpdateRequestFromJson(
+  Map<String, dynamic> json,
+) => MemoTagsUpdateRequest(
+  tagNames:
+      (json['tag_names'] as List<dynamic>).map((e) => e as String).toList(),
+);
 
-Map<String, dynamic> _$UpdateTagsRequestToJson(UpdateTagsRequest instance) =>
-    <String, dynamic>{'tag_names': instance.tagNames};
+Map<String, dynamic> _$MemoTagsUpdateRequestToJson(
+  MemoTagsUpdateRequest instance,
+) => <String, dynamic>{'tag_names': instance.tagNames};
 
 AuthRequest _$AuthRequestFromJson(Map<String, dynamic> json) =>
     AuthRequest(userId: json['user_id'] as String);

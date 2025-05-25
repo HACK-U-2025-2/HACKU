@@ -24,7 +24,7 @@ abstract class MemoApiClient {
 
   /// 新たなメモを投稿
   @POST('/memos/')
-  Future<Memo> createMemo({@Body() required CreateMemoRequest request});
+  Future<Memo> createMemo({@Body() required MemoCreateRequest request});
 
   /// 指定されたメモの詳細情報を取得
   @GET('/memos/{memo_id}')
@@ -34,21 +34,21 @@ abstract class MemoApiClient {
   @PATCH('/memos/{memo_id}/body')
   Future<void> updateMemoBody({
     @Path('memo_id') required int memoId,
-    @Body() required UpdateBodyRequest request,
+    @Body() required MemoBodyUpdateRequest request,
   });
 
   /// メモのタイトル修正
   @PATCH('/memos/{memo_id}/title')
   Future<void> updateMemoTitle({
     @Path('memo_id') required int memoId,
-    @Body() required UpdateTitleRequest request,
+    @Body() required MemoTitleUpdateRequest request,
   });
 
   /// メモのタグ修正
   @PATCH('/memos/{memo_id}/tags')
   Future<void> updateMemoTags({
     @Path('memo_id') required int memoId,
-    @Body() required UpdateTagsRequest request,
+    @Body() required MemoTagsUpdateRequest request,
   });
 
   /// メモを削除

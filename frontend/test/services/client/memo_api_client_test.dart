@@ -43,7 +43,7 @@ void main() {
     List<String> tags = const [],
   }) async {
     return memoClient.createMemo(
-      request: CreateMemoRequest(raw: content, tagNames: tags),
+      request: MemoCreateRequest(raw: content, tagNames: tags),
     );
   }
 
@@ -109,17 +109,17 @@ void main() {
 
       await memoClient.updateMemoTitle(
         memoId: memo.id.value,
-        request: const UpdateTitleRequest(title: '更新されたタイトル'),
+        request: const MemoTitleUpdateRequest(title: '更新されたタイトル'),
       );
 
       await memoClient.updateMemoBody(
         memoId: memo.id.value,
-        request: const UpdateBodyRequest(body: '更新された本文内容です。'),
+        request: const MemoBodyUpdateRequest(body: '更新された本文内容です。'),
       );
 
       await memoClient.updateMemoTags(
         memoId: memo.id.value,
-        request: const UpdateTagsRequest(tagNames: ['更新済み', 'テスト完了']),
+        request: const MemoTagsUpdateRequest(tagNames: ['更新済み', 'テスト完了']),
       );
 
       final updatedMemo = await memoClient.getMemo(memoId: memo.id.value);
@@ -182,13 +182,13 @@ void main() {
       final memosAsc = await memoClient.getMemos(
         queries: const GetMemosQuery(
           tags: ['sort'],
-          sort: MemoSort.createdAtAsc,
+          sort: MemoSortOrder.createdAtAsc,
         ),
       );
       final memosDesc = await memoClient.getMemos(
         queries: const GetMemosQuery(
           tags: ['sort'],
-          sort: MemoSort.createdAtDesc,
+          sort: MemoSortOrder.createdAtDesc,
         ),
       );
       expect(memosAsc, isNotEmpty);
@@ -223,22 +223,22 @@ void main() {
       );
       await memoClient.updateMemoBody(
         memoId: memo1.id.value,
-        request: const UpdateBodyRequest(body: 'updated body 1'),
+        request: const MemoBodyUpdateRequest(body: 'updated body 1'),
       );
       await memoClient.updateMemoBody(
         memoId: memo2.id.value,
-        request: const UpdateBodyRequest(body: 'updated body 2'),
+        request: const MemoBodyUpdateRequest(body: 'updated body 2'),
       );
       final memosAsc = await memoClient.getMemos(
         queries: const GetMemosQuery(
           tags: ['sort'],
-          sort: MemoSort.updatedAtAsc,
+          sort: MemoSortOrder.updatedAtAsc,
         ),
       );
       final memosDesc = await memoClient.getMemos(
         queries: const GetMemosQuery(
           tags: ['sort'],
-          sort: MemoSort.updatedAtDesc,
+          sort: MemoSortOrder.updatedAtDesc,
         ),
       );
       expect(memosAsc, isNotEmpty);

@@ -52,7 +52,7 @@ class _MemoApiClient implements MemoApiClient {
   }
 
   @override
-  Future<Memo> createMemo({required CreateMemoRequest request}) async {
+  Future<Memo> createMemo({required MemoCreateRequest request}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -109,7 +109,7 @@ class _MemoApiClient implements MemoApiClient {
   @override
   Future<void> updateMemoBody({
     required int memoId,
-    required UpdateBodyRequest request,
+    required MemoBodyUpdateRequest request,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -132,7 +132,7 @@ class _MemoApiClient implements MemoApiClient {
   @override
   Future<void> updateMemoTitle({
     required int memoId,
-    required UpdateTitleRequest request,
+    required MemoTitleUpdateRequest request,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -155,7 +155,7 @@ class _MemoApiClient implements MemoApiClient {
   @override
   Future<void> updateMemoTags({
     required int memoId,
-    required UpdateTagsRequest request,
+    required MemoTagsUpdateRequest request,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

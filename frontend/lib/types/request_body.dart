@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'request_body.g.dart';
 
 @JsonEnum(fieldRename: FieldRename.snake)
-enum MemoSort { createdAtAsc, createdAtDesc, updatedAtAsc, updatedAtDesc }
+enum MemoSortOrder { createdAtAsc, createdAtDesc, updatedAtAsc, updatedAtDesc }
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class GetMemosQuery {
@@ -13,59 +13,59 @@ class GetMemosQuery {
       _$GetMemosQueryFromJson(json);
   final String? keyword;
   final List<String>? tags;
-  final MemoSort? sort;
+  final MemoSortOrder? sort;
 
   Map<String, dynamic> toJson() => _$GetMemosQueryToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
-class CreateMemoRequest {
-  const CreateMemoRequest({
+class MemoCreateRequest {
+  const MemoCreateRequest({
     required this.raw,
     this.tagNames = const [],
     this.needProofreading = false,
   });
 
-  factory CreateMemoRequest.fromJson(Map<String, dynamic> json) =>
-      _$CreateMemoRequestFromJson(json);
+  factory MemoCreateRequest.fromJson(Map<String, dynamic> json) =>
+      _$MemoCreateRequestFromJson(json);
   final String raw;
   final List<String> tagNames;
   final bool needProofreading;
 
-  Map<String, dynamic> toJson() => _$CreateMemoRequestToJson(this);
+  Map<String, dynamic> toJson() => _$MemoCreateRequestToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
-class UpdateBodyRequest {
-  const UpdateBodyRequest({required this.body});
+class MemoBodyUpdateRequest {
+  const MemoBodyUpdateRequest({required this.body});
 
-  factory UpdateBodyRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateBodyRequestFromJson(json);
+  factory MemoBodyUpdateRequest.fromJson(Map<String, dynamic> json) =>
+      _$MemoBodyUpdateRequestFromJson(json);
   final String body;
 
-  Map<String, dynamic> toJson() => _$UpdateBodyRequestToJson(this);
+  Map<String, dynamic> toJson() => _$MemoBodyUpdateRequestToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
-class UpdateTitleRequest {
-  const UpdateTitleRequest({required this.title});
+class MemoTitleUpdateRequest {
+  const MemoTitleUpdateRequest({required this.title});
 
-  factory UpdateTitleRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateTitleRequestFromJson(json);
+  factory MemoTitleUpdateRequest.fromJson(Map<String, dynamic> json) =>
+      _$MemoTitleUpdateRequestFromJson(json);
   final String title;
 
-  Map<String, dynamic> toJson() => _$UpdateTitleRequestToJson(this);
+  Map<String, dynamic> toJson() => _$MemoTitleUpdateRequestToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
-class UpdateTagsRequest {
-  const UpdateTagsRequest({required this.tagNames});
+class MemoTagsUpdateRequest {
+  const MemoTagsUpdateRequest({required this.tagNames});
 
-  factory UpdateTagsRequest.fromJson(Map<String, dynamic> json) =>
-      _$UpdateTagsRequestFromJson(json);
+  factory MemoTagsUpdateRequest.fromJson(Map<String, dynamic> json) =>
+      _$MemoTagsUpdateRequestFromJson(json);
   final List<String> tagNames;
 
-  Map<String, dynamic> toJson() => _$UpdateTagsRequestToJson(this);
+  Map<String, dynamic> toJson() => _$MemoTagsUpdateRequestToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)

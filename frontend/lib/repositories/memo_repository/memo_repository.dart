@@ -1,6 +1,6 @@
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
-import 'package:frontend/types/request_body.dart';
+import 'package:frontend/widgets/dialogs/sort_dialog.dart';
 
 export 'package:frontend/types/request_body.dart';
 
@@ -9,7 +9,7 @@ abstract interface class MemoRepository {
   Future<List<MemoPreview>> getMemos({
     String? keyword,
     List<String>? tagNames,
-    MemoSort? sort,
+    MemoSortOption? sort,
   });
 
   /// メモのIDからメモを取得する

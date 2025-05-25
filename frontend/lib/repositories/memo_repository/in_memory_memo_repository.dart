@@ -3,6 +3,7 @@ import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
+import 'package:frontend/widgets/dialogs/sort_dialog.dart';
 
 /// メモのリポジトリのインメモリ実装。Dockerを起動しない場合のデバッグ時のみ使用する。
 class InMemoryMemoRepository implements MemoRepository {
@@ -20,7 +21,7 @@ class InMemoryMemoRepository implements MemoRepository {
   Future<List<MemoPreview>> getMemos({
     String? keyword,
     List<String>? tagNames,
-    MemoSort? sort,
+    MemoSortOption? sort,
   }) async =>
       _memos.values
           .where((memo) {
@@ -45,19 +46,23 @@ class InMemoryMemoRepository implements MemoRepository {
               updatedAt: memo.updatedAt,
             ),
           )
-          .sorted(
-            (a, b) => switch (sort) {
-              MemoSort.createdAtAsc => a.createdAt.compareTo(b.createdAt),
-              MemoSort.createdAtDesc => b.createdAt.compareTo(a.createdAt),
-              MemoSort.updatedAtAsc => (a.updatedAt ?? a.createdAt).compareTo(
-                b.updatedAt ?? b.createdAt,
-              ),
-              MemoSort.updatedAtDesc => (b.updatedAt ?? b.createdAt).compareTo(
-                a.updatedAt ?? a.createdAt,
-              ),
-              _ => 0,
-            },
-          )
+          .sorted((a, b) {
+            if (sort == null) return 0;
+            return switch (sort.mode) {
+              MemoSortMode.createdAt =>
+                sort.isAsc
+                    ? a.createdAt.compareTo(b.createdAt)
+                    : b.createdAt.compareTo(a.createdAt),
+              MemoSortMode.updatedAt =>
+                sort.isAsc
+                    ? (a.updatedAt ?? a.createdAt).compareTo(
+                      b.updatedAt ?? b.createdAt,
+                    )
+                    : (b.updatedAt ?? b.createdAt).compareTo(
+                      a.updatedAt ?? a.createdAt,
+                    ),
+            };
+          })
           .toList();
 
   @override
