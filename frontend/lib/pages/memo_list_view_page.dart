@@ -206,7 +206,7 @@ class _SearchBar extends HookWidget {
     }, [debouncedSearchText]);
 
     final sortOption = useState(
-      SortOption(mode: SortMode.createdAt, isAsc: true),
+      MemoSortOption(mode: MemoSortMode.createdAt, isAsc: true),
     );
 
     return SearchBar(
@@ -215,15 +215,16 @@ class _SearchBar extends HookWidget {
         IconButton(
           icon: const Icon(Icons.swap_vert),
           onPressed: () async {
-            final newSortOption = await showDialog<SortOption?>(
+            final newSortOption = await showDialog<MemoSortOption?>(
               context: context,
               builder:
-                  (context) => SortDialog(initialSortOption: sortOption.value),
+                  (context) =>
+                      MemoSortDialog(initialSortOption: sortOption.value),
             );
             if (newSortOption != null) {
               // TODO(Rozelin-dc): ソート処理
               sortOption.value = newSortOption;
-              debugPrint('ソートオプション: ${sortOption.value.query}');
+              debugPrint('ソートオプション: ${sortOption.value}');
             }
           },
         ),

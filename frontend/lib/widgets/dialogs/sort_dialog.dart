@@ -1,31 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-enum SortMode {
-  createdAt(label: '作成日時', query: 'created_at'),
-  updatedAt(label: '更新日時', query: 'updated_at');
+enum MemoSortMode {
+  createdAt(label: '作成日時'),
+  updatedAt(label: '更新日時');
 
-  const SortMode({required this.label, required this.query});
+  const MemoSortMode({required this.label});
 
   final String label;
-  final String query;
 }
 
-class SortOption {
-  SortOption({required this.mode, required this.isAsc});
+class MemoSortOption {
+  MemoSortOption({required this.mode, required this.isAsc});
 
-  final SortMode mode;
+  final MemoSortMode mode;
   final bool isAsc;
-
-  String get query {
-    return '${mode.query}_${isAsc ? 'asc' : 'desc'}';
-  }
 }
 
-class SortDialog extends HookWidget {
-  const SortDialog({required this.initialSortOption, super.key});
+class MemoSortDialog extends HookWidget {
+  const MemoSortDialog({required this.initialSortOption, super.key});
 
-  final SortOption initialSortOption;
+  final MemoSortOption initialSortOption;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +41,7 @@ class SortDialog extends HookWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          ...SortMode.values.map(
+          ...MemoSortMode.values.map(
             (mode) => RadioListTile(
               value: mode,
               groupValue: sortMode.value,
@@ -103,7 +98,7 @@ class SortDialog extends HookWidget {
           onPressed: () {
             Navigator.of(
               context,
-            ).pop(SortOption(mode: sortMode.value, isAsc: isAsc.value));
+            ).pop(MemoSortOption(mode: sortMode.value, isAsc: isAsc.value));
           },
           child: const Text('並び替え'),
         ),
