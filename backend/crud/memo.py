@@ -37,10 +37,12 @@ def create_memo(
     new_memo = Memos(title=title, user_id=user_id, body=body, raw=raw)
 
     db.add(new_memo)
+
+    if tag_names:
+        db.commit()
+        add_memotags_by_tags(db, new_memo.id, tag_ids)
+
     db.commit()
-
-    add_memotags_by_tags(db, new_memo.id, tag_ids)
-
     db.refresh(new_memo)
 
     return new_memo, tags
@@ -92,10 +94,10 @@ def update_memo_by_id(
 
     raise_if_none(memo, "Memo")
 
-    if title is not None:
+    if title:
         memo.title = title
 
-    if body is not None:
+    if body:
         memo.body = body
 
     if tag_names is not None:
