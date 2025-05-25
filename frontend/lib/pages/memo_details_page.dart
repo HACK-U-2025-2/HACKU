@@ -2,8 +2,11 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/models/memo.dart';
+import 'package:frontend/pages/errors/memo_error_with_refresh_page.dart';
+import 'package:frontend/pages/errors/memo_not_found_page.dart';
 import 'package:frontend/providers/memo_edit_provider.dart';
 import 'package:frontend/providers/memo_provider.dart';
+import 'package:frontend/repositories/memo_repository/memo_repository.dart';
 import 'package:frontend/widgets/dialogs/delete_dialog.dart';
 import 'package:frontend/widgets/dialogs/input_dialog.dart';
 import 'package:frontend/widgets/memo_details/memo_body_view.dart';
@@ -27,18 +30,21 @@ class MemoDetailsPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memoAsyncValue = ref.watch(memoProvider(memoId));
+    final memoValue = ref.watch(memoProvider(memoId));
 
-    if (memoAsyncValue.isLoading) {
+    if (memoValue.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    if (memoAsyncValue.hasError) {
-      return Scaffold(
-        body: Center(child: Text(memoAsyncValue.error.toString())),
-      );
+    if (memoValue.hasError) {
+      final error = memoValue.error;
+      debugPrint('memoAsyncValue error: $error');
+      return switch (error) {
+        final MemoNotFoundException _ => const MemoNotFoundPage(),
+        _ => MemoErrorWithRefreshPage(memoId: memoId),
+      };
     }
 
-    final memo = memoAsyncValue.requireValue;
+    final memo = memoValue.requireValue;
     final tags = ref.watch(memoTagNamesProvider);
 
     final currentTab = useState(MemoDetailsTab.body);
