@@ -1,4 +1,6 @@
 transformers
+numpy==1.25.2
+hf_xet
 alembic
 accelerate
 fastapi
