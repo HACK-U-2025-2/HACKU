@@ -17,6 +17,10 @@ void main() {
   const baseUrl = 'http://localhost:8000';
   const userId = 'test_user_id';
 
+  // サーバーのAIのモック時のレスポンスは固定
+  // テストのコードも変わるため、それを管理するためのフラグ
+  const useMock = true;
+
   setUp(() async {
     final dio = Dio(BaseOptions(baseUrl: baseUrl));
 
@@ -154,7 +158,9 @@ void main() {
       final memo = await createTestMemo(content: '検索ワード', tags: ['検索', 'テスト']);
 
       final searchResult = await memoClient.getMemos(
-        queries: const GetMemosQuery(keyword: 'ワード'),
+        // useMockがconstでdead_codeになるが意図的なため無視
+        // ignore: dead_code
+        queries: const GetMemosQuery(keyword: useMock ? 'モック' : 'ワード'),
       );
 
       expect(searchResult, isNotEmpty);
