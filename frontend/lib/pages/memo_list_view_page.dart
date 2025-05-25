@@ -218,14 +218,12 @@ class _SearchBar extends HookWidget {
             final newSortOption = await showDialog<SortOption?>(
               context: context,
               builder:
-                  (context) => SortDialog(
-                    initialSortMode: sortOption.value.mode,
-                    initialIsAsc: sortOption.value.isAsc,
-                  ),
+                  (context) => SortDialog(initialSortOption: sortOption.value),
             );
             if (newSortOption != null) {
               // TODO(Rozelin-dc): ソート処理
               sortOption.value = newSortOption;
+              debugPrint('ソートオプション: ${sortOption.value.query}');
             }
           },
         ),

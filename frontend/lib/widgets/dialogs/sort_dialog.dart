@@ -2,46 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 enum SortMode {
-  createdAt(label: '作成日時'),
-  updatedAt(label: '更新日時');
+  createdAt(label: '作成日時', query: 'created_at'),
+  updatedAt(label: '更新日時', query: 'updated_at');
 
-  const SortMode({required this.label});
+  const SortMode({required this.label, required this.query});
 
   final String label;
+  final String query;
 }
 
 class SortOption {
   SortOption({required this.mode, required this.isAsc});
 
-  final bool isAsc;
   final SortMode mode;
+  final bool isAsc;
 
   String get query {
-    switch (mode) {
-      case SortMode.createdAt:
-        return isAsc ? 'created_at_asc' : 'created_at_desc';
-      case SortMode.updatedAt:
-        return isAsc ? 'updated_at_asc' : 'updated_at_desc';
-    }
+    return '${mode.query}_${isAsc ? 'asc' : 'desc'}';
   }
 }
 
 class SortDialog extends HookWidget {
-  const SortDialog({
-    required this.initialSortMode,
-    required this.initialIsAsc,
-    super.key,
-  });
+  const SortDialog({required this.initialSortOption, super.key});
 
-  final SortMode initialSortMode;
-  final bool initialIsAsc;
+  final SortOption initialSortOption;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final sortMode = useState(initialSortMode);
-    final isAsc = useState(initialIsAsc);
+    final sortMode = useState(initialSortOption.mode);
+    final isAsc = useState(initialSortOption.isAsc);
 
     return AlertDialog(
       title: const Text('メモの並び替え'),
