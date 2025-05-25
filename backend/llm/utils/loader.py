@@ -27,9 +27,7 @@ def load_model():
         else:
             _tokenizer = AutoTokenizer.from_pretrained(_model_name)
             _model = AutoModelForCausalLM.from_pretrained(
-                _model_name,
-                torch_dtype="auto",
-                device_map="auto"
+                _model_name, torch_dtype="auto", device_map="auto"
             )
 
     return _model, _tokenizer
