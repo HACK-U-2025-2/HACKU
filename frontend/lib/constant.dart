@@ -2,3 +2,5 @@
 const memoTitleMaxLength = 15;
 
 const speechToTextAutoPauseSeconds = 5;
+
+const searchRequestDurationMilliseconds = 500;

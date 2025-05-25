@@ -1,6 +1,7 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:frontend/constant.dart';
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/models/tag.dart';
@@ -197,7 +198,7 @@ class _SearchBar extends HookWidget {
     final searchText = useState('');
     final debouncedSearchText = useDebounced(
       searchText.value,
-      const Duration(milliseconds: 500),
+      const Duration(milliseconds: searchRequestDurationMilliseconds),
     );
     useEffect(() {
       // TODO(Rozelin-dc): 検索処理, https://github.com/HACK-U-2025-2/HACKU/issues/75
