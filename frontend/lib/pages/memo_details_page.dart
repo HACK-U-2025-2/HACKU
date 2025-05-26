@@ -2,8 +2,11 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/models/memo.dart';
+import 'package:frontend/pages/errors/memo_error_with_refresh_page.dart';
+import 'package:frontend/pages/errors/memo_not_found_page.dart';
 import 'package:frontend/providers/memo_edit_provider.dart';
 import 'package:frontend/providers/memo_provider.dart';
+import 'package:frontend/repositories/memo_repository/memo_repository.dart';
 import 'package:frontend/widgets/dialogs/delete_dialog.dart';
 import 'package:frontend/widgets/dialogs/input_dialog.dart';
 import 'package:frontend/widgets/memo_details/memo_body_view.dart';
@@ -21,20 +24,27 @@ enum MemoDetailsTab {
 
 @RoutePage()
 class MemoDetailsPage extends HookConsumerWidget {
-  const MemoDetailsPage({super.key});
+  const MemoDetailsPage({required this.memoId, super.key});
+
+  final MemoId memoId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memoAsyncValue = ref.watch(memoProvider(const MemoId(1)));
+    final memoValue = ref.watch(memoProvider(memoId));
 
-    if (memoAsyncValue.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+    if (memoValue.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    if (memoAsyncValue.hasError) {
-      return const Scaffold(body: Center(child: Text('メモの取得に失敗しました')));
+    if (memoValue.hasError) {
+      final error = memoValue.error;
+      debugPrint('memoAsyncValue error: $error');
+      return switch (error) {
+        final MemoNotFoundException _ => const MemoNotFoundPage(),
+        _ => MemoErrorWithRefreshPage(memoId: memoId),
+      };
     }
 
-    final memo = memoAsyncValue.requireValue;
+    final memo = memoValue.requireValue;
     final tags = ref.watch(memoTagNamesProvider);
     // TODO(Rozelin-dc): memoのフラグを参照するように
     final isFavorite = useState(false);
@@ -44,6 +54,10 @@ class MemoDetailsPage extends HookConsumerWidget {
       initialLength: MemoDetailsTab.values.length,
     );
 
+    void updateCurrentTab() {
+      currentTab.value = MemoDetailsTab.values[tabController.index];
+    }
+
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(memoTagNamesProvider.notifier).setTags(memo.tags);
@@ -52,10 +66,10 @@ class MemoDetailsPage extends HookConsumerWidget {
     }, [memo]);
 
     useEffect(() {
-      tabController.addListener(() {
-        currentTab.value = MemoDetailsTab.values[tabController.index];
-      });
-      return tabController.dispose;
+      tabController.addListener(updateCurrentTab);
+      return () {
+        tabController.removeListener(updateCurrentTab);
+      };
     }, [tabController]);
 
     final isEditingMode = ref.watch(isEditingModeProvider);

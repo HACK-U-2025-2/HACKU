@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class LoginRequest(BaseModel):
-    user_id: str
+    user_id: str = Field(min_length=1, json_schema_extra={"examples": ["a"]})
 
     model_config = {"from_attributes": True}
 

@@ -51,7 +51,7 @@ class MemoTitleMenu extends StatelessWidget {
               spacing: 8,
               children: [
                 const SizedBox(width: 16), // バランスを取るためのスペース
-                child!,
+                Flexible(child: child!),
                 const Icon(Icons.arrow_drop_down),
               ],
             ),

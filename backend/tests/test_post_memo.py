@@ -131,3 +131,35 @@ def test_db_save_duplicate_tags(test_db, client):
     tags = test_db.query(Tags).all()
 
     assert len(tags) == len(SHORT_TAGS) + 1
+
+
+# タグが空の場合にDBに正しく保存されているか
+def test_db_save_empty_tags(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_tags(test_db, EMPTY_TAGS)
+    create_test_memotags(test_db, EMPTY_MEMOTAGS)
+
+    raw = "raw"
+    tag_names = []
+    need_proofreading = False
+
+    response = client.post(
+        "/memos/",
+        headers=headers,
+        json={
+            "raw": raw,
+            "tag_names": tag_names,
+            "need_proofreading": need_proofreading,
+        },
+    )
+    assert response.status_code == 201
+
+    tags = test_db.query(Tags).all()
+
+    assert len(tags) == 0
+
+    memotags = test_db.query(MemoTags).all()
+
+    assert len(memotags) == 0

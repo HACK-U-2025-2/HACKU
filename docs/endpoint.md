@@ -24,18 +24,6 @@ http://localhost:8000
 
 ---
 
-### `GET /memos/embedding` (MCP only)
-- **説明**: メモの埋め込みモデルを取得
-- **リクエスト**:
-    - **ヘッダ**:
-        - `Authorization`: Bearer トークン（必須）
-- **レスポンス**:
-    - 200: メモ一覧（`[MemoFullResponse]`）
-    - 401: 認証情報が不正
-    - 404: メモが存在しない
-
----
-
 ### `GET /memos/{memo_id}`
 - **説明**: 指定されたメモの詳細を取得
 - **リクエスト**:
@@ -79,7 +67,7 @@ http://localhost:8000
     - 401: 認証情報が不正
     - 422: リクエストが不正
 
-### 'PUT /memos/{memo_id}'
+### `PUT /memos/{memo_id}`
 - **説明**: メモの修正
 - **リクエスト**:
     - **ヘッダ**:
@@ -94,7 +82,7 @@ http://localhost:8000
     - 404: メモが存在しない
     - 422: リクエストが不正
 
-### 'PATCH /memos/{memo_id}/body'
+### `PATCH /memos/{memo_id}/body`
 - **説明**: メモの文章修正(http版)
 - **リクエスト**:
     - **パスパラメータ**:
@@ -111,7 +99,7 @@ http://localhost:8000
 
 ---
 
-### 'PATCH /memos/{memo_id}/title'
+### `PATCH /memos/{memo_id}/title`
 - **説明**: メモのタイトル修正
 - **リクエスト**:
     - **パスパラメータ**:
@@ -126,7 +114,7 @@ http://localhost:8000
     - 404: メモが存在しない
     - 422: リクエストが不正
 
-### 'PATCH /memos/{memo_id}/tag'
+### `PATCH /memos/{memo_id}/tag`
 - **説明**: メモのタグ修正
 - **リクエスト**:
     - **パスパラメータ**:
@@ -143,7 +131,7 @@ http://localhost:8000
 
 ---
 
-### `PUT /memos/{memo_id}/favorite`
+### `PATCH /memos/{memo_id}/favorite`
 - **説明**: メモのお気に入り情報を更新
 - **リクエスト**:
     - **パスパラメータ**:
@@ -160,7 +148,7 @@ http://localhost:8000
 
 ---
 
-### `PUT /memos/{memo_id}/archive`
+### `PATCH /memos/{memo_id}/archive`
 - **説明**: メモのアーカイブ情報を更新
 - **リクエスト**:
     - **パスパラメータ**:
@@ -204,18 +192,6 @@ http://localhost:8000
     - 200: タグ一覧（`[TagResponse]`）
     - 401: 認証情報が不正
     - 422: リクエストが不正
-
----
-
-### `GET /tags/embedding` (MCP only)
-- **説明**: タグの埋め込みモデルを取得
-- **リクエスト**:
-    - **ヘッダ**:
-        - `Authorization`: Bearer トークン（必須）
-- **レスポンス**:
-    - 200: メモ一覧（`[TagFullResponse]`）
-    - 401: 認証情報が不正
-    - 404: メモが存在しない
 
 ---
 
