@@ -15,6 +15,11 @@ class Memos(Base):
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
-    tags = relationship("MemoTags", back_populates="memo")
+    tags = relationship(
+        "MemoTags",
+        back_populates="memo",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     model_config = {"from_attributes": True}
