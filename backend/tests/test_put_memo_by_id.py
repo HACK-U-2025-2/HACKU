@@ -248,8 +248,8 @@ def test_failure_id_empty_tags(test_db, client):
 def test_failure_id_empty_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
-    create_test_tags(test_db, SHORT_TAGS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
+    create_test_tags(test_db, SHORT_TAGS, SHORT_TAGEMBEDDINGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 
     memo_id = 1
