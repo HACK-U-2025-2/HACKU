@@ -1,4 +1,5 @@
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
+from tests.mock_data.memoembedding import EMPTY_MEMOEMBEDDINGS, SHORT_MEMOEMBEDDINGS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
 from tests.utils.auth import get_headers
@@ -9,7 +10,7 @@ from tests.utils.post import create_test_memos, create_test_memotags, create_tes
 def test_format(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 
@@ -28,7 +29,7 @@ def test_format(test_db, client):
 def test_normal_get(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 
@@ -46,7 +47,7 @@ def test_normal_get(test_db, client):
 def test_empty_data(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, EMPTY_MEMOTAGS)
 
@@ -61,7 +62,7 @@ def test_empty_data(test_db, client):
 def test_normal_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 
@@ -79,7 +80,7 @@ def test_normal_search(test_db, client):
 def test_empty_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 

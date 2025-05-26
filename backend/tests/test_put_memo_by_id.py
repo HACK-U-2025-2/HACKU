@@ -3,6 +3,7 @@ from models.memotag import MemoTags
 from models.tag import Tags
 from sqlalchemy import select
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
+from tests.mock_data.memoembedding import EMPTY_MEMOEMBEDDINGS, SHORT_MEMOEMBEDDINGS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
 from tests.utils.auth import get_headers
@@ -117,7 +118,7 @@ def test_failure_id_body(test_db, client):
 def test_normal_update_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 
@@ -157,7 +158,7 @@ def test_normal_update_tags(test_db, client):
 def test_failure_id_duplicate_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     memo_id = 1
     tag_names = ["成功", "成功"]
@@ -178,11 +179,38 @@ def test_failure_id_duplicate_tags(test_db, client):
     assert len(updated_tags) == 1
 
 
+# タグが空の際に正常に通信が行われるか(tags)
+def test_failure_id_empty_tags(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_tags(test_db, SHORT_TAGS)
+    create_test_memotags(test_db, SHORT_MEMOTAGS)
+
+    memo_id = 1
+    tag_names = []
+
+    response = client.patch(
+        f"/memos/{memo_id}/tags", headers=headers, json={"tag_names": tag_names}
+    )
+    assert response.status_code == 200
+
+    query = select(MemoTags).where(MemoTags.memo_id == memo_id)
+    updated_memotags = test_db.execute(query).scalars().all()
+
+    assert len(updated_memotags) == 0
+
+    query = select(Tags)
+    updated_tags = test_db.execute(query).scalars().all()
+
+    assert len(updated_tags) == len(SHORT_TAGS)
+
+
 # 存在しないメモを指定した場合に正常に通信が行われるか(tags)
 def test_empty_memo_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
 
     memo_id = 1
     tag_names = ["失敗"]
@@ -197,7 +225,7 @@ def test_empty_memo_tags(test_db, client):
 def test_failure_id_tags(test_db, client):
     user_id = "b"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     memo_id = 1
     tag_names = ["失敗"]
@@ -212,7 +240,7 @@ def test_failure_id_tags(test_db, client):
 def test_normal_update_all(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 
@@ -260,7 +288,7 @@ def test_normal_update_all(test_db, client):
 def test_empty_memo_all(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
 
     memo_id = 1
     response = client.put(
@@ -279,7 +307,7 @@ def test_empty_memo_all(test_db, client):
 def test_update_all_fields_wrong_user(test_db, client):
     user_id = "b"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     memo_id = 1
     response = client.put(

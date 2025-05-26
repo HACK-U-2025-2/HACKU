@@ -1,4 +1,6 @@
 transformers
+numpy==1.25.2
+hf_xet
 alembic
 accelerate
 fastapi
@@ -12,6 +14,7 @@ pydantic-settings
 pydantic_core
 python-dotenv
 psycopg2-binary
+pgvector
 SQLAlchemy
 starlette
 python-jose[cryptography]

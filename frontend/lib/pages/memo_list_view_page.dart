@@ -1,12 +1,14 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:frontend/constant.dart';
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:frontend/widgets/destination_navigation_drawer.dart';
 import 'package:frontend/widgets/dialogs/input_dialog.dart';
 import 'package:frontend/widgets/dialogs/record_dialog.dart';
+import 'package:frontend/widgets/dialogs/sort_dialog.dart';
 import 'package:frontend/widgets/memo_card.dart';
 
 @RoutePage()
@@ -15,17 +17,6 @@ class MemoListViewPage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final searchText = useState('');
-    final debouncedSearchText = useDebounced(
-      searchText.value,
-      const Duration(milliseconds: 500),
-    );
-    useEffect(() {
-      // TODO(Rozelin-dc): 検索処理, https://github.com/HACK-U-2025-2/HACKU/issues/75
-      debugPrint('Search text: $debouncedSearchText');
-      return null;
-    }, [debouncedSearchText]);
-
     final mockMemoList = List.generate(
       20,
       (index) => MemoPreview(
@@ -51,13 +42,7 @@ class MemoListViewPage extends HookWidget {
             spacing: 20,
             children: [
               _TagsHorizontalListView(tags: mockTagList),
-              SearchBar(
-                leading: const Icon(Icons.search),
-                hintText: '検索キーワードを入力',
-                onChanged: (value) {
-                  searchText.value = value;
-                },
-              ),
+              _SearchBar(),
               Expanded(
                 child: Scrollbar(
                   child: ListView.separated(
@@ -203,6 +188,52 @@ class _TagChip extends HookWidget {
                 isSelected.value = false;
               }
               : null,
+    );
+  }
+}
+
+class _SearchBar extends HookWidget {
+  @override
+  Widget build(BuildContext context) {
+    final searchText = useState('');
+    final debouncedSearchText = useDebounced(
+      searchText.value,
+      const Duration(milliseconds: searchRequestDurationMilliseconds),
+    );
+    useEffect(() {
+      // TODO(Rozelin-dc): 検索処理, https://github.com/HACK-U-2025-2/HACKU/issues/75
+      debugPrint('Search text: $debouncedSearchText');
+      return null;
+    }, [debouncedSearchText]);
+
+    final sortOption = useState(
+      MemoSortOption(mode: MemoSortMode.createdAt, isAsc: true),
+    );
+
+    return SearchBar(
+      leading: const Icon(Icons.search),
+      trailing: [
+        IconButton(
+          icon: const Icon(Icons.swap_vert),
+          onPressed: () async {
+            final newSortOption = await showDialog<MemoSortOption?>(
+              context: context,
+              builder:
+                  (context) =>
+                      MemoSortDialog(initialSortOption: sortOption.value),
+            );
+            if (newSortOption != null) {
+              // TODO(Rozelin-dc): ソート処理
+              sortOption.value = newSortOption;
+              debugPrint('ソートオプション: ${sortOption.value}');
+            }
+          },
+        ),
+      ],
+      hintText: '検索キーワードを入力',
+      onChanged: (value) {
+        searchText.value = value;
+      },
     );
   }
 }

@@ -19,13 +19,16 @@ engine = create_engine(
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base.metadata.create_all(bind=engine)
+
+@pytest.fixture(scope="function")
+def init_test_db():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    yield
 
 
 @pytest.fixture(scope="function")
-def test_db():
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
+def test_db(init_test_db):
     db = TestingSessionLocal()
     try:
         yield db
@@ -40,11 +43,14 @@ def client(test_db):
 
     app.dependency_overrides[get_db] = override_get_db
     yield TestClient(app)
+    app.dependency_overrides.clear()
 
 
 @pytest.fixture(autouse=True)
 def mock_ai_functions():
     with patch("crud.memo.clean_transcript", return_value="校正原文"), patch(
         "crud.memo.summarize_text", return_value="要約ボディ"
-    ), patch("crud.memo.generate_title", return_value="生成タイトル"):
+    ), patch("crud.memo.generate_title", return_value="生成タイトル"), patch(
+        "crud.memo.get_embedding", return_value=[0.1] * 1024
+    ):
         yield

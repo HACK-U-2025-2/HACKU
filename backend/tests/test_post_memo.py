@@ -1,8 +1,10 @@
 import pytest
 from models.memo import Memos
+from models.memoembeddings import MemoEmbeddings
 from models.memotag import MemoTags
 from models.tag import Tags
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
+from tests.mock_data.memoembedding import EMPTY_MEMOEMBEDDINGS, SHORT_MEMOEMBEDDINGS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
 from tests.utils.auth import get_headers
@@ -51,7 +53,7 @@ def test_format(test_db, client):
 def test_db_save(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, EMPTY_MEMOTAGS)
 
@@ -72,11 +74,19 @@ def test_db_save(test_db, client):
 
     memos = test_db.query(Memos).all()
     memotags = test_db.query(MemoTags).all()
+    memoembeddings = test_db.query(MemoEmbeddings).all()
     tags = test_db.query(Tags).all()
 
-    assert len(memos) == len(EMPTY_MEMOS) + 1
+    assert len(memos) == len(SHORT_MEMOS) + 1
     assert len(memotags) == len(EMPTY_MEMOTAGS) + len(tag_names)
+    assert len(memoembeddings) == len(SHORT_MEMOS) + 1
     assert len(tags) == len(SHORT_TAGS) + 1
+
+    memoembeddings = (
+        test_db.query(MemoEmbeddings)
+        .filter_by(MemoEmbeddings.id == response.id)
+        .one_or_none()
+    )
 
 
 # タイトル，要約，校正が行われているか
@@ -109,7 +119,7 @@ def test_ai_generate(test_db, client):
 def test_db_save_duplicate_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, EMPTY_MEMOTAGS)
 
@@ -131,3 +141,35 @@ def test_db_save_duplicate_tags(test_db, client):
     tags = test_db.query(Tags).all()
 
     assert len(tags) == len(SHORT_TAGS) + 1
+
+
+# タグが空の場合にDBに正しく保存されているか
+def test_db_save_empty_tags(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_tags(test_db, EMPTY_TAGS)
+    create_test_memotags(test_db, EMPTY_MEMOTAGS)
+
+    raw = "raw"
+    tag_names = []
+    need_proofreading = False
+
+    response = client.post(
+        "/memos/",
+        headers=headers,
+        json={
+            "raw": raw,
+            "tag_names": tag_names,
+            "need_proofreading": need_proofreading,
+        },
+    )
+    assert response.status_code == 201
+
+    tags = test_db.query(Tags).all()
+
+    assert len(tags) == 0
+
+    memotags = test_db.query(MemoTags).all()
+
+    assert len(memotags) == 0

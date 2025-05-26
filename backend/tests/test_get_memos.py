@@ -1,6 +1,7 @@
 import pytest
 from schemas.memo import MemoSortOrder
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
+from tests.mock_data.memoembedding import EMPTY_MEMOEMBEDDINGS, SHORT_MEMOEMBEDDINGS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
 from tests.utils.auth import get_headers
@@ -11,7 +12,7 @@ from tests.utils.post import create_test_memos, create_test_memotags, create_tes
 def test_format(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     response = client.get("/memos/", headers=headers)
     assert response.status_code == 200
@@ -32,7 +33,7 @@ def test_format(test_db, client):
 def test_normal_get(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     response = client.get("/memos", headers=headers)
     assert response.status_code == 200
@@ -48,7 +49,7 @@ def test_normal_get(test_db, client):
 def test_empty_data(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
 
     response = client.get("/memos/", headers=headers)
     assert response.status_code == 200
@@ -61,7 +62,7 @@ def test_empty_data(test_db, client):
 def test_normal_keyword_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     response = client.get("/memos/", headers=headers, params={"keyword": "メモ"})
     assert response.status_code == 200
@@ -77,7 +78,7 @@ def test_normal_keyword_search(test_db, client):
 def test_empty_keyword_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
 
     response = client.get("/memos/", headers=headers, params={"keyword": "3"})
     assert response.status_code == 200
@@ -90,7 +91,7 @@ def test_empty_keyword_search(test_db, client):
 def test_normal_tags_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 
@@ -113,7 +114,7 @@ def test_normal_tags_search(test_db, client):
 def test_empty_tags_search(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, EMPTY_TAGS)
     create_test_memotags(test_db, EMPTY_MEMOTAGS)
 
@@ -132,7 +133,7 @@ def test_empty_tags_search(test_db, client):
 def test_sort_order(test_db, client, sort_key):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     response = client.get("/memos/", headers=headers, params={"sort": sort_key})
     assert response.status_code == 200
@@ -151,7 +152,7 @@ def test_sort_order(test_db, client, sort_key):
 def test_sort_order_invalid(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     response = client.get("/memos/", headers=headers, params={"sort": "error"})
     assert response.status_code == 422

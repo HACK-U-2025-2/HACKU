@@ -4,13 +4,15 @@ from crud.memotag import add_memotags_by_tags, update_memo_tags
 from crud.query.build_memo_by_id_query import build_memo_by_id_query
 from crud.query.filter_memos_by_tags import filter_memos_by_tags
 from crud.tag import fetch_tags_by_names, upsert_tags
+from embedding.embedding import get_embedding
 from llm.clean_transcript import clean_transcript
 from llm.generate_title import generate_title
 from llm.summarize_text import summarize_text
 from models.memo import Memos
+from models.memoembeddings import MemoEmbeddings
 from schemas.memo import MemoSortOrder
 from sqlalchemy import asc, desc, select
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 from utils.exceptions import raise_if_none
 
 sort_mapping = {
@@ -29,15 +31,33 @@ def create_memo(
 
     body = summarize_text(raw)
     title = generate_title(body)
+    embedding = get_embedding(f"{title} {body}")
 
     upsert_tags(db, tag_names)
     tags = fetch_tags_by_names(db, tag_names)
     tag_ids = {tag.id for tag in tags}
 
-    new_memo = Memos(title=title, user_id=user_id, body=body, raw=raw)
+    test_embedding = [0.1] * 3
+
+    new_memo = Memos(
+        title=title,
+        user_id=user_id,
+        body=body,
+        raw=raw,
+        simple_embedding=test_embedding,
+        is_archive=False,
+    )
 
     db.add(new_memo)
+
+    if tag_names:
+        db.commit()
+        add_memotags_by_tags(db, new_memo.id, tag_ids)
+
     db.commit()
+
+    memo_embedding = MemoEmbeddings(id=new_memo.id, embedding=embedding)
+    db.add(memo_embedding)
 
     add_memotags_by_tags(db, new_memo.id, tag_ids)
 
@@ -92,10 +112,10 @@ def update_memo_by_id(
 
     raise_if_none(memo, "Memo")
 
-    if title is not None:
+    if title:
         memo.title = title
 
-    if body is not None:
+    if body:
         memo.body = body
 
     if tag_names is not None:

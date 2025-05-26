@@ -1,16 +1,18 @@
 from datetime import datetime
 from enum import Enum
-from typing import List
+from typing import Annotated, List
 
 from pydantic import BaseModel, Field
 from schemas.tag import TagResponse
 
+TagName = Annotated[str, Field(min_length=1)]
+
 
 class MemoPreviewResponse(BaseModel):
-    id: int = Field(gt=0, examples=[1])
-    title: str = Field(min_length=1, examples=["Title"])
-    user_id: str = Field(min_length=1, examples=["User"])
-    body: str = Field(min_length=1, examples=["Body"])
+    id: int = Field(gt=0, json_schema_extra={"examples": [1]})
+    title: str = Field(min_length=1, json_schema_extra={"examples": ["Title"]})
+    user_id: str = Field(min_length=1, json_schema_extra={"examples": ["User"]})
+    body: str = Field(min_length=1, json_schema_extra={"examples": ["Body"]})
     created_at: datetime
     updated_at: datetime
 
@@ -18,11 +20,11 @@ class MemoPreviewResponse(BaseModel):
 
 
 class MemoResponse(BaseModel):
-    id: int = Field(gt=0, examples=[1])
-    title: str = Field(min_length=1, examples=["Title"])
-    user_id: str = Field(min_length=1, examples=["User"])
-    body: str = Field(min_length=1, examples=["Body"])
-    raw: str = Field(min_length=1, examples=["Body"])
+    id: int = Field(gt=0, json_schema_extra={"examples": [1]})
+    title: str = Field(min_length=1, json_schema_extra={"examples": ["Title"]})
+    user_id: str = Field(min_length=1, json_schema_extra={"examples": ["User"]})
+    body: str = Field(min_length=1, json_schema_extra={"examples": ["Body"]})
+    raw: str = Field(min_length=1, json_schema_extra={"examples": ["Body"]})
     tags: List[TagResponse] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
@@ -31,35 +33,41 @@ class MemoResponse(BaseModel):
 
 
 class MemoCreateRequest(BaseModel):
-    raw: str
-    tag_names: List[str]
-    need_proofreading: bool
+    raw: str = Field(min_length=1, json_schema_extra={"examples": ["raw text"]})
+    tag_names: List[TagName] = Field(
+        default_factory=list, json_schema_extra={"examples": [["タグ1", "タグ2"]]}
+    )
+    need_proofreading: bool = Field(json_schema_extra={"examples": [True]})
 
     model_config = {"from_attributes": True}
 
 
 class MemoAllUpdateRequest(BaseModel):
-    title: str
-    body: str
-    tag_names: List[str]
+    title: str = Field(min_length=1, json_schema_extra={"examples": ["title"]})
+    body: str = Field(min_length=1, json_schema_extra={"examples": ["summary"]})
+    tag_names: List[TagName] = Field(
+        default_factory=list, json_schema_extra={"examples": [["タグ1", "タグ2"]]}
+    )
 
     model_config = {"from_attributes": True}
 
 
 class MemoTitleUpdateRequest(BaseModel):
-    title: str
+    title: str = Field(min_length=1, json_schema_extra={"examples": ["title"]})
 
     model_config = {"from_attributes": True}
 
 
 class MemoBodyUpdateRequest(BaseModel):
-    body: str
+    body: str = Field(min_length=1, json_schema_extra={"examples": ["summary"]})
 
     model_config = {"from_attributes": True}
 
 
 class MemoTagsUpdateRequest(BaseModel):
-    tag_names: List[str]
+    tag_names: List[TagName] = Field(
+        default_factory=list, json_schema_extra={"examples": [["タグ1", "タグ2"]]}
+    )
 
     model_config = {"from_attributes": True}
 
