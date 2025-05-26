@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/models/memo.dart';
+import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/providers/memo_edit_provider.dart';
+import 'package:frontend/widgets/memo_card.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -15,6 +17,17 @@ class MemoBodyView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isEditingMode = ref.watch(isEditingModeProvider);
 
+    // TODO(Rozelin-dc): memoを参照する
+    final relatedMemos = List.generate(
+      3,
+      (index) => MemoPreview(
+        id: MemoId(index),
+        title: 'メモタイトル$index',
+        body: 'メモ$indexの要約',
+        createdAt: DateTime.now(),
+      ),
+    );
+
     if (isEditingMode) {
       return _EditView(memo);
     }
@@ -22,7 +35,31 @@ class MemoBodyView extends HookConsumerWidget {
     return SingleChildScrollView(
       // FABとの重なりを避けるために、下部に余白を追加
       padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 100),
-      child: GptMarkdown(memo.body),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GptMarkdown(memo.body),
+          const SizedBox(height: 30),
+          const Divider(),
+          Text(
+            '関連メモ',
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: relatedMemos.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 8),
+            itemBuilder: (context, index) {
+              final relatedMemo = relatedMemos[index];
+              return MemoCard(memoPreview: relatedMemo, showBody: false);
+            },
+          ),
+        ],
+      ),
     );
   }
 }

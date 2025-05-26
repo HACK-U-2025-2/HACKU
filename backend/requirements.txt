@@ -1,4 +1,4 @@
-transformers==4.51.3
+transformers
 numpy==1.25.2
 hf_xet
 alembic

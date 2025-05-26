@@ -6,6 +6,7 @@ from tests.mock_data.memoembedding import EMPTY_MEMOEMBEDDINGS, SHORT_MEMOEMBEDD
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
 from tests.mock_data.tagembedding import EMPTY_TAGEMBEDDINGS, SHORT_TAGEMBEDDINGS
+
 from tests.utils.auth import get_headers
 from tests.utils.post import create_test_memos, create_test_memotags, create_test_tags
 
@@ -16,6 +17,7 @@ def test_normal_delete(test_db, client):
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS, SHORT_TAGEMBEDDINGS)
+
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 
     memo_id = 1
@@ -37,6 +39,7 @@ def test_normal_delete(test_db, client):
 
     assert deleted_memo is None
     assert deleted_memoembeddings is None
+
     assert deleted_memotags == []
 
     all_memotags = test_db.query(MemoTags).all()
