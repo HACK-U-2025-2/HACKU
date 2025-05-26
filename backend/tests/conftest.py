@@ -59,5 +59,7 @@ def mock_ai_functions():
         "crud.memo.summarize_text", return_value="要約ボディ"
     ), patch("crud.memo.generate_title", return_value="生成タイトル"), patch(
         "crud.memo.get_embedding", return_value=[0.5] * 1024
+    ), patch(
+        "crud.tag.get_embedding", return_value=[0.6] * 1024
     ):
         yield

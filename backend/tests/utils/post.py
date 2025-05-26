@@ -2,6 +2,7 @@ from models.memo import Memos
 from models.memoembeddings import MemoEmbeddings
 from models.memotag import MemoTags
 from models.tag import Tags
+from models.tagembeddings import TagEmbeddings
 
 
 def create_test_memos(test_db, memo_list, memoembedding_list):
@@ -27,12 +28,18 @@ def create_test_memos(test_db, memo_list, memoembedding_list):
     test_db.commit()
 
 
-def create_test_tags(test_db, tag_list):
-    for data in tag_list:
+def create_test_tags(test_db, tag_list, tagembedding_list):
+    for i in range(len(tag_list)):
+        data = tag_list[i]
         tag = Tags(
             name=data["name"],
         )
         test_db.add(tag)
+        test_db.flush()
+
+        data = tagembedding_list[i]
+        tagembeddings = TagEmbeddings(id=tag.id, embedding=data["embedding"])
+        test_db.add(tagembeddings)
 
     test_db.commit()
 

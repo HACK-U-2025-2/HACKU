@@ -3,11 +3,13 @@ from models.memo import Memos
 from models.memoembeddings import MemoEmbeddings
 from models.memotag import MemoTags
 from models.tag import Tags
+from models.tagembeddings import TagEmbeddings
 from sqlalchemy import select
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memoembedding import EMPTY_MEMOEMBEDDINGS, SHORT_MEMOEMBEDDINGS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS
 from tests.mock_data.tag import EMPTY_TAGS, SHORT_TAGS
+from tests.mock_data.tagembedding import EMPTY_TAGEMBEDDINGS, SHORT_TAGEMBEDDINGS
 from tests.utils.auth import get_headers
 from tests.utils.post import create_test_memos, create_test_memotags, create_test_tags
 
@@ -36,7 +38,8 @@ def test_normal_update_title(test_db, client):
     query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
     updated_memoembedding = test_db.execute(query).scalar_one_or_none()
 
-    assert np.array_equal(updated_memoembedding.embedding, [0.5] * 1024)
+    expected = np.array([0.5] * 1024, dtype=updated_memoembedding.embedding.dtype)
+    assert np.array_equal(updated_memoembedding.embedding, expected)
 
 
 # 存在しないメモを指定した場合に正常に通信が行われるか(title)
@@ -93,7 +96,8 @@ def test_normal_update_body(test_db, client):
     query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
     updated_memoembedding = test_db.execute(query).scalar_one_or_none()
 
-    assert np.array_equal(updated_memoembedding.embedding, [0.5] * 1024)
+    expected = np.array([0.5] * 1024, dtype=updated_memoembedding.embedding.dtype)
+    assert np.array_equal(updated_memoembedding.embedding, expected)
 
 
 # 存在しないメモを指定した場合に正常に通信が行われるか(body)
@@ -131,7 +135,7 @@ def test_normal_update_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
-    create_test_tags(test_db, SHORT_TAGS)
+    create_test_tags(test_db, SHORT_TAGS, SHORT_TAGEMBEDDINGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 
     memo_id = 1
@@ -168,7 +172,19 @@ def test_normal_update_tags(test_db, client):
     query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
     updated_memoembedding = test_db.execute(query).scalar_one_or_none()
 
-    assert not np.array_equal(updated_memoembedding.embedding, [0.5] * 1024)
+    expected = np.array([0.5] * 1024, dtype=updated_memoembedding.embedding.dtype)
+    assert not np.array_equal(updated_memoembedding.embedding, expected)
+
+    tags = test_db.execute(select(Tags)).scalars().all()
+    for tag in tags:
+        query = select(TagEmbeddings).where(TagEmbeddings.id == tag.id)
+        tagembedding = test_db.execute(query).scalar_one_or_none()
+        print(tagembedding.embedding)
+        expected = np.array([0.6] * 1024, dtype=tagembedding.embedding.dtype)
+        if tag.name == "成功":
+            assert np.array_equal(tagembedding.embedding, expected)
+        else:
+            assert not np.array_equal(tagembedding.embedding, expected)
 
 
 # タグ名が重複する際に正常に通信が行われるか(tags)
@@ -195,13 +211,18 @@ def test_failure_id_duplicate_tags(test_db, client):
 
     assert len(updated_tags) == 1
 
+    query = select(TagEmbeddings)
+    updated_tagembeddings = test_db.execute(query).scalars().all()
+
+    assert len(updated_tagembeddings) == 1
+
 
 # タグが空の際に正常に通信が行われるか(tags)
 def test_failure_id_empty_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
-    create_test_tags(test_db, SHORT_TAGS)
+    create_test_tags(test_db, SHORT_TAGS, SHORT_TAGEMBEDDINGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 
     memo_id = 1
@@ -258,7 +279,7 @@ def test_normal_update_all(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
-    create_test_tags(test_db, SHORT_TAGS)
+    create_test_tags(test_db, SHORT_TAGS, SHORT_TAGEMBEDDINGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 
     memo_id = 1

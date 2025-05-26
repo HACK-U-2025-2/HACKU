@@ -39,7 +39,8 @@ def test_normal_update_websocket(test_db, client):
     query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
     updated_memoembedding = test_db.execute(query).scalar_one_or_none()
 
-    assert np.array_equal(updated_memoembedding.embedding, [0.5] * 1024)
+    expected = np.array([0.5] * 1024, dtype=updated_memoembedding.embedding.dtype)
+    assert np.array_equal(updated_memoembedding.embedding, expected)
 
 
 # 存在しないメモを指定した場合に正常に通信が行われるかwebsocket)
