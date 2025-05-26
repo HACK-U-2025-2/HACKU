@@ -33,5 +33,4 @@ class Memos(Base):
         passive_deletes=True,
     )
 
-
     model_config = {"from_attributes": True}

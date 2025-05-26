@@ -47,7 +47,6 @@ def upsert_tags(db: Session, tag_names: List[str]):
     db.execute(insert(TagEmbeddings).values(embeddings_to_insert))
 
 
-
 def fetch_tags_by_names(db: Session, tag_names: List[str]):
     query = select(Tags)
     query = query.where(Tags.name.in_(tag_names))

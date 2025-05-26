@@ -59,7 +59,6 @@ def create_memo(
 
     db.commit()
 
-
     db.commit()
     db.refresh(new_memo)
 
