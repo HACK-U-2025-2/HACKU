@@ -18,10 +18,10 @@ def load_embedding_model():
         # 利用可能なら GPU、なければ CPU
         device = "cuda" if torch.cuda.is_available() else "cpu"
         # トークナイザー読み込み
-        _embedding_tokenizer = AutoTokenizer.from_pretrained(_embedding_model_name)
+        _embedding_tokenizer = AutoTokenizer.from_pretrained(_embedding_model_name, force_download=True)
         # モデル読み込み (GPU 時は半精度で)
         dtype = torch.float16 if device == "cuda" else torch.float32
         _embedding_model = AutoModel.from_pretrained(
-            _embedding_model_name, torch_dtype=dtype
+            _embedding_model_name, torch_dtype=dtype, force_download=True
         ).to(device)
     return _embedding_model, _embedding_tokenizer
