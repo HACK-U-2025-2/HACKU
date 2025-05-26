@@ -85,6 +85,8 @@ class _EditToolBar extends ConsumerWidget {
       final wasTagsChanged = !listEquals(newTags, memo.tagNames);
       final wasChanged = wasBodyChanged || wasTagsChanged;
 
+      if (!wasChanged) return;
+
       context.loaderOverlay.show();
       try {
         // 本文が変更されている場合のみ更新
@@ -96,7 +98,7 @@ class _EditToolBar extends ConsumerWidget {
           await repo.updateMemoTags(id, newTags);
         }
 
-        if (context.mounted && wasChanged) {
+        if (context.mounted) {
           // データを再取得
           ref.invalidate(memoProvider(id));
 
@@ -104,9 +106,6 @@ class _EditToolBar extends ConsumerWidget {
             context,
           ).showSnackBar(const SnackBar(content: Text('メモを更新しました。')));
         }
-
-        // 編集モードを終了
-        ref.read(isEditingModeProvider.notifier).toggle();
       } on Exception catch (e) {
         debugPrint('Error updating memo body: $e');
 
@@ -150,7 +149,10 @@ class _EditToolBar extends ConsumerWidget {
               ),
               IconButton.filled(
                 icon: const Icon(Icons.check),
-                onPressed: update,
+                onPressed: () async {
+                  await update();
+                  ref.read(isEditingModeProvider.notifier).toggle();
+                },
               ),
             ],
           ),
