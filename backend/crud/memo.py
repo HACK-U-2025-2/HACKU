@@ -32,12 +32,11 @@ def create_memo(
     body = summarize_text(raw)
     title = generate_title(body)
     embedding = get_embedding(f"{title} {body}")
+    test_embedding = [0.1] * 3
 
     upsert_tags(db, tag_names)
     tags = fetch_tags_by_names(db, tag_names)
     tag_ids = {tag.id for tag in tags}
-
-    test_embedding = [0.1] * 3
 
     new_memo = Memos(
         title=title,
@@ -50,16 +49,15 @@ def create_memo(
 
     db.add(new_memo)
 
-    if tag_names:
-        db.commit()
-        add_memotags_by_tags(db, new_memo.id, tag_ids)
-
     db.commit()
 
     memo_embedding = MemoEmbeddings(id=new_memo.id, embedding=embedding)
     db.add(memo_embedding)
 
-    add_memotags_by_tags(db, new_memo.id, tag_ids)
+    if tag_names:
+        add_memotags_by_tags(db, new_memo.id, tag_ids)
+
+    db.commit()
 
     db.refresh(new_memo)
 
@@ -120,6 +118,26 @@ def update_memo_by_id(
 
     if tag_names is not None:
         update_memo_tags(db, memo_id, tag_names)
+
+    if body or title:
+        embedding = get_embedding(f"{title} {body}")
+        test_embedding = [0.1] * 3
+
+        memo.simple_embedding = test_embedding
+        memo.embedding.embedding = embedding
+
+    db.commit()
+    return memo
+
+
+def update_memo_body_except_embedding(
+    db: Session,
+    user_id: str,
+    memo_id: int,
+    body: str,
+):
+    memo = fetch_memo_by_ids(db, user_id, memo_id)
+    memo.body = body
 
     db.commit()
     return memo

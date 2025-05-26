@@ -1,4 +1,6 @@
+import numpy as np
 from models.memo import Memos
+from models.memoembeddings import MemoEmbeddings
 from models.memotag import MemoTags
 from models.tag import Tags
 from sqlalchemy import select
@@ -14,7 +16,7 @@ from tests.utils.post import create_test_memos, create_test_memotags, create_tes
 def test_normal_update_title(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     memo_id = 1
     title = "成功"
@@ -31,12 +33,17 @@ def test_normal_update_title(test_db, client):
 
     assert updated_memo.title == title
 
+    query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
+    updated_memoembedding = test_db.execute(query).scalar_one_or_none()
+
+    assert np.array_equal(updated_memoembedding.embedding, [0.5] * 1024)
+
 
 # 存在しないメモを指定した場合に正常に通信が行われるか(title)
 def test_empty_memo_title(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
 
     memo_id = 1
     title = "失敗"
@@ -51,7 +58,7 @@ def test_empty_memo_title(test_db, client):
 def test_failure_id_title(test_db, client):
     user_id = "b"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     memo_id = 1
     title = "失敗"
@@ -66,7 +73,7 @@ def test_failure_id_title(test_db, client):
 def test_normal_update_body(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     memo_id = 1
     body = "成功"
@@ -83,12 +90,17 @@ def test_normal_update_body(test_db, client):
 
     assert updated_memo.body == body
 
+    query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
+    updated_memoembedding = test_db.execute(query).scalar_one_or_none()
+
+    assert np.array_equal(updated_memoembedding.embedding, [0.5] * 1024)
+
 
 # 存在しないメモを指定した場合に正常に通信が行われるか(body)
 def test_empty_memo_body(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
 
     memo_id = 1
     body = "失敗"
@@ -103,7 +115,7 @@ def test_empty_memo_body(test_db, client):
 def test_failure_id_body(test_db, client):
     user_id = "b"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     memo_id = 1
     body = "失敗"
@@ -153,6 +165,11 @@ def test_normal_update_tags(test_db, client):
         assert tag.name in tag_names
         assert tag.name != "Tag 2"
 
+    query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
+    updated_memoembedding = test_db.execute(query).scalar_one_or_none()
+
+    assert not np.array_equal(updated_memoembedding.embedding, [0.5] * 1024)
+
 
 # タグ名が重複する際に正常に通信が行われるか(tags)
 def test_failure_id_duplicate_tags(test_db, client):
@@ -183,7 +200,7 @@ def test_failure_id_duplicate_tags(test_db, client):
 def test_failure_id_empty_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
     create_test_tags(test_db, SHORT_TAGS)
     create_test_memotags(test_db, SHORT_MEMOTAGS)
 

@@ -9,7 +9,7 @@ import pytest
 from database import Base, get_db
 from fastapi.testclient import TestClient
 from main import app
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -18,6 +18,13 @@ engine = create_engine(
 )
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+@event.listens_for(engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 
 @pytest.fixture(scope="function")
@@ -51,6 +58,6 @@ def mock_ai_functions():
     with patch("crud.memo.clean_transcript", return_value="校正原文"), patch(
         "crud.memo.summarize_text", return_value="要約ボディ"
     ), patch("crud.memo.generate_title", return_value="生成タイトル"), patch(
-        "crud.memo.get_embedding", return_value=[0.1] * 1024
+        "crud.memo.get_embedding", return_value=[0.5] * 1024
     ):
         yield

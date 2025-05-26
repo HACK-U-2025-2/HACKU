@@ -1,6 +1,9 @@
 import asyncio
 
+import numpy as np
 from models.memo import Memos
+from models.memoembeddings import MemoEmbeddings
+from sqlalchemy import select
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memoembedding import EMPTY_MEMOEMBEDDINGS, SHORT_MEMOEMBEDDINGS
 from tests.utils.auth import get_headers
@@ -27,11 +30,16 @@ def test_normal_update_websocket(test_db, client):
 
         asyncio.run(asyncio.sleep(1.2))
 
-        updated_memo = (
-            test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
-        )
-        assert updated_memo is not None
-        assert updated_memo.body == body
+    updated_memo = (
+        test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
+    )
+    assert updated_memo is not None
+    assert updated_memo.body == body
+
+    query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
+    updated_memoembedding = test_db.execute(query).scalar_one_or_none()
+
+    assert np.array_equal(updated_memoembedding.embedding, [0.5] * 1024)
 
 
 # 存在しないメモを指定した場合に正常に通信が行われるかwebsocket)
@@ -94,7 +102,7 @@ def test_multiple_updates_websocket(test_db, client):
         response3 = websocket.receive_json()
         assert response3["status"] == "success"
 
-    asyncio.run(asyncio.sleep(1.2))
+        asyncio.run(asyncio.sleep(1.2))
 
     updated_memo = (
         test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
@@ -118,8 +126,6 @@ def test_websocket_disconnect_midway(test_db, client):
         websocket.send_json({"body": body})
         response = websocket.receive_json()
         assert response["status"] == "success"
-
-        websocket.close()
 
     asyncio.run(asyncio.sleep(3.2))
 

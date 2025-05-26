@@ -1,4 +1,5 @@
 from models.memo import Memos
+from models.memoembeddings import MemoEmbeddings
 from models.memotag import MemoTags
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memoembedding import EMPTY_MEMOEMBEDDINGS, SHORT_MEMOEMBEDDINGS
@@ -27,9 +28,14 @@ def test_normal_delete(test_db, client):
         test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
     )
 
+    deleted_memoembeddings = (
+        test_db.query(MemoEmbeddings).filter_by(id=memo_id).one_or_none()
+    )
+
     deleted_memotags = test_db.query(MemoTags).filter_by(memo_id=memo_id).all()
 
     assert deleted_memo is None
+    assert deleted_memoembeddings is None
     assert deleted_memotags == []
 
     all_memotags = test_db.query(MemoTags).all()

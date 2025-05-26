@@ -79,14 +79,8 @@ def test_db_save(test_db, client):
 
     assert len(memos) == len(SHORT_MEMOS) + 1
     assert len(memotags) == len(EMPTY_MEMOTAGS) + len(tag_names)
-    assert len(memoembeddings) == len(SHORT_MEMOS) + 1
+    assert len(memoembeddings) == len(SHORT_MEMOEMBEDDINGS) + 1
     assert len(tags) == len(SHORT_TAGS) + 1
-
-    memoembeddings = (
-        test_db.query(MemoEmbeddings)
-        .filter_by(MemoEmbeddings.id == response.id)
-        .one_or_none()
-    )
 
 
 # タイトル，要約，校正が行われているか
@@ -147,7 +141,7 @@ def test_db_save_duplicate_tags(test_db, client):
 def test_db_save_empty_tags(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
     create_test_tags(test_db, EMPTY_TAGS)
     create_test_memotags(test_db, EMPTY_MEMOTAGS)
 

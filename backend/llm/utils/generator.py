@@ -1,6 +1,6 @@
 import json
 
-from llm.utils.loader import load_llm_model, load_model
+from llm.utils.loader import load_llm_model
 
 
 def generate_text(prompt: str, enable_thinking: bool, max_new_tokens: int) -> str:
