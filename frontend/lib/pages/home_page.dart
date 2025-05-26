@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/providers/repository_provider.dart';
 import 'package:frontend/router.gr.dart';
+import 'package:frontend/types/extensions/snack_bar.dart';
 import 'package:frontend/widgets/destination_navigation_drawer.dart';
 import 'package:frontend/widgets/memo_text_field.dart';
 import 'package:frontend/widgets/record_button.dart';
@@ -32,9 +33,9 @@ class HomePage extends HookConsumerWidget {
       } on Exception catch (e) {
         debugPrint('Error adding memo: $e');
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('メモの追加に失敗しました。やり直してください')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showErrorSnackBar(message: 'メモの追加に失敗しました。やり直してください');
         }
       } finally {
         if (context.mounted) {
