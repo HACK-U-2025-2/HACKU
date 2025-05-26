@@ -30,6 +30,8 @@ def test_normal_update_websocket(test_db, client):
 
         asyncio.run(asyncio.sleep(1.2))
 
+        websocket.close()
+
     updated_memo = (
         test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
     )
