@@ -6,7 +6,7 @@ part of 'repository_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$memoRepositoryHash() => r'a110590bdca376ee0787315e5b2cc8aa243e8152';
+String _$memoRepositoryHash() => r'574f7879c7ae14b283e4094fb285da15f275a97a';
 
 /// See also [memoRepository].
 @ProviderFor(memoRepository)
