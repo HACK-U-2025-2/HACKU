@@ -13,7 +13,7 @@ services:
       - .:/app
 
   db:
-    image: pgvector/postgres:14
+    image: ankane/pgvector
     restart: always
     environment:
       POSTGRES_USER: hacku
