@@ -50,7 +50,6 @@ class MemoTitleMenu extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               spacing: 8,
               children: [
-                const SizedBox(width: 16), // バランスを取るためのスペース
                 Flexible(child: child!),
                 const Icon(Icons.arrow_drop_down),
               ],
@@ -60,7 +59,9 @@ class MemoTitleMenu extends StatelessWidget {
       },
       child: Text(
         memo.title,
-        style: const TextStyle(overflow: TextOverflow.fade),
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(overflow: TextOverflow.ellipsis),
       ),
     );
   }
