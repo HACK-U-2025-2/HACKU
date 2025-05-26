@@ -6,7 +6,7 @@ part of 'memo_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$memoHash() => r'e071d5a2973c38133d03fa9badaa9b605b796aea';
+String _$memoHash() => r'0d0bc51cfb7d6eec9899d681ad516f2e26b061f2';
 
 /// Copied from Dart SDK
 class _SystemHash {
