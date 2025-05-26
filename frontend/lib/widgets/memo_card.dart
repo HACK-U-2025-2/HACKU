@@ -5,10 +5,16 @@ import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/router.gr.dart';
 
 class MemoCard extends HookWidget {
-  const MemoCard({required this.memoPreview, super.key, this.showBody = true});
+  const MemoCard({
+    required this.memoPreview,
+    super.key,
+    this.showBody = true,
+    this.showFavoriteButton = true,
+  });
 
   final MemoPreview memoPreview;
   final bool showBody;
+  final bool showFavoriteButton;
 
   @override
   Widget build(BuildContext context) {
@@ -19,30 +25,53 @@ class MemoCard extends HookWidget {
       context.router.push(const MemoDetailsRoute());
     }
 
+    // TODO(Rozelin-dc): MemoPreviewのフラグを見るようにする
+    final isFavorite = useState(false);
+
     return GestureDetector(
       onTap: onTap,
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 4,
+            spacing: 8,
             children: [
-              Text(
-                memoPreview.title,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
+                  children: [
+                    Text(
+                      memoPreview.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    if (showBody)
+                      Text(
+                        memoPreview.body,
+                        style: theme.textTheme.bodyMedium,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
+                      ),
+                  ],
                 ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
               ),
-              if (showBody)
-                Text(
-                  memoPreview.body,
-                  style: theme.textTheme.bodyMedium,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 3,
+              if (showFavoriteButton)
+                IconButton(
+                  icon: Icon(
+                    isFavorite.value
+                        ? Icons.favorite
+                        : Icons.favorite_border_outlined,
+                  ),
+                  onPressed: () {
+                    isFavorite.value = !isFavorite.value;
+                    // TODO(Rozelin-dc): API処理
+                  },
                 ),
             ],
           ),
