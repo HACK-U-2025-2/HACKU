@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/widgets/dialogs/delete_dialog.dart';
 import 'package:frontend/widgets/dialogs/input_dialog.dart';
+import 'package:frontend/widgets/dialogs/select_archive_date_dialog.dart';
 
 class MemoTitleMenu extends StatelessWidget {
   const MemoTitleMenu({required this.memo, super.key});
@@ -30,6 +31,22 @@ class MemoTitleMenu extends StatelessWidget {
       }
     }
 
+    Future<void> updateArchiveDate() async {
+      final newDate = await showDialog<String?>(
+        context: context,
+        builder: (context) {
+          return SelectArchiveDateDialog(
+            // TODO(Rozelin-dc): memoを参照して初期値を設定
+            initialValue: DateTime.now(),
+          );
+        },
+      );
+      if (newDate != null) {
+        // TODO(Rozelin-dc): API処理。空文字ならアーカイブしない
+        debugPrint('新しいアーカイブ日: $newDate');
+      }
+    }
+
     return MenuAnchor(
       style: const MenuStyle(alignment: Alignment.bottomCenter),
       menuChildren: [
@@ -39,6 +56,13 @@ class MemoTitleMenu extends StatelessWidget {
           onPressed: updateTitle,
         ),
         _MenuItemButton(icon: Icons.delete, label: '削除', onPressed: delete),
+        _MenuItemButton(
+          icon: Icons.archive_outlined,
+          // TODO(Rozelin-dc): アーカイブ日を表示する
+          label: 'アーカイブ予定なし',
+          // TODO(Rozelin-dc): お気に入りされていたらアーカイブ不可なので、ダイアログが開かないようにする
+          onPressed: updateArchiveDate,
+        ),
       ],
       builder: (context, controller, child) {
         return InkWell(
