@@ -3,6 +3,7 @@ import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
+import 'package:frontend/widgets/dialogs/sort_dialog.dart';
 
 /// メモのリポジトリのインメモリ実装。Dockerを起動しない場合のデバッグ時のみ使用する。
 class InMemoryMemoRepository implements MemoRepository {
@@ -17,8 +18,25 @@ class InMemoryMemoRepository implements MemoRepository {
   int _nextId = 0;
 
   @override
-  Future<List<MemoPreview>> getMemos() async =>
+  Future<List<MemoPreview>> getMemos({
+    String? keyword,
+    List<String>? tagNames,
+    MemoSortOption? sort,
+  }) async =>
       _memos.values
+          .where((memo) {
+            final matchesKeyword =
+                keyword == null ||
+                memo.title.contains(keyword) ||
+                memo.body.contains(keyword);
+            final matchesTags =
+                tagNames == null ||
+                tagNames.isEmpty ||
+                tagNames.every(
+                  (name) => memo.tags.any((tag) => tag.name == name),
+                );
+            return matchesKeyword && matchesTags;
+          })
           .map(
             (memo) => MemoPreview(
               id: memo.id,
@@ -28,6 +46,23 @@ class InMemoryMemoRepository implements MemoRepository {
               updatedAt: memo.updatedAt,
             ),
           )
+          .sorted((a, b) {
+            if (sort == null) return 0;
+            return switch (sort.mode) {
+              MemoSortMode.createdAt =>
+                sort.isAsc
+                    ? a.createdAt.compareTo(b.createdAt)
+                    : b.createdAt.compareTo(a.createdAt),
+              MemoSortMode.updatedAt =>
+                sort.isAsc
+                    ? (a.updatedAt ?? a.createdAt).compareTo(
+                      b.updatedAt ?? b.createdAt,
+                    )
+                    : (b.updatedAt ?? b.createdAt).compareTo(
+                      a.updatedAt ?? a.createdAt,
+                    ),
+            };
+          })
           .toList();
 
   @override
@@ -35,9 +70,9 @@ class InMemoryMemoRepository implements MemoRepository {
       _memos[id] ?? (throw MemoNotFoundException(id));
 
   @override
-  Future<void> addMemo(String rawMemo) async {
+  Future<Memo> addMemo(String rawMemo) async {
     final memoId = MemoId(++_nextId);
-    _memos[memoId] = Memo(
+    return _memos[memoId] = Memo(
       id: memoId,
       title: 'Memo $_nextId',
       body: '$rawMemoの要約',

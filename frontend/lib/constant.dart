@@ -4,4 +4,6 @@ const memoTagNameMaxLength = 15;
 
 const speechToTextAutoPauseSeconds = 5;
 
+const searchRequestDurationMilliseconds = 500;
+
 const dateTextFormat = 'yyyy/MM/dd';

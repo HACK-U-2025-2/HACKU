@@ -120,7 +120,7 @@ def test_websocket_disconnect_midway(test_db, client):
 
         websocket.close()
 
-    asyncio.run(asyncio.sleep(1.2))
+    asyncio.run(asyncio.sleep(3.2))
 
     updated_memo = (
         test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()

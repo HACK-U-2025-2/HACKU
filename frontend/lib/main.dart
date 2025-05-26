@@ -5,6 +5,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:frontend/providers/router_provider.dart';
 import 'package:frontend/theme.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 void main() {
   // 縦画面に固定
@@ -21,15 +22,17 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
 
-    return MaterialApp.router(
-      routerConfig: router.config(),
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        FlutterQuillLocalizations.delegate,
-      ],
-      theme: buildThemeData(Brightness.light),
+    return GlobalLoaderOverlay(
+      child: MaterialApp.router(
+        routerConfig: router.config(),
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          FlutterQuillLocalizations.delegate,
+        ],
+        theme: buildThemeData(Brightness.light),
+      ),
     );
   }
 }
