@@ -2,7 +2,11 @@ import asyncio
 from typing import Annotated
 
 from crud.auth import get_current_user, get_current_user_websocket
-from crud.memo import fetch_memo_by_ids, update_memo_by_id
+from crud.memo import (
+    fetch_memo_by_ids,
+    update_memo_body_except_embedding,
+    update_memo_by_id,
+)
 from database import get_db
 from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
 from schemas.auth import DecodedToken
@@ -73,7 +77,7 @@ async def websocket_memo_body(websocket: WebSocket, db: DbDependency, memo_id: i
         except asyncio.CancelledError:
             pass
 
-        await update_if_changed(
+        await update_finally(
             db=db,
             user_id=user.user_id,
             memo_id=memo_id,
@@ -84,6 +88,26 @@ async def websocket_memo_body(websocket: WebSocket, db: DbDependency, memo_id: i
 
     finally:
         await websocket.close()
+
+
+async def update_finally(  # 最後の変更をDBに反映
+    db: DbDependency,
+    user_id: int,
+    memo_id: int,
+    latest_state: BodyState,
+    db_state: BodyState,
+    lock: asyncio.Lock,
+):
+    async with lock:
+        # if latest_state.hash != db_state.hash:
+        await asyncio.to_thread(
+            update_memo_by_id,
+            db=db,
+            user_id=user_id,
+            memo_id=memo_id,
+            body=latest_state.body,
+        )
+        db_state.update(latest_state.body)
 
 
 async def update_if_changed(  # 最新のbodyとDBのハッシュを比較し、変更があればDBを更新
@@ -97,7 +121,7 @@ async def update_if_changed(  # 最新のbodyとDBのハッシュを比較し、
     async with lock:
         if latest_state.hash != db_state.hash:
             await asyncio.to_thread(
-                update_memo_by_id,
+                update_memo_body_except_embedding,
                 db=db,
                 user_id=user_id,
                 memo_id=memo_id,

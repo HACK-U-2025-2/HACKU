@@ -1,7 +1,11 @@
 import asyncio
 
+import numpy as np
 from models.memo import Memos
+from models.memoembeddings import MemoEmbeddings
+from sqlalchemy import select
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
+from tests.mock_data.memoembedding import EMPTY_MEMOEMBEDDINGS, SHORT_MEMOEMBEDDINGS
 from tests.utils.auth import get_headers
 from tests.utils.post import create_test_memos
 
@@ -10,7 +14,7 @@ from tests.utils.post import create_test_memos
 def test_normal_update_websocket(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     memo_id = 1
     body = "成功"
@@ -26,18 +30,29 @@ def test_normal_update_websocket(test_db, client):
 
         asyncio.run(asyncio.sleep(1.2))
 
-        updated_memo = (
-            test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
-        )
-        assert updated_memo is not None
-        assert updated_memo.body == body
+        websocket.close()
+
+    updated_memo = (
+        test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
+    )
+    assert updated_memo is not None
+    assert updated_memo.body == body
+
+    expected = np.array([0.5] * 3, dtype=updated_memo.simple_embedding.dtype)
+    assert np.array_equal(updated_memo.simple_embedding, expected)
+
+    query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
+    updated_memoembedding = test_db.execute(query).scalar_one_or_none()
+
+    expected = np.array([0.5] * 1024, dtype=updated_memoembedding.embedding.dtype)
+    assert np.array_equal(updated_memoembedding.embedding, expected)
 
 
 # 存在しないメモを指定した場合に正常に通信が行われるかwebsocket)
 def test_empty_memo_websocket(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
 
     memo_id = 1
     body = "失敗"
@@ -55,7 +70,7 @@ def test_empty_memo_websocket(test_db, client):
 def test_failure_id_websocket(test_db, client):
     user_id = "b"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, EMPTY_MEMOS)
+    create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
 
     memo_id = 1
     body = "失敗"
@@ -73,7 +88,7 @@ def test_failure_id_websocket(test_db, client):
 def test_multiple_updates_websocket(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     memo_id = 1
     bodies = ["更新1", "更新２", "成功"]
@@ -93,7 +108,7 @@ def test_multiple_updates_websocket(test_db, client):
         response3 = websocket.receive_json()
         assert response3["status"] == "success"
 
-    asyncio.run(asyncio.sleep(1.2))
+        asyncio.run(asyncio.sleep(1.2))
 
     updated_memo = (
         test_db.query(Memos).filter_by(id=memo_id, user_id=user_id).one_or_none()
@@ -106,7 +121,7 @@ def test_multiple_updates_websocket(test_db, client):
 def test_websocket_disconnect_midway(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
-    create_test_memos(test_db, SHORT_MEMOS)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
 
     memo_id = 1
     body = "成功"
@@ -117,8 +132,6 @@ def test_websocket_disconnect_midway(test_db, client):
         websocket.send_json({"body": body})
         response = websocket.receive_json()
         assert response["status"] == "success"
-
-        websocket.close()
 
     asyncio.run(asyncio.sleep(3.2))
 

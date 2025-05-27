@@ -14,6 +14,7 @@ pydantic-settings
 pydantic_core
 python-dotenv
 psycopg2-binary
+pgvector
 SQLAlchemy
 starlette
 python-jose[cryptography]

@@ -9,3 +9,10 @@ class Tags(Base):
     name = Column(String, nullable=False, unique=True)
 
     memos = relationship("MemoTags", back_populates="tag")
+    embedding = relationship(
+        "TagEmbeddings",
+        back_populates="tag",
+        uselist=False,
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
