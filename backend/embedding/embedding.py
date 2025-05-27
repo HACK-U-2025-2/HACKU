@@ -1,3 +1,5 @@
+import random
+
 import torch
 
 from .loader import load_embedding_model
@@ -8,6 +10,11 @@ def get_embedding(text: str) -> list:
     テキストをモデルで埋め込みベクトル化し、リストで返します。
     """
     model, tokenizer = load_embedding_model()
+
+    if model == "mock_model":
+        EMBEDDING_DIM = 1024
+        return [random.uniform(-1, 1) for _ in range(EMBEDDING_DIM)]
+
     device = next(model.parameters()).device
 
     with torch.no_grad():
