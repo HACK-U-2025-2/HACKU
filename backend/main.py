@@ -44,19 +44,3 @@ app.include_router(auth.router)
 app.include_router(tag.router)
 app.include_router(memo.router)
 app.include_router(memo_websocket.router)
-
-if __name__ == "__main__":
-    from llm.summarize_text import summarize_text
-
-    print("-" * 10, "summarize_text", "-" * 10)
-    print(
-        summarize_text(
-            "夜の村で何か起きるみたいな感じのやつでも全部がそうじゃなくてなんか選ばれた人だけっていうか理由はまだよくわかんないけど昔の話とか関係あるかもで少年がその中に入ってうーん"
-        )
-    )
-
-    from embedding.embedding import get_embedding
-    from embedding.reduce_to_3d import embedding_to_3d_unit
-
-    x = get_embedding("夜の村で何か起きるみたいな感じ")
-    print(embedding_to_3d_unit(x))
