@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -24,7 +25,9 @@ class MyApp extends ConsumerWidget {
 
     return GlobalLoaderOverlay(
       child: MaterialApp.router(
-        routerConfig: router.config(),
+        routerConfig: router.config(
+          navigatorObservers: () => [AutoRouteObserver()],
+        ),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,

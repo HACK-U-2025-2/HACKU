@@ -16,11 +16,26 @@ import 'package:frontend/widgets/memo_card.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 @RoutePage()
-class MemoListViewPage extends HookConsumerWidget {
+class MemoListViewPage extends StatefulHookConsumerWidget {
   const MemoListViewPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MemoListViewPage> createState() => _MemoListViewPageState();
+}
+
+class _MemoListViewPageState extends ConsumerState<MemoListViewPage>
+    with AutoRouteAwareStateMixin {
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    // ページに戻ってきたときにメモとタグの一覧を再取得
+    ref
+      ..invalidate(memoListProvider)
+      ..invalidate(tagListProvider);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final memoList = ref.watch(memoListProvider);
 
     return Scaffold(
