@@ -18,6 +18,7 @@ class MemoPreviewResponse(BaseModel):
     title: str = Field(min_length=1, json_schema_extra={"examples": ["Title"]})
     user_id: str = Field(min_length=1, json_schema_extra={"examples": ["User"]})
     body: str = Field(min_length=1, json_schema_extra={"examples": ["Body"]})
+    is_favorite: bool = Field(json_schema_extra={"examples": [False]})
     created_at: datetime
     updated_at: datetime
 
@@ -31,6 +32,7 @@ class MemoResponse(BaseModel):
     body: str = Field(min_length=1, json_schema_extra={"examples": ["Body"]})
     raw: str = Field(min_length=1, json_schema_extra={"examples": ["Body"]})
     tags: List[TagResponse] = Field(default_factory=list)
+    is_favorite: bool = Field(json_schema_extra={"examples": [False]})
     created_at: datetime
     updated_at: datetime
 
@@ -84,6 +86,12 @@ class MemoTagsUpdateRequest(BaseModel):
     tag_names: List[TagName] = Field(
         default_factory=list, json_schema_extra={"examples": [["タグ1", "タグ2"]]}
     )
+
+    model_config = {"from_attributes": True}
+
+
+class MemoFavoriteUpdateRequest(BaseModel):
+    is_favorite: bool = Field(json_schema_extra={"examples": [False]})
 
     model_config = {"from_attributes": True}
 

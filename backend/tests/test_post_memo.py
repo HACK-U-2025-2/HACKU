@@ -42,6 +42,7 @@ def test_format(test_db, client):
     assert isinstance(memo["raw"], str)
     assert isinstance(memo["user_id"], str)
     assert isinstance(memo["tags"], list)
+    assert isinstance(memo["is_favorite"], bool)
     assert isinstance(memo["created_at"], str)
     assert isinstance(memo["updated_at"], str)
 
