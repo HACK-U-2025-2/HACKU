@@ -32,7 +32,7 @@ class MemoDetailsPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final memoValue = ref.watch(memoProvider(memoId));
 
-    if (memoValue.isLoading) {
+    if (memoValue.isLoading && !memoValue.hasValue) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (memoValue.hasError) {

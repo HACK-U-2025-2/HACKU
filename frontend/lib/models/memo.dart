@@ -20,6 +20,10 @@ sealed class Memo with _$Memo {
   }) = _Memo;
 
   factory Memo.fromJson(Map<String, dynamic> json) => _$MemoFromJson(json);
+
+  const Memo._();
+
+  List<String> get tagNames => tags.map((tag) => tag.name).toList();
 }
 
 final class MemoIdJsonConverter implements JsonConverter<MemoId, int> {

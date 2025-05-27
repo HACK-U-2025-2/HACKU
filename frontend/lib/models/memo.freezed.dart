@@ -85,8 +85,8 @@ as DateTime?,
 /// @nodoc
 
 @JsonSerializable(fieldRename: FieldRename.snake)
-class _Memo implements Memo {
-  const _Memo({@MemoIdJsonConverter() required this.id, required this.title, required this.body, required this.raw, required this.createdAt, final  List<Tag> tags = const [], this.updatedAt}): _tags = tags;
+class _Memo extends Memo {
+  const _Memo({@MemoIdJsonConverter() required this.id, required this.title, required this.body, required this.raw, required this.createdAt, final  List<Tag> tags = const [], this.updatedAt}): _tags = tags,super._();
   factory _Memo.fromJson(Map<String, dynamic> json) => _$MemoFromJson(json);
 
 @override@MemoIdJsonConverter() final  MemoId id;
