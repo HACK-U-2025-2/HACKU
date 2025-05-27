@@ -25,7 +25,9 @@ def load_llm_model():
             _model = "mock_model"
             _tokenizer = "mock_tokenizer"
         else:
-            _tokenizer = AutoTokenizer.from_pretrained(_model_name, force_download=False)
+            _tokenizer = AutoTokenizer.from_pretrained(
+                _model_name, force_download=False
+            )
             _model = AutoModelForCausalLM.from_pretrained(
                 _model_name, torch_dtype="auto", device_map="auto", force_download=False
             )
