@@ -13,7 +13,7 @@ def get_embedding(text: str) -> list:
     device = next(model.parameters()).device
 
     if model == "mock_model":
-        EMBEDDING_DIM = 1024  # 本番の埋め込み次元数に合わせてください
+        EMBEDDING_DIM = 1024
         return [random.uniform(-1, 1) for _ in range(EMBEDDING_DIM)]
 
     with torch.no_grad():
