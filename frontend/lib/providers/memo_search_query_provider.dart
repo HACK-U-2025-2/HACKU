@@ -39,8 +39,7 @@ class MemoSearchTagNames extends _$MemoSearchTagNames {
 class MemoSearchSortOption extends _$MemoSearchSortOption {
   @override
   MemoSortOption build() {
-    // TODO: デフォルトのソートオプションについてサーバーと合意を取る
-    return MemoSortOption(isAsc: true, mode: MemoSortMode.createdAt);
+    return MemoSortOption(isAsc: false, mode: MemoSortMode.createdAt);
   }
 
   void setSortOption(MemoSortOption sortOption) {

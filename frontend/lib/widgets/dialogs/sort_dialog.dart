@@ -64,9 +64,9 @@ class MemoSortDialog extends HookWidget {
             ),
           ),
           RadioListTile(
-            value: true,
+            value: false,
             groupValue: isAsc.value,
-            title: const Text('昇順'),
+            title: const Text('降順'),
             onChanged: (value) {
               if (value != null) {
                 isAsc.value = value;
@@ -75,9 +75,9 @@ class MemoSortDialog extends HookWidget {
             contentPadding: EdgeInsets.zero,
           ),
           RadioListTile(
-            value: false,
+            value: true,
             groupValue: isAsc.value,
-            title: const Text('降順'),
+            title: const Text('昇順'),
             onChanged: (value) {
               if (value != null) {
                 isAsc.value = value;
