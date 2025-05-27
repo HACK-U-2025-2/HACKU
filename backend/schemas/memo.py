@@ -1,13 +1,16 @@
 from datetime import datetime
 from enum import Enum
-from typing import Annotated, List
+from typing import Annotated, List, TypeAlias
 
 from pydantic import BaseModel, Field, conlist
 from schemas.tag import TagResponse
 
 TagName = Annotated[str, Field(min_length=1)]
 
-SimpleEmbedding = conlist(float, min_length=3, max_length=3)
+SimpleEmbedding = Annotated[
+    conlist(float, min_length=3, max_length=3),
+    Field(json_schema_extra={"examples": [[0.1, 0.2, 0.3]]}),
+]
 
 
 class MemoPreviewResponse(BaseModel):

@@ -15,6 +15,7 @@ from schemas.memo import (
     MemoAllUpdateRequest,
     MemoBodyUpdateRequest,
     MemoCreateRequest,
+    MemoEmbeddingResponse,
     MemoPreviewResponse,
     MemoResponse,
     MemoSortOrder,
@@ -61,13 +62,19 @@ async def hangle_read_memo_by_id(
     tag_response = [TagResponse.model_validate(memo_tag.tag) for memo_tag in memo.tags]
     return MemoResponse.model_validate({**memo.__dict__, "tags": tag_response})
 
-@router.get("/embeddings", response_model=List[MemoEmbeddingResponse], status_code=status.HTTP_200_OK)
+
+@router.get(
+    "/embeddings",
+    response_model=List[MemoEmbeddingResponse],
+    status_code=status.HTTP_200_OK,
+)
 async def hangle_read_memo_embeddings(
     db: DbDependency,
     user: UserDependency,
 ):
-    
-    return MemoResponse.
+    memos = fetch_memos(db=db, user_id=user.user_id)
+    return [MemoEmbeddingResponse.model_validate(m) for m in memos]
+
 
 @router.post("/", response_model=MemoResponse, status_code=status.HTTP_201_CREATED)
 async def handle_create_memo(
