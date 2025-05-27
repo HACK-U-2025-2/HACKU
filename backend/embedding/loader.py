@@ -14,7 +14,7 @@ def load_embedding_model():
     BAAI/bge-m3 モデルとトークナイザーをキャッシュして返す。
     GPU があれば float16、なければ float32 でロードし、適切なデバイスに配置。
     """
-    global _embedding_model, _embedding_tokenizer  # ←★追加！
+    global _embedding_model, _embedding_tokenizer
 
     if _embedding_model is None or _embedding_tokenizer is None:
         use_mock = os.getenv("USE_MOCK_MODEL", "false").lower() == "true"
