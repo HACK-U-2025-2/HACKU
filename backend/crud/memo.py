@@ -59,8 +59,6 @@ def create_memo(
         add_memotags_by_tags(db, new_memo.id, tag_ids)
 
     db.commit()
-
-    db.commit()
     db.refresh(new_memo)
 
     return new_memo, tags
