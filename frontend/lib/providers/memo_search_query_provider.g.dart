@@ -42,12 +42,12 @@ final memoSearchTagNamesProvider =
 
 typedef _$MemoSearchTagNames = AutoDisposeNotifier<List<String>>;
 String _$memoSearchSortOptionHash() =>
-    r'd8551dc930bfbc63bce94c9fd0c99fca7ef26a88';
+    r'53888895c79bac4b53e3cab7a5feeb0ddb4fa7fd';
 
 /// See also [MemoSearchSortOption].
 @ProviderFor(MemoSearchSortOption)
 final memoSearchSortOptionProvider =
-    AutoDisposeNotifierProvider<MemoSearchSortOption, MemoSortOption?>.internal(
+    AutoDisposeNotifierProvider<MemoSearchSortOption, MemoSortOption>.internal(
       MemoSearchSortOption.new,
       name: r'memoSearchSortOptionProvider',
       debugGetCreateSourceHash:
@@ -58,6 +58,6 @@ final memoSearchSortOptionProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$MemoSearchSortOption = AutoDisposeNotifier<MemoSortOption?>;
+typedef _$MemoSearchSortOption = AutoDisposeNotifier<MemoSortOption>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

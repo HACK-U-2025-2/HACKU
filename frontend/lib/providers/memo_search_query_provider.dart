@@ -38,11 +38,12 @@ class MemoSearchTagNames extends _$MemoSearchTagNames {
 @riverpod
 class MemoSearchSortOption extends _$MemoSearchSortOption {
   @override
-  MemoSortOption? build() {
-    return null;
+  MemoSortOption build() {
+    // TODO: デフォルトのソートオプションについてサーバーと合意を取る
+    return MemoSortOption(isAsc: true, mode: MemoSortMode.createdAt);
   }
 
-  void setSortOption(MemoSortOption? sortOption) {
+  void setSortOption(MemoSortOption sortOption) {
     state = sortOption;
   }
 }

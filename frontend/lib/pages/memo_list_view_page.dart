@@ -251,14 +251,7 @@ class _SearchBar extends HookConsumerWidget {
             final newSortOption = await showDialog<MemoSortOption?>(
               context: context,
               builder:
-                  (context) => MemoSortDialog(
-                    initialSortOption:
-                        sortOption ??
-                        MemoSortOption(
-                          isAsc: true,
-                          mode: MemoSortMode.createdAt,
-                        ),
-                  ),
+                  (context) => MemoSortDialog(initialSortOption: sortOption),
             );
             if (newSortOption != null) {
               ref
