@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/providers/memo_provider.dart';
+import 'package:frontend/widgets/error_with_refresh.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class MemoErrorWithRefreshPage extends ConsumerWidget {
@@ -13,18 +14,10 @@ class MemoErrorWithRefreshPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('エラー')),
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('エラーが発生しました。やり直してください'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                ref.invalidate(memoProvider(memoId));
-              },
-              child: const Text('再読み込み'),
-            ),
-          ],
+        child: ErrorWithRefresh(
+          onRefresh: () {
+            ref.invalidate(memoProvider(memoId));
+          },
         ),
       ),
     );

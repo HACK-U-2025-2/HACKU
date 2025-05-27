@@ -1,5 +1,6 @@
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
+import 'package:frontend/models/tag.dart';
 import 'package:frontend/widgets/dialogs/sort_dialog.dart';
 
 export 'package:frontend/types/request_body.dart';
@@ -29,6 +30,9 @@ abstract interface class MemoRepository {
 
   /// メモを削除する
   Future<void> deleteMemo(MemoId id);
+
+  /// タグの一覧を取得する
+  Future<List<Tag>> getTags({String? keyword});
 }
 
 class MemoNotFoundException implements Exception {

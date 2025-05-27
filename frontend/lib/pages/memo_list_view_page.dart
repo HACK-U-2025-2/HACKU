@@ -1,35 +1,42 @@
-import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/constant.dart';
-import 'package:frontend/models/memo.dart';
-import 'package:frontend/models/memo_preview.dart';
+import 'package:frontend/hooks/use_create_memo.dart';
 import 'package:frontend/models/tag.dart';
+import 'package:frontend/providers/memo_list_provider.dart';
+import 'package:frontend/providers/memo_search_query_provider.dart';
+import 'package:frontend/providers/tag_list_provider.dart';
 import 'package:frontend/widgets/destination_navigation_drawer.dart';
 import 'package:frontend/widgets/dialogs/input_dialog.dart';
 import 'package:frontend/widgets/dialogs/record_dialog.dart';
 import 'package:frontend/widgets/dialogs/sort_dialog.dart';
+import 'package:frontend/widgets/error_with_refresh.dart';
 import 'package:frontend/widgets/memo_card.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 @RoutePage()
-class MemoListViewPage extends HookWidget {
+class MemoListViewPage extends StatefulHookConsumerWidget {
   const MemoListViewPage({super.key});
 
   @override
+  ConsumerState<MemoListViewPage> createState() => _MemoListViewPageState();
+}
+
+class _MemoListViewPageState extends ConsumerState<MemoListViewPage>
+    with AutoRouteAwareStateMixin {
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    // ページに戻ってきたときにメモとタグの一覧を再取得
+    ref
+      ..invalidate(memoListProvider)
+      ..invalidate(tagListProvider);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final mockMemoList = List.generate(
-      20,
-      (index) => MemoPreview(
-        id: MemoId(index),
-        title: 'メモタイトル$index',
-        body: 'だんだん長くなるメモの要約。' * (index + 1),
-        createdAt: DateTime.now(),
-      ),
-    );
-    final mockTagList = List.generate(
-      20,
-      (index) => Tag(id: TagId(index), name: 'タグ$index'),
-    );
+    final memoList = ref.watch(memoListProvider);
 
     return Scaffold(
       drawer: const DestinationNavigationDrawer(),
@@ -41,21 +48,36 @@ class MemoListViewPage extends HookWidget {
           child: Column(
             spacing: 20,
             children: [
-              _TagsHorizontalListView(tags: mockTagList),
+              const _TagsHorizontalListView(),
               _SearchBar(),
               Expanded(
-                child: Scrollbar(
-                  child: ListView.separated(
-                    // FABの分大きめにpaddingをとる
-                    padding: const EdgeInsets.only(bottom: 180),
-                    separatorBuilder:
-                        (context, index) => const SizedBox(height: 20),
-                    itemCount: mockMemoList.length,
-                    itemBuilder:
-                        (context, index) =>
-                            MemoCard(memoPreview: mockMemoList[index]),
-                  ),
-                ),
+                child:
+                    memoList.isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : memoList.hasError
+                        ? Center(
+                          child: ErrorWithRefresh(
+                            errorMessage: 'メモの取得に失敗しました。やり直してください',
+                            onRefresh: () {
+                              ref.invalidate(memoListProvider);
+                            },
+                          ),
+                        )
+                        : memoList.requireValue.isEmpty
+                        ? const Center(child: Text('メモがまだありません'))
+                        : Scrollbar(
+                          child: ListView.separated(
+                            // FABの分大きめにpaddingをとる
+                            padding: const EdgeInsets.only(bottom: 180),
+                            separatorBuilder:
+                                (context, index) => const SizedBox(height: 20),
+                            itemCount: memoList.requireValue.length,
+                            itemBuilder:
+                                (context, index) => MemoCard(
+                                  memoPreview: memoList.requireValue[index],
+                                ),
+                          ),
+                        ),
               ),
             ],
           ),
@@ -65,17 +87,23 @@ class MemoListViewPage extends HookWidget {
   }
 }
 
-class _AddMemoFab extends HookWidget {
+class _AddMemoFab extends HookConsumerWidget {
   const _AddMemoFab();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
     final isOpen = useState(false);
 
     const animationDuration = Duration(milliseconds: 300);
     const animationCurve = Curves.easeOut;
+
+    final submitNewMemo = useCreateMemo(
+      context: context,
+      ref: ref,
+      afterCreate: () => isOpen.value = false,
+    );
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -92,8 +120,7 @@ class _AddMemoFab extends HookWidget {
                 builder: (context) => const AddMemoFromTextDialog(),
               );
               if (rawMemo != null) {
-                // TODO(Rozelin-dc): メモ追加処理
-                debugPrint('テキストメモ追加: $rawMemo');
+                await submitNewMemo(rawMemo);
               }
             },
             child: const Icon(Icons.edit),
@@ -108,10 +135,9 @@ class _AddMemoFab extends HookWidget {
             heroTag: null,
             onPressed: () async {
               final transcription = await pickTranscribed(context);
-              if (transcription == null) return;
-
-              // TODO(Rozelin-dc): メモ追加処理
-              debugPrint('音声メモ追加: $transcription');
+              if (transcription != null) {
+                await submitNewMemo(transcription);
+              }
             },
             child: const Icon(Icons.mic),
           ),
@@ -141,74 +167,89 @@ class _AddMemoFab extends HookWidget {
   }
 }
 
-class _TagsHorizontalListView extends StatelessWidget {
-  const _TagsHorizontalListView({required this.tags});
-
-  final List<Tag> tags;
+class _TagsHorizontalListView extends ConsumerWidget {
+  const _TagsHorizontalListView();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // TODO(sprint2): タグを全て取得するのではなく、数を絞りたい
+    final tags = ref.watch(tagListProvider);
+
     return SizedBox(
       height: 50,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        scrollDirection: Axis.horizontal,
-        itemCount: tags.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final tag = tags[index];
-          return _TagChip(tag: tag);
-        },
-      ),
+      child:
+          tags.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : tags.hasError
+              ? ErrorWithRefresh(
+                errorMessage: 'タグの取得に失敗しました',
+                onRefresh: () {
+                  ref.invalidate(tagListProvider);
+                },
+                isRow: true,
+              )
+              : ListView.separated(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                scrollDirection: Axis.horizontal,
+                itemCount: tags.requireValue.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final tag = tags.requireValue[index];
+                  return _TagChip(tag: tag);
+                },
+              ),
     );
   }
 }
 
-class _TagChip extends HookWidget {
+class _TagChip extends HookConsumerWidget {
   const _TagChip({required this.tag});
 
   final Tag tag;
 
   @override
-  Widget build(BuildContext context) {
-    final isSelected = useState(false);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isSelected = ref.watch(memoSearchTagNamesProvider).contains(tag.name);
+    final memoSearchTagNamesNotifier = ref.read(
+      memoSearchTagNamesProvider.notifier,
+    );
 
     return FilterChip(
       label: Text(tag.name),
-      selected: isSelected.value,
+      selected: isSelected,
       showCheckmark: false,
       onSelected: (value) {
-        // TODO(Rozelin-dc): タグタップによる検索の実装, https://github.com/HACK-U-2025-2/HACKU/issues/75
-        isSelected.value = true;
+        memoSearchTagNamesNotifier.addTagName(tag.name);
       },
       onDeleted:
           // 選択されていない時に削除ボタンが出ないように
-          isSelected.value
+          isSelected
               ? () {
-                isSelected.value = false;
+                memoSearchTagNamesNotifier.removeTagName(tag.name);
               }
               : null,
     );
   }
 }
 
-class _SearchBar extends HookWidget {
+class _SearchBar extends HookConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final searchText = useState('');
     final debouncedSearchText = useDebounced(
       searchText.value,
       const Duration(milliseconds: searchRequestDurationMilliseconds),
     );
     useEffect(() {
-      // TODO(Rozelin-dc): 検索処理, https://github.com/HACK-U-2025-2/HACKU/issues/75
-      debugPrint('Search text: $debouncedSearchText');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref
+            .read(memoSearchKeywordProvider.notifier)
+            .setKeyword(debouncedSearchText ?? '');
+      });
       return null;
     }, [debouncedSearchText]);
 
-    final sortOption = useState(
-      MemoSortOption(mode: MemoSortMode.createdAt, isAsc: true),
-    );
+    final sortOption = ref.watch(memoSearchSortOptionProvider);
 
     return SearchBar(
       leading: const Icon(Icons.search),
@@ -219,13 +260,12 @@ class _SearchBar extends HookWidget {
             final newSortOption = await showDialog<MemoSortOption?>(
               context: context,
               builder:
-                  (context) =>
-                      MemoSortDialog(initialSortOption: sortOption.value),
+                  (context) => MemoSortDialog(initialSortOption: sortOption),
             );
             if (newSortOption != null) {
-              // TODO(Rozelin-dc): ソート処理
-              sortOption.value = newSortOption;
-              debugPrint('ソートオプション: ${sortOption.value}');
+              ref
+                  .read(memoSearchSortOptionProvider.notifier)
+                  .setSortOption(newSortOption);
             }
           },
         ),
