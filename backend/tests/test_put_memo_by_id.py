@@ -399,7 +399,7 @@ def test_update_all_fields_wrong_user(test_db, client):
 
 
 # 指定したメモが正常に変更されるか(favorite)
-def test_normal_update_title(test_db, client):
+def test_normal_update_favorite(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
@@ -421,7 +421,7 @@ def test_normal_update_title(test_db, client):
 
 
 # 現在と同じ状態に変更が指定された場合に正常に変更されるか(favorite)
-def test_normal_update_title(test_db, client):
+def test_normal_same_favorite(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
@@ -443,7 +443,7 @@ def test_normal_update_title(test_db, client):
 
 
 # 存在しないメモを指定した場合に正常に通信が行われるか(favorite)
-def test_empty_memo_title(test_db, client):
+def test_empty_memo_favorite(test_db, client):
     user_id = "a"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
@@ -458,7 +458,7 @@ def test_empty_memo_title(test_db, client):
 
 
 # 異なるユーザのメモを指定した場合に正常に通信が行われるか(favorite)
-def test_failure_id_title(test_db, client):
+def test_failure_id_favorite(test_db, client):
     user_id = "b"
     headers = get_headers(user_id, client)
     create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
