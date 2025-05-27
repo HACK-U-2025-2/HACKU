@@ -166,18 +166,12 @@ class _TagsHorizontalListView extends ConsumerWidget {
           tags.isLoading
               ? const Center(child: CircularProgressIndicator())
               : tags.hasError
-              ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 8,
-                children: [
-                  const Text('タグの取得に失敗しました'),
-                  ElevatedButton(
-                    onPressed: () {
-                      ref.invalidate(tagListProvider);
-                    },
-                    child: const Text('再読み込み'),
-                  ),
-                ],
+              ? ErrorWithRefresh(
+                errorMessage: 'タグの取得に失敗しました',
+                onRefresh: () {
+                  ref.invalidate(tagListProvider);
+                },
+                isRow: true,
               )
               : ListView.separated(
                 padding: const EdgeInsets.symmetric(vertical: 8),
