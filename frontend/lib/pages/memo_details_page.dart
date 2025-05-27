@@ -46,6 +46,8 @@ class MemoDetailsPage extends HookConsumerWidget {
 
     final memo = memoValue.requireValue;
     final tags = ref.watch(memoTagNamesProvider);
+    // TODO(Rozelin-dc): memoのフラグを参照するように
+    final isFavorite = useState(false);
 
     final currentTab = useState(MemoDetailsTab.body);
     final tabController = useTabController(
@@ -74,7 +76,22 @@ class MemoDetailsPage extends HookConsumerWidget {
     final showFab = !isEditingMode && currentTab.value == MemoDetailsTab.body;
 
     return Scaffold(
-      appBar: AppBar(title: MemoTitleMenu(memo: memo)),
+      appBar: AppBar(
+        title: MemoTitleMenu(memo: memo),
+        actions: [
+          IconButton(
+            icon: Icon(
+              isFavorite.value
+                  ? Icons.favorite
+                  : Icons.favorite_border_outlined,
+            ),
+            onPressed: () {
+              isFavorite.value = !isFavorite.value;
+              // TODO(Rozelin-dc): API処理
+            },
+          ),
+        ],
+      ),
       floatingActionButton:
           showFab
               ? FloatingActionButton(

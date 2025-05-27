@@ -10,7 +10,7 @@ _tokenizer = None
 _model_name = "Qwen/Qwen3-4B"
 
 
-def load_model():
+def load_llm_model():
     """
     モデルとトークナイザーを一度だけロードして返す。
     環境変数 `USE_MOCK_LLM=true` の場合はモックを返し、falseの場合はモデルをロードする。
@@ -25,9 +25,9 @@ def load_model():
             _model = "mock_llm"
             _tokenizer = "mock_tokenizer"
         else:
-            _tokenizer = AutoTokenizer.from_pretrained(_model_name)
+            _tokenizer = AutoTokenizer.from_pretrained(_model_name, force_download=True)
             _model = AutoModelForCausalLM.from_pretrained(
-                _model_name, torch_dtype="auto", device_map="auto"
+                _model_name, torch_dtype="auto", device_map="auto", force_download=True
             )
 
     return _model, _tokenizer

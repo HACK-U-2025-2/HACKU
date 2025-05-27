@@ -4,13 +4,16 @@ from crud.memotag import add_memotags_by_tags, update_memo_tags
 from crud.query.build_memo_by_id_query import build_memo_by_id_query
 from crud.query.filter_memos_by_tags import filter_memos_by_tags
 from crud.tag import fetch_tags_by_names, upsert_tags
+from embedding.embedding import get_embedding
+from embedding.reduce_to_3d import embedding_to_3d_unit
 from llm.clean_transcript import clean_transcript
 from llm.generate_title import generate_title
 from llm.summarize_text import summarize_text
 from models.memo import Memos
+from models.memoembeddings import MemoEmbeddings
 from schemas.memo import MemoSortOrder
 from sqlalchemy import asc, desc, select
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 from utils.exceptions import raise_if_none
 
 sort_mapping = {
@@ -29,17 +32,30 @@ def create_memo(
 
     body = summarize_text(raw)
     title = generate_title(body)
+    embedding = get_embedding(f"{title} {body}")
+    simple_embedding = embedding_to_3d_unit(embedding)
 
     upsert_tags(db, tag_names)
     tags = fetch_tags_by_names(db, tag_names)
     tag_ids = {tag.id for tag in tags}
 
-    new_memo = Memos(title=title, user_id=user_id, body=body, raw=raw)
+    new_memo = Memos(
+        title=title,
+        user_id=user_id,
+        body=body,
+        raw=raw,
+        simple_embedding=simple_embedding,
+        is_archive=False,
+    )
 
     db.add(new_memo)
 
+    db.commit()
+
+    memo_embedding = MemoEmbeddings(id=new_memo.id, embedding=embedding)
+    db.add(memo_embedding)
+
     if tag_names:
-        db.commit()
         add_memotags_by_tags(db, new_memo.id, tag_ids)
 
     db.commit()
@@ -102,6 +118,26 @@ def update_memo_by_id(
 
     if tag_names is not None:
         update_memo_tags(db, memo_id, tag_names)
+
+    if body or title:
+        embedding = get_embedding(f"{title} {body}")
+        simple_embedding = embedding_to_3d_unit(embedding)
+
+        memo.simple_embedding = simple_embedding
+        memo.embedding.embedding = embedding
+
+    db.commit()
+    return memo
+
+
+def update_memo_body_except_embedding(
+    db: Session,
+    user_id: str,
+    memo_id: int,
+    body: str,
+):
+    memo = fetch_memo_by_ids(db, user_id, memo_id)
+    memo.body = body
 
     db.commit()
     return memo

@@ -1,10 +1,10 @@
 import json
 
-from llm.utils.loader import load_model
+from llm.utils.loader import load_llm_model
 
 
 def generate_text(prompt: str, enable_thinking: bool, max_new_tokens: int) -> str:
-    model, tokenizer = load_model()
+    model, tokenizer = load_llm_model()
 
     if model == "mock_llm":
         clean_prompt = prompt.replace("\n", "")

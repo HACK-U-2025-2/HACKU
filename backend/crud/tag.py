@@ -1,7 +1,9 @@
 from typing import List, Optional
 
 from crud.query.filter_tags_by_user_id import filter_tags_by_user_id_query
+from embedding.embedding import get_embedding
 from models.tag import Tags
+from models.tagembeddings import TagEmbeddings
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
@@ -28,6 +30,21 @@ def upsert_tags(db: Session, tag_names: List[str]):
     query = query.on_conflict_do_nothing(index_elements=["name"])
 
     db.execute(query)
+
+    query = select(Tags)
+    query = query.where(Tags.name.in_(tag_names))
+    query = query.where(~Tags.id.in_(select(TagEmbeddings.id)))
+
+    result = db.execute(query).scalars().all()
+
+    if not result:
+        return
+
+    embeddings_to_insert = [
+        {"id": tag.id, "embedding": get_embedding(tag.name)} for tag in result
+    ]
+
+    db.execute(insert(TagEmbeddings).values(embeddings_to_insert))
 
 
 def fetch_tags_by_names(db: Session, tag_names: List[str]):
