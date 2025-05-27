@@ -1,3 +1,5 @@
+import random
+
 import torch
 
 from .loader import load_embedding_model
@@ -9,6 +11,10 @@ def get_embedding(text: str) -> list:
     """
     model, tokenizer = load_embedding_model()
     device = next(model.parameters()).device
+
+    if model == "mock_model":
+        EMBEDDING_DIM = 1024  # 本番の埋め込み次元数に合わせてください
+        return [random.uniform(-1, 1) for _ in range(EMBEDDING_DIM)]
 
     with torch.no_grad():
         # トークナイズしてデバイスへ転送

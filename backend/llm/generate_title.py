@@ -10,5 +10,5 @@ def generate_title(text: str) -> str:
 # 文章
 {text}
 """
-    json_text = generate_text(prompt, enable_thinking=False, max_new_tokens=12)
+    json_text = generate_text(prompt, enable_thinking=False, max_new_tokens=64)
     return parse_json(json_text)
