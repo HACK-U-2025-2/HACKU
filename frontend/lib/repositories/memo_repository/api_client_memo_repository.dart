@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_preview.dart';
+import 'package:frontend/models/tag.dart';
 import 'package:frontend/repositories/auth_repository/auth_repository.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
 import 'package:frontend/services/client/memo_api_client.dart';
@@ -89,6 +90,15 @@ class ApiClientMemoRepository implements MemoRepository {
       await _memoApiClient.deleteMemo(memoId: id.value);
     } on DioException catch (e) {
       throw _handleDioException(e, id);
+    }
+  }
+
+  @override
+  Future<List<Tag>> getTags({String? keyword}) async {
+    try {
+      return await _memoApiClient.getTags(keyword: keyword);
+    } on DioException catch (e) {
+      throw _handleDioException(e, null);
     }
   }
 }

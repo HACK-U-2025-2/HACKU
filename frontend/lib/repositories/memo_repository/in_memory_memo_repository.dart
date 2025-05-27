@@ -119,6 +119,14 @@ class InMemoryMemoRepository implements MemoRepository {
     if (_memos.remove(id) == null) throw MemoNotFoundException(id);
   }
 
+  @override
+  Future<List<Tag>> getTags({String? keyword}) async {
+    if (keyword == null || keyword.isEmpty) {
+      return _tags.values.toList();
+    }
+    return _tags.values.where((tag) => tag.name.contains(keyword)).toList();
+  }
+
   // メモの更新処理を共通化、非同期処理にしている
   Future<void> _updateMemo(MemoId id, Memo Function(Memo) update) async {
     final memo = _memos[id];

@@ -1,16 +1,11 @@
-import 'dart:async';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:frontend/providers/repository_provider.dart';
-import 'package:frontend/router.gr.dart';
-import 'package:frontend/types/extensions/snack_bar.dart';
+import 'package:frontend/hooks/use_create_memo.dart';
 import 'package:frontend/widgets/destination_navigation_drawer.dart';
 import 'package:frontend/widgets/memo_text_field.dart';
 import 'package:frontend/widgets/record_button.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 
 @RoutePage()
 class HomePage extends HookConsumerWidget {
@@ -22,27 +17,11 @@ class HomePage extends HookConsumerWidget {
     final textController = useTextEditingController();
     final focusNode = useFocusNode();
 
-    Future<void> submit(String raw) async {
-      context.loaderOverlay.show();
-      try {
-        final memo = await ref.read(memoRepositoryProvider).addMemo(raw);
-        textController.clear();
-        if (context.mounted) {
-          unawaited(context.router.push(MemoDetailsRoute(memoId: memo.id)));
-        }
-      } on Exception catch (e) {
-        debugPrint('Error adding memo: $e');
-        if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showErrorSnackBar(message: 'メモの追加に失敗しました。やり直してください');
-        }
-      } finally {
-        if (context.mounted) {
-          context.loaderOverlay.hide();
-        }
-      }
-    }
+    final submit = useCreateMemo(
+      context: context,
+      ref: ref,
+      afterCreate: textController.clear,
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('ホーム')),

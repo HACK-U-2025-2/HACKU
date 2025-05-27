@@ -23,7 +23,7 @@ final isEditingModeProvider =
     );
 
 typedef _$IsEditingMode = AutoDisposeNotifier<bool>;
-String _$memoTagNamesHash() => r'17635115a62ceb909164a2c1e9a0aae23a16cf88';
+String _$memoTagNamesHash() => r'83280f9efe54965da9cbb119f81aa9bb6982039b';
 
 /// See also [MemoTagNames].
 @ProviderFor(MemoTagNames)

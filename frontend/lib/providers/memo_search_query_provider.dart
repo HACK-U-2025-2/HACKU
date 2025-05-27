@@ -1,0 +1,48 @@
+import 'package:frontend/widgets/dialogs/sort_dialog.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'memo_search_query_provider.g.dart';
+
+@riverpod
+class MemoSearchKeyword extends _$MemoSearchKeyword {
+  @override
+  String build() {
+    return '';
+  }
+
+  void setKeyword(String keyword) {
+    state = keyword;
+  }
+}
+
+@riverpod
+class MemoSearchTagNames extends _$MemoSearchTagNames {
+  @override
+  List<String> build() {
+    return [];
+  }
+
+  void addTagName(String tagName) {
+    state = [...state, tagName];
+  }
+
+  void removeTagName(String tagName) {
+    state = state.where((name) => name != tagName).toList();
+  }
+
+  void clearTagNames() {
+    state = [];
+  }
+}
+
+@riverpod
+class MemoSearchSortOption extends _$MemoSearchSortOption {
+  @override
+  MemoSortOption build() {
+    return MemoSortOption(isAsc: false, mode: MemoSortMode.createdAt);
+  }
+
+  void setSortOption(MemoSortOption sortOption) {
+    state = sortOption;
+  }
+}
