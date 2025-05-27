@@ -61,6 +61,13 @@ async def hangle_read_memo_by_id(
     tag_response = [TagResponse.model_validate(memo_tag.tag) for memo_tag in memo.tags]
     return MemoResponse.model_validate({**memo.__dict__, "tags": tag_response})
 
+@router.get("/embeddings", response_model=List[MemoEmbeddingResponse], status_code=status.HTTP_200_OK)
+async def hangle_read_memo_embeddings(
+    db: DbDependency,
+    user: UserDependency,
+):
+    
+    return MemoResponse.
 
 @router.post("/", response_model=MemoResponse, status_code=status.HTTP_201_CREATED)
 async def handle_create_memo(
