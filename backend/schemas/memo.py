@@ -13,7 +13,7 @@ class MemoPreviewResponse(BaseModel):
     title: str = Field(min_length=1, json_schema_extra={"examples": ["Title"]})
     user_id: str = Field(min_length=1, json_schema_extra={"examples": ["User"]})
     body: str = Field(min_length=1, json_schema_extra={"examples": ["Body"]})
-    is_favorite: bool = Field(json_schema_extra={"examples": False})
+    is_favorite: bool = Field(json_schema_extra={"examples": [False]})
     created_at: datetime
     updated_at: datetime
 
