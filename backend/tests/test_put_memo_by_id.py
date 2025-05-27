@@ -191,7 +191,6 @@ def test_normal_update_tags(test_db, client):
     for tag in tags:
         query = select(TagEmbeddings).where(TagEmbeddings.id == tag.id)
         tagembedding = test_db.execute(query).scalar_one_or_none()
-        print(tagembedding.embedding)
         expected = np.array([0.6] * 1024, dtype=tagembedding.embedding.dtype)
         if tag.name == "成功":
             assert np.array_equal(tagembedding.embedding, expected)
@@ -395,5 +394,79 @@ def test_update_all_fields_wrong_user(test_db, client):
             "body": "失敗",
             "tag_names": ["失敗"],
         },
+    )
+    assert response.status_code == 404
+
+
+# 指定したメモが正常に変更されるか(favorite)
+def test_normal_update_title(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
+
+    memo_id = 1
+    is_favorite = True
+
+    response = client.patch(
+        f"/memos/{memo_id}/favorite", headers=headers, json={"is_favorite": is_favorite}
+    )
+    assert response.status_code == 200
+
+    query = select(Memos).where(Memos.id == memo_id, Memos.user_id == user_id)
+    updated_memo = test_db.execute(query).scalar_one_or_none()
+
+    assert updated_memo is not None
+
+    assert updated_memo.is_favorite == is_favorite
+
+
+# 現在と同じ状態に変更が指定された場合に正常に変更されるか(favorite)
+def test_normal_update_title(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
+
+    memo_id = 1
+    is_favorite = False
+
+    response = client.patch(
+        f"/memos/{memo_id}/favorite", headers=headers, json={"is_favorite": is_favorite}
+    )
+    assert response.status_code == 200
+
+    query = select(Memos).where(Memos.id == memo_id, Memos.user_id == user_id)
+    updated_memo = test_db.execute(query).scalar_one_or_none()
+
+    assert updated_memo is not None
+
+    assert updated_memo.is_favorite == is_favorite
+
+
+# 存在しないメモを指定した場合に正常に通信が行われるか(favorite)
+def test_empty_memo_title(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, EMPTY_MEMOS, EMPTY_MEMOEMBEDDINGS)
+
+    memo_id = 1
+    is_favorite = True
+
+    response = client.patch(
+        f"/memos/{memo_id}/favorite", headers=headers, json={"is_favorite": is_favorite}
+    )
+    assert response.status_code == 404
+
+
+# 異なるユーザのメモを指定した場合に正常に通信が行われるか(favorite)
+def test_failure_id_title(test_db, client):
+    user_id = "b"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
+
+    memo_id = 1
+    is_favorite = True
+
+    response = client.patch(
+        f"/memos/{memo_id}/favorite", headers=headers, json={"is_favorite": is_favorite}
     )
     assert response.status_code == 404

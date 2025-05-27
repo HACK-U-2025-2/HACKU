@@ -45,6 +45,7 @@ def create_memo(
         body=body,
         raw=raw,
         simple_embedding=simple_embedding,
+        is_favorite=False,
         is_archive=False,
     )
 
@@ -137,7 +138,21 @@ def update_memo_body_except_embedding(
     body: str,
 ):
     memo = fetch_memo_by_ids(db, user_id, memo_id)
+
+    raise_if_none(memo, "Memo")
+
     memo.body = body
+
+    db.commit()
+    return memo
+
+
+def update_memo_favorite(db: Session, user_id: str, memo_id: int, is_favorite: bool):
+    memo = fetch_memo_by_ids(db, user_id, memo_id)
+
+    raise_if_none(memo, "Memo")
+
+    memo.is_favorite = is_favorite
 
     db.commit()
     return memo

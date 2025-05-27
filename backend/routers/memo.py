@@ -7,6 +7,7 @@ from crud.memo import (
     fetch_memo_by_ids,
     fetch_memos,
     update_memo_by_id,
+    update_memo_favorite,
 )
 from database import get_db
 from fastapi import APIRouter, Depends, Query, Response, status
@@ -15,6 +16,7 @@ from schemas.memo import (
     MemoAllUpdateRequest,
     MemoBodyUpdateRequest,
     MemoCreateRequest,
+    MemoFavoriteUpdateRequest,
     MemoPreviewResponse,
     MemoResponse,
     MemoSortOrder,
@@ -142,6 +144,22 @@ async def handle_update_tags(
 ):
     memo = update_memo_by_id(
         db=db, user_id=user.user_id, memo_id=memo_id, tag_names=request.tag_names
+    )
+
+    raise_if_none(memo, "Memo")
+
+    return Response(status_code=status.HTTP_200_OK)
+
+
+@router.patch("/{memo_id}/favorite", status_code=status.HTTP_200_OK)
+async def handle_update_tags(
+    db: DbDependency,
+    user: UserDependency,
+    memo_id: int,
+    request: MemoFavoriteUpdateRequest,
+):
+    memo = update_memo_favorite(
+        db=db, user_id=user.user_id, memo_id=memo_id, is_favorite=request.is_favorite
     )
 
     raise_if_none(memo, "Memo")
