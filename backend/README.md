@@ -39,6 +39,9 @@
 ### データベースの更新(テーブル変更時)
 - サーバを起動した状態で以下を実行
 ```bash
+    docker compose exec db psql -U hacku -d hacku_db
+    CREATE EXTENSION IF NOT EXISTS vector;
+    \q
     docker exec -it backend-backend-1 sh  
     alembic upgrade head
 ```

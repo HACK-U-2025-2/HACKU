@@ -6,6 +6,7 @@ from models.memo import *
 from models.memoembeddings import *
 from models.memotag import *
 from models.tag import *
+from models.tagembeddings import *
 from sqlalchemy import engine_from_config, pool
 
 # this is the Alembic Config object, which provides
