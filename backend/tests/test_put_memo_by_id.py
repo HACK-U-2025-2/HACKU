@@ -35,6 +35,9 @@ def test_normal_update_title(test_db, client):
 
     assert updated_memo.title == title
 
+    expected = np.array([0.5] * 3, dtype=updated_memo.simple_embedding.dtype)
+    assert np.array_equal(updated_memo.simple_embedding, expected)
+
     query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
     updated_memoembedding = test_db.execute(query).scalar_one_or_none()
 
@@ -92,6 +95,9 @@ def test_normal_update_body(test_db, client):
     assert updated_memo is not None
 
     assert updated_memo.body == body
+
+    expected = np.array([0.5] * 3, dtype=updated_memo.simple_embedding.dtype)
+    assert np.array_equal(updated_memo.simple_embedding, expected)
 
     query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
     updated_memoembedding = test_db.execute(query).scalar_one_or_none()
@@ -168,6 +174,12 @@ def test_normal_update_tags(test_db, client):
     for tag in updated_tags:
         assert tag.name in tag_names
         assert tag.name != "Tag 2"
+
+    query = select(Memos).where(Memos.id == memo_id, Memos.user_id == user_id)
+    updated_memo = test_db.execute(query).scalar_one_or_none()
+
+    expected = np.array([0.5] * 3, dtype=updated_memo.simple_embedding.dtype)
+    assert not np.array_equal(updated_memo.simple_embedding, expected)
 
     query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
     updated_memoembedding = test_db.execute(query).scalar_one_or_none()

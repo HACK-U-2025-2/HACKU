@@ -38,6 +38,9 @@ def test_normal_update_websocket(test_db, client):
     assert updated_memo is not None
     assert updated_memo.body == body
 
+    expected = np.array([0.5] * 3, dtype=updated_memo.simple_embedding.dtype)
+    assert np.array_equal(updated_memo.simple_embedding, expected)
+
     query = select(MemoEmbeddings).where(MemoEmbeddings.id == memo_id)
     updated_memoembedding = test_db.execute(query).scalar_one_or_none()
 

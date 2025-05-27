@@ -61,5 +61,7 @@ def mock_ai_functions():
         "crud.memo.get_embedding", return_value=[0.5] * 1024
     ), patch(
         "crud.tag.get_embedding", return_value=[0.6] * 1024
+    ), patch(
+        "crud.memo.embedding_to_3d_unit", return_value=[0.5] * 3
     ):
         yield

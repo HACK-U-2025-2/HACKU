@@ -5,6 +5,7 @@ from crud.query.build_memo_by_id_query import build_memo_by_id_query
 from crud.query.filter_memos_by_tags import filter_memos_by_tags
 from crud.tag import fetch_tags_by_names, upsert_tags
 from embedding.embedding import get_embedding
+from embedding.reduce_to_3d import embedding_to_3d_unit
 from llm.clean_transcript import clean_transcript
 from llm.generate_title import generate_title
 from llm.summarize_text import summarize_text
@@ -32,7 +33,7 @@ def create_memo(
     body = summarize_text(raw)
     title = generate_title(body)
     embedding = get_embedding(f"{title} {body}")
-    test_embedding = [0.1] * 3
+    simple_embedding = embedding_to_3d_unit(embedding)
 
     upsert_tags(db, tag_names)
     tags = fetch_tags_by_names(db, tag_names)
@@ -43,7 +44,7 @@ def create_memo(
         user_id=user_id,
         body=body,
         raw=raw,
-        simple_embedding=test_embedding,
+        simple_embedding=simple_embedding,
         is_archive=False,
     )
 
@@ -122,9 +123,9 @@ def update_memo_by_id(
 
     if body or title:
         embedding = get_embedding(f"{title} {body}")
-        test_embedding = [0.1] * 3
+        simple_embedding = embedding_to_3d_unit(embedding)
 
-        memo.simple_embedding = test_embedding
+        memo.simple_embedding = simple_embedding
         memo.embedding.embedding = embedding
 
     db.commit()
