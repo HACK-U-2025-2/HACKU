@@ -28,15 +28,9 @@ class MemoTagNames extends _$MemoTagNames {
 
   void addTag(String tag) {
     state = [...state, tag];
-    _update();
   }
 
   void removeTag(String tag) {
     state = state.where((t) => t != tag).toList();
-    _update();
-  }
-
-  void _update() {
-    // TODO(tyPhoon-collab): タグを削除する処理を実装する
   }
 }
