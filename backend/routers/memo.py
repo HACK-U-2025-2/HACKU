@@ -6,6 +6,7 @@ from crud.memo import (
     delete_memo_by_id,
     fetch_memo_by_ids,
     fetch_memos,
+    fetch_memos_relate,
     update_memo_by_id,
     update_memo_favorite,
 )
@@ -76,6 +77,20 @@ async def hangle_read_memo_by_id(
 
     tag_response = [TagResponse.model_validate(memo_tag.tag) for memo_tag in memo.tags]
     return MemoResponse.model_validate({**memo.__dict__, "tags": tag_response})
+
+
+@router.get(
+    "/{memo_id}/relate",
+    response_model=List[MemoPreviewResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def handle_read_memos(
+    db: DbDependency,
+    user: UserDependency,
+    memo_id: int,
+):
+    memos = fetch_memos_relate(db=db, user_id=user.user_id, memo_id=memo_id)
+    return [MemoPreviewResponse.model_validate(m) for m in memos]
 
 
 @router.post("/", response_model=MemoResponse, status_code=status.HTTP_201_CREATED)
