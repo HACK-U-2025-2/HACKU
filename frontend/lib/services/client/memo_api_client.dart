@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:frontend/models/memo.dart';
+import 'package:frontend/models/memo_embedding.dart';
 import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:frontend/services/client/auth_interceptor.dart';
@@ -21,6 +22,12 @@ abstract class MemoApiClient {
   /// メモ一覧を取得
   @GET('/memos/')
   Future<List<MemoPreview>> getMemos({@Queries() GetMemosQuery? queries});
+
+  /// 関連メモの一覧を取得
+  @GET('/memos/{memo_id}/relate')
+  Future<List<MemoPreview>> getRelatedMemos({
+    @Path('memo_id') required int memoId,
+  });
 
   /// 新たなメモを投稿
   @POST('/memos/')
@@ -51,6 +58,12 @@ abstract class MemoApiClient {
     @Body() required MemoTagsUpdateRequest request,
   });
 
+  @PATCH('/memos/{memo_id}/favorite')
+  Future<void> updateMemoFavorite({
+    @Path('memo_id') required int memoId,
+    @Body() required MemoFavoriteUpdateRequest request,
+  });
+
   /// メモを削除
   @DELETE('/memos/{memo_id}')
   Future<void> deleteMemo({@Path('memo_id') required int memoId});
@@ -58,4 +71,8 @@ abstract class MemoApiClient {
   /// ユーザが使用したタグ一覧を取得
   @GET('/tags')
   Future<List<Tag>> getTags({@Query('keyword') String? keyword});
+
+  /// メモの埋め込み表現を取得
+  @GET('/memos/embeddings')
+  Future<List<MemoEmbedding>> getMemoEmbeddings();
 }

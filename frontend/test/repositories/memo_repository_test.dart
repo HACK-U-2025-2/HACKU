@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend/models/memo.dart';
 import 'package:frontend/repositories/memo_repository/in_memory_memo_repository.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
 import 'package:frontend/widgets/dialogs/sort_dialog.dart';
@@ -210,6 +209,37 @@ void main() {
       expect(asc.first.title, anyOf('Memo 2', 'A updated'));
       expect(desc.first.title, anyOf('Memo 2', 'A updated'));
       expect(asc.first.title != desc.first.title, isTrue);
+    });
+
+    test('getRelatedMemos returns up to 3 other memos', () async {
+      await repository.addMemo('A'); // id:1
+      await repository.addMemo('B'); // id:2
+      await repository.addMemo('C'); // id:3
+      await repository.addMemo('D'); // id:4
+      final related = await repository.getRelatedMemos(const MemoId(1));
+      expect(related.length, lessThanOrEqualTo(3));
+      expect(related.every((m) => m.id != const MemoId(1)), isTrue);
+    });
+
+    test('getTags filters by keyword', () async {
+      final tags = await repository.getTags(keyword: '1');
+      expect(tags.length, 1);
+      expect(tags.first.name, 'tag1');
+    });
+
+    test('getMemoEmbeddings returns embedding for each memo', () async {
+      await repository.addMemo('A');
+      await repository.addMemo('B');
+      final embeddings = await repository.getMemoEmbeddings();
+      expect(embeddings.length, 2);
+      expect(embeddings.first.simpleEmbedding.length, 3);
+    });
+
+    test('updateMemoFavorite updates favorite flag', () async {
+      await repository.addMemo('A');
+      await repository.updateMemoFavorite(const MemoId(1), isFavorite: true);
+      final memo = await repository.getMemoById(const MemoId(1));
+      expect(memo.isFavorite, isTrue);
     });
   });
 }

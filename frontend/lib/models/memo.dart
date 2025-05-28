@@ -15,6 +15,7 @@ sealed class Memo with _$Memo {
     required String body,
     required String raw,
     required DateTime createdAt,
+    @Default(false) bool isFavorite,
     @Default([]) List<Tag> tags,
     DateTime? updatedAt,
   }) = _Memo;

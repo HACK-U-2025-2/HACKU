@@ -72,6 +72,14 @@ Map<String, dynamic> _$MemoTagsUpdateRequestToJson(
   MemoTagsUpdateRequest instance,
 ) => <String, dynamic>{'tag_names': instance.tagNames};
 
+MemoFavoriteUpdateRequest _$MemoFavoriteUpdateRequestFromJson(
+  Map<String, dynamic> json,
+) => MemoFavoriteUpdateRequest(isFavorite: json['is_favorite'] as bool);
+
+Map<String, dynamic> _$MemoFavoriteUpdateRequestToJson(
+  MemoFavoriteUpdateRequest instance,
+) => <String, dynamic>{'is_favorite': instance.isFavorite};
+
 AuthRequest _$AuthRequestFromJson(Map<String, dynamic> json) =>
     AuthRequest(userId: json['user_id'] as String);
 

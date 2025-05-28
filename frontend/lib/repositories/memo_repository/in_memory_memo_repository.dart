@@ -1,6 +1,6 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
-import 'package:frontend/models/memo.dart';
-import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
 import 'package:frontend/widgets/dialogs/sort_dialog.dart';
@@ -66,6 +66,27 @@ class InMemoryMemoRepository implements MemoRepository {
           .toList();
 
   @override
+  Future<List<MemoPreview>> getRelatedMemos(MemoId id) async {
+    final memo = _memos[id];
+    if (memo == null) throw MemoNotFoundException(id);
+
+    // 仮で最新のメモ0~3件を返す
+    return _memos.values
+        .where((m) => m.id != id) // 自分自身を除外
+        .take(3)
+        .map(
+          (m) => MemoPreview(
+            id: m.id,
+            title: m.title,
+            body: m.body,
+            createdAt: m.createdAt,
+            updatedAt: m.updatedAt,
+          ),
+        )
+        .toList();
+  }
+
+  @override
   Future<Memo> getMemoById(MemoId id) async =>
       _memos[id] ?? (throw MemoNotFoundException(id));
 
@@ -115,6 +136,14 @@ class InMemoryMemoRepository implements MemoRepository {
   }
 
   @override
+  Future<void> updateMemoFavorite(MemoId id, {required bool isFavorite}) =>
+      _updateMemo(
+        id,
+        (memo) =>
+            memo.copyWith(isFavorite: isFavorite, updatedAt: DateTime.now()),
+      );
+
+  @override
   Future<void> deleteMemo(MemoId id) async {
     if (_memos.remove(id) == null) throw MemoNotFoundException(id);
   }
@@ -125,6 +154,29 @@ class InMemoryMemoRepository implements MemoRepository {
       return _tags.values.toList();
     }
     return _tags.values.where((tag) => tag.name.contains(keyword)).toList();
+  }
+
+  @override
+  Future<List<MemoEmbedding>> getMemoEmbeddings() async {
+    return _memos.values.map((memo) {
+      // 仮の埋め込み表現を生成
+      // ３次元の正規化されたベクトル
+      // タイトルと本文のハッシュ値を使ってダミーの埋め込みを生成
+      final hash = memo.title.hashCode ^ memo.body.hashCode;
+      final embedding = List<double>.generate(
+        3,
+        (i) => ((hash >> (i * 8)) & 0xFF) / 255.0,
+      );
+      final norm = sqrt(embedding.fold<double>(0, (sum, v) => sum + v * v));
+      final normalizedEmbedding =
+          norm == 0 ? embedding : embedding.map((v) => v / norm).toList();
+
+      return MemoEmbedding(
+        id: memo.id,
+        title: memo.title,
+        simpleEmbedding: normalizedEmbedding,
+      );
+    }).toList();
   }
 
   // メモの更新処理を共通化、非同期処理にしている

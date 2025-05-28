@@ -69,6 +69,17 @@ class MemoTagsUpdateRequest {
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+class MemoFavoriteUpdateRequest {
+  const MemoFavoriteUpdateRequest({required this.isFavorite});
+
+  factory MemoFavoriteUpdateRequest.fromJson(Map<String, dynamic> json) =>
+      _$MemoFavoriteUpdateRequestFromJson(json);
+  final bool isFavorite;
+
+  Map<String, dynamic> toJson() => _$MemoFavoriteUpdateRequestToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class AuthRequest {
   const AuthRequest({required this.userId});
 

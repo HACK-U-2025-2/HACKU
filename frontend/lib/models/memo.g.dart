@@ -12,6 +12,7 @@ _Memo _$MemoFromJson(Map<String, dynamic> json) => _Memo(
   body: json['body'] as String,
   raw: json['raw'] as String,
   createdAt: DateTime.parse(json['created_at'] as String),
+  isFavorite: json['is_favorite'] as bool? ?? false,
   tags:
       (json['tags'] as List<dynamic>?)
           ?.map((e) => Tag.fromJson(e as Map<String, dynamic>))
@@ -29,6 +30,7 @@ Map<String, dynamic> _$MemoToJson(_Memo instance) => <String, dynamic>{
   'body': instance.body,
   'raw': instance.raw,
   'created_at': instance.createdAt.toIso8601String(),
+  'is_favorite': instance.isFavorite,
   'tags': instance.tags,
   'updated_at': instance.updatedAt?.toIso8601String(),
 };
