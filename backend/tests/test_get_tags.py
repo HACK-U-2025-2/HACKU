@@ -24,6 +24,7 @@ def test_format(test_db, client):
 
     assert isinstance(data, list)
     assert isinstance(tag["name"], str)
+    assert isinstance(tag["used_num"], int)
 
 
 # 指定されたユーザのタグのみが返ってくるか
@@ -42,6 +43,10 @@ def test_normal_get(test_db, client):
 
     for tag in data:
         assert tag["name"] in ["タグ1", "Tag 2"]
+        if tag["name"] == "タグ1":
+            assert tag["used_num"] == 2
+        else:
+            assert tag["used_num"] == 1
 
 
 # ユーザのタグが存在しない場合に正常に通信が行われるか
