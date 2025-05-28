@@ -16,6 +16,7 @@ from schemas.memo import (
     MemoAllUpdateRequest,
     MemoBodyUpdateRequest,
     MemoCreateRequest,
+    MemoEmbeddingResponse,
     MemoFavoriteUpdateRequest,
     MemoPreviewResponse,
     MemoResponse,
@@ -48,6 +49,19 @@ async def handle_read_memos(
         db=db, user_id=user.user_id, search_word=keyword, tags=tags, sort=sort
     )
     return [MemoPreviewResponse.model_validate(m) for m in memos]
+
+
+@router.get(
+    "/embeddings",
+    response_model=List[MemoEmbeddingResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def hangle_read_memo_embeddings(
+    db: DbDependency,
+    user: UserDependency,
+):
+    memos = fetch_memos(db=db, user_id=user.user_id)
+    return [MemoEmbeddingResponse.model_validate(m) for m in memos]
 
 
 @router.get("/{memo_id}", response_model=MemoResponse, status_code=status.HTTP_200_OK)
