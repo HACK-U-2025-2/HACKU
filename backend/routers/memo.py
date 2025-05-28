@@ -84,7 +84,7 @@ async def hangle_read_memo_by_id(
     response_model=List[MemoPreviewResponse],
     status_code=status.HTTP_200_OK,
 )
-async def handle_read_memos(
+async def handle_read_memo_relates(
     db: DbDependency,
     user: UserDependency,
     memo_id: int,
