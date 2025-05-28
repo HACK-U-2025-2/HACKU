@@ -249,6 +249,17 @@ class _SearchBar extends HookConsumerWidget {
       return null;
     }, [debouncedSearchText]);
 
+    // 表示と内部処理の不整合を防ぐため、dispose時に検索クエリをクリア
+    useEffect(
+      () => () {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.read(memoSearchKeywordProvider.notifier).setKeyword('');
+          ref.read(memoSearchTagNamesProvider.notifier).clearTagNames();
+        });
+      },
+      [],
+    );
+
     final sortOption = ref.watch(memoSearchSortOptionProvider);
 
     return SearchBar(
