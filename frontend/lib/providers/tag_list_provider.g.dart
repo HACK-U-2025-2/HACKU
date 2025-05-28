@@ -6,7 +6,7 @@ part of 'tag_list_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$tagListHash() => r'f56061be7d5528ae8e58d69354ab1ae9b0f20ce1';
+String _$tagListHash() => r'dcee414311253ad3a88468316f62bf9ef6ba376b';
 
 /// See also [tagList].
 @ProviderFor(tagList)
