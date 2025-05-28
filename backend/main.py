@@ -5,6 +5,7 @@ from embedding.loader import load_embedding_model
 from fastapi import FastAPI
 from llm.utils.loader import load_llm_model
 from routers import auth, memo, memo_websocket, tag
+from scheduler.start_scheduller import start_scheduler
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,12 @@ async def lifespan(app: FastAPI):
         logger.warning("LLM warm-up skipped: %s", e)
 
     # ── ③ アプリ起動へ ────────────────────────────────
+    yield
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await start_scheduler()
     yield
 
 
