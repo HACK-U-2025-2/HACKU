@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
         logger.warning("LLM warm-up skipped: %s", e)
 
     # ── ③ アプリ起動へ ────────────────────────────────
-    await start_scheduler()
+    start_scheduler()
     yield
 
 
