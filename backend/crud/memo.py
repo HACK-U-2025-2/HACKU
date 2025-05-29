@@ -14,6 +14,7 @@ from models.memoembeddings import MemoEmbeddings
 from schemas.memo import MemoSortOrder
 from sqlalchemy import asc, desc, select
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import func
 from utils.exceptions import raise_if_none
 
 cosine_distance = MemoEmbeddings.embedding.cosine_distance
@@ -88,6 +89,19 @@ def fetch_memos(
 
     if sort in sort_mapping:
         query = query.order_by(sort_mapping[sort])
+
+    result = db.execute(query)
+    return result.scalars().all()
+
+
+def fetch_memos_randomly(
+    db: Session,
+    user_id: str,
+):
+    query = select(Memos)
+    query = query.filter(Memos.user_id == user_id)
+    query = query.order_by(func.random())
+    query = query.limit(3)
 
     result = db.execute(query)
     return result.scalars().all()
