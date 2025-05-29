@@ -199,7 +199,10 @@ class _TagChip extends ConsumerWidget {
       deleteIcon: const Icon(Icons.close),
       onDeleted:
           isEditingMode
-              ? () => ref.read(memoTagNamesProvider.notifier).removeTag(tagName)
+              ? () {
+                // TODO(tyPhoon-collab): Websocketに対応時にダイアログを表示する機構を復活させる
+                ref.read(memoTagNamesProvider.notifier).removeTag(tagName);
+              }
               : null,
     );
   }
