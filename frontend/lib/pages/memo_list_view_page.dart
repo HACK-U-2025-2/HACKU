@@ -200,7 +200,7 @@ class _TagsHorizontalListView extends HookConsumerWidget {
         if (debouncedSelectedTagNames != null) {
           ref
               .read(memoSearchTagNamesProvider.notifier)
-              .setTagNames(debouncedSelectedTagNames.toList());
+              .setTagNames(debouncedSelectedTagNames);
         }
       });
       return null;
