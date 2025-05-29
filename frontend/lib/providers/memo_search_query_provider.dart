@@ -33,6 +33,10 @@ class MemoSearchTagNames extends _$MemoSearchTagNames {
   void clearTagNames() {
     state = [];
   }
+
+  void setTagNames(List<String> tagNames) {
+    state = tagNames;
+  }
 }
 
 @riverpod

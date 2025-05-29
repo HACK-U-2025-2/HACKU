@@ -167,13 +167,29 @@ class _AddMemoFab extends HookConsumerWidget {
   }
 }
 
-class _TagsHorizontalListView extends ConsumerWidget {
+class _TagsHorizontalListView extends HookConsumerWidget {
   const _TagsHorizontalListView();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // TODO(sprint2): タグを全て取得するのではなく、数を絞りたい
     final tags = ref.watch(tagListProvider);
+
+    final selectedTagNames = useState<Set<String>>({});
+    final debouncedSelectedTagNames = useDebounced(
+      selectedTagNames.value,
+      const Duration(milliseconds: searchRequestDurationMilliseconds),
+    );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (debouncedSelectedTagNames != null) {
+          ref
+              .read(memoSearchTagNamesProvider.notifier)
+              .setTagNames(debouncedSelectedTagNames.toList());
+        }
+      });
+      return null;
+    }, [debouncedSelectedTagNames]);
 
     return SizedBox(
       height: 50,
@@ -195,7 +211,20 @@ class _TagsHorizontalListView extends ConsumerWidget {
                 separatorBuilder: (context, index) => const SizedBox(width: 8),
                 itemBuilder: (context, index) {
                   final tag = tags.requireValue[index];
-                  return _TagChip(tag: tag);
+                  return _TagChip(
+                    tag: tag,
+                    isSelected: selectedTagNames.value.contains(tag.name),
+                    onSelected: () {
+                      selectedTagNames.value = {
+                        ...selectedTagNames.value,
+                        tag.name,
+                      };
+                    },
+                    onUnselected: () {
+                      selectedTagNames.value = {...selectedTagNames.value}
+                        ..remove(tag.name);
+                    },
+                  );
                 },
               ),
     );
@@ -203,31 +232,28 @@ class _TagsHorizontalListView extends ConsumerWidget {
 }
 
 class _TagChip extends HookConsumerWidget {
-  const _TagChip({required this.tag});
+  const _TagChip({
+    required this.tag,
+    required this.isSelected,
+    required this.onSelected,
+    required this.onUnselected,
+  });
 
   final Tag tag;
+  final bool isSelected;
+  final VoidCallback onSelected;
+  final VoidCallback onUnselected;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isSelected = ref.watch(memoSearchTagNamesProvider).contains(tag.name);
-    final memoSearchTagNamesNotifier = ref.read(
-      memoSearchTagNamesProvider.notifier,
-    );
-
     return FilterChip(
       label: Text(tag.name),
       selected: isSelected,
       showCheckmark: false,
-      onSelected: (value) {
-        memoSearchTagNamesNotifier.addTagName(tag.name);
-      },
+      onSelected: (value) => onSelected(),
       onDeleted:
           // 選択されていない時に削除ボタンが出ないように
-          isSelected
-              ? () {
-                memoSearchTagNamesNotifier.removeTagName(tag.name);
-              }
-              : null,
+          isSelected ? onUnselected : null,
     );
   }
 }
