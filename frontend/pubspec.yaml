@@ -53,6 +53,7 @@ dependencies:
   device_info_plus: ^11.4.0
   universal_platform: ^1.1.0
   loader_overlay: ^5.0.0
+  graphify: ^1.1.1
 
 dev_dependencies:
   auto_route_generator: ^10.0.1

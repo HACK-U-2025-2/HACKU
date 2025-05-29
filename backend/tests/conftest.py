@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from main import app
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql.expression import literal
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(
@@ -65,3 +66,13 @@ def mock_ai_functions():
         "crud.memo.embedding_to_3d_unit", return_value=[0.5] * 3
     ):
         yield
+
+
+@pytest.fixture(autouse=True)
+def mock_cosine_distance(monkeypatch):
+
+    def mock_cosine_distance(target_embedding):
+        return literal(0.0)
+
+    monkeypatch.setattr("crud.memo.cosine_distance", mock_cosine_distance)
+    yield

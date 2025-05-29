@@ -9,16 +9,17 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: HomeRoute.page, initial: true, path: Destination.home.path),
     AutoRoute(page: MemoListViewRoute.page, path: Destination.memoList.path),
     AutoRoute(page: MemoDetailsRoute.page),
+    AutoRoute(page: SphereRoute.page, path: Destination.sphere.path),
   ];
 }
 
 enum Destination {
   home(iconData: Icons.home_outlined, label: 'ホーム', path: '/'),
-  memoList(iconData: Icons.list_outlined, label: 'メモ一覧', path: '/memo-list')
+  memoList(iconData: Icons.list_outlined, label: 'メモ一覧', path: '/memo-list'),
   // tagList(iconData: Icons.label_outline, label: 'タグ一覧'),
   // importantList(iconData: Icons.favorite_outline, label: '重要メモ'),
-  // archiveList(iconData: Icons.archive_outlined, label: 'アーカイブ')
-  ;
+  // archiveList(iconData: Icons.archive_outlined, label: 'アーカイブ'),
+  sphere(iconData: Icons.public_outlined, label: '思考空間', path: '/sphere');
 
   const Destination({
     required this.iconData,
