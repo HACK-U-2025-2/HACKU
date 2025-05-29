@@ -45,9 +45,11 @@ class TagListViewPage extends HookConsumerWidget {
                     tagList.isLoading
                         ? const Center(child: CircularProgressIndicator())
                         : tagList.hasError
-                        ? ErrorWithRefresh(
-                          errorMessage: 'タグの取得に失敗しました。やり直してください',
-                          onRefresh: () => ref.invalidate(tagListProvider),
+                        ? Center(
+                          child: ErrorWithRefresh(
+                            errorMessage: 'タグの取得に失敗しました。やり直してください',
+                            onRefresh: () => ref.invalidate(tagListProvider),
+                          ),
                         )
                         : Scrollbar(
                           child: ListView(
