@@ -10,8 +10,6 @@ class CustomBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BackButton(
       onPressed: () {
-        if (!context.mounted) return;
-
         context.router.popUntil((route) => route.data?.toDestination() != null);
       },
     );
