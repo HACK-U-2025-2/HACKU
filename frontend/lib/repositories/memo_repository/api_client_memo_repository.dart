@@ -40,6 +40,15 @@ class ApiClientMemoRepository implements MemoRepository {
   }
 
   @override
+  Future<List<MemoPreview>> getRandomMemos() async {
+    try {
+      return await _memoApiClient.getRandomMemos();
+    } on DioException catch (e) {
+      throw _handleDioException(e, null);
+    }
+  }
+
+  @override
   Future<Memo> getMemoById(MemoId id) async {
     try {
       return await _memoApiClient.getMemo(memoId: id.value);

@@ -302,5 +302,20 @@ void main() {
       await deleteTestMemo(memo1.id.value);
       await deleteTestMemo(memo2.id.value);
     });
+
+    test('Get random memos', () async {
+      final memo1 = await createTestMemo(content: 'random1', tags: ['rnd']);
+      final memo2 = await createTestMemo(content: 'random2', tags: ['rnd']);
+      final memo3 = await createTestMemo(content: 'random3', tags: ['rnd']);
+      final memo4 = await createTestMemo(content: 'random4', tags: ['rnd']);
+
+      final randomMemos = await memoClient.getRandomMemos();
+      expect(randomMemos.length, lessThanOrEqualTo(3));
+
+      await deleteTestMemo(memo1.id.value);
+      await deleteTestMemo(memo2.id.value);
+      await deleteTestMemo(memo3.id.value);
+      await deleteTestMemo(memo4.id.value);
+    });
   });
 }

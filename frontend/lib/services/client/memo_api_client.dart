@@ -29,6 +29,10 @@ abstract class MemoApiClient {
     @Path('memo_id') required int memoId,
   });
 
+  /// ランダムなメモを取得
+  @GET('/memos/random')
+  Future<List<MemoPreview>> getRandomMemos();
+
   /// 新たなメモを投稿
   @POST('/memos/')
   Future<Memo> createMemo({@Body() required MemoCreateRequest request});

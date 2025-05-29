@@ -16,6 +16,11 @@ void main() {
       expect(memos, isEmpty);
     });
 
+    test('getRandomMemos returns empty list initially', () async {
+      final memos = await repository.getRandomMemos();
+      expect(memos, isEmpty);
+    });
+
     test('addMemo adds a memo and getMemos returns it', () async {
       await repository.addMemo('テストメモ');
 
@@ -219,6 +224,14 @@ void main() {
       final related = await repository.getRelatedMemos(const MemoId(1));
       expect(related.length, lessThanOrEqualTo(3));
       expect(related.every((m) => m.id != const MemoId(1)), isTrue);
+    });
+
+    test('getRandomMemos returns up to 3 random memos', () async {
+      await repository.addMemo('A');
+      await repository.addMemo('B');
+      await repository.addMemo('C');
+      final randomMemos = await repository.getRandomMemos();
+      expect(randomMemos.length, lessThanOrEqualTo(3));
     });
 
     test('getTags filters by keyword', () async {

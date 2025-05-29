@@ -20,6 +20,9 @@ abstract interface class MemoRepository {
   /// 関連メモの一覧を取得する
   Future<List<MemoPreview>> getRelatedMemos(MemoId id);
 
+  /// ランダムなメモを取得する
+  Future<List<MemoPreview>> getRandomMemos();
+
   /// メモのIDからメモを取得する
   Future<Memo> getMemoById(MemoId id);
 

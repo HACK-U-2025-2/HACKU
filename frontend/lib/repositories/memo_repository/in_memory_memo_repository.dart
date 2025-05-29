@@ -11,9 +11,9 @@ class InMemoryMemoRepository implements MemoRepository {
 
   final Map<MemoId, Memo> _memos = {};
   final Map<TagId, Tag> _tags = {
-    const TagId(1): const Tag(id: TagId(1), name: 'tag1', usedNum: 0),
-    const TagId(2): const Tag(id: TagId(2), name: 'tag2', usedNum: 0),
-    const TagId(3): const Tag(id: TagId(3), name: 'tag3', usedNum: 0),
+    const TagId(1): const Tag(id: TagId(1), name: 'tag1'),
+    const TagId(2): const Tag(id: TagId(2), name: 'tag2'),
+    const TagId(3): const Tag(id: TagId(3), name: 'tag3'),
   };
   int _nextId = 0;
 
@@ -81,6 +81,23 @@ class InMemoryMemoRepository implements MemoRepository {
             body: m.body,
             createdAt: m.createdAt,
             updatedAt: m.updatedAt,
+          ),
+        )
+        .toList();
+  }
+
+  @override
+  Future<List<MemoPreview>> getRandomMemos() async {
+    final shuffled = _memos.values.toList()..shuffle();
+    return shuffled
+        .take(3)
+        .map(
+          (memo) => MemoPreview(
+            id: memo.id,
+            title: memo.title,
+            body: memo.body,
+            createdAt: memo.createdAt,
+            updatedAt: memo.updatedAt,
           ),
         )
         .toList();
