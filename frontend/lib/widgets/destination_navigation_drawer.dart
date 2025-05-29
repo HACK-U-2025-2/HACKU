@@ -51,7 +51,7 @@ class DestinationNavigationDrawer extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(16),
           child: Text(
-            '瞬間メモ（仮）',
+            'MynDly',
             style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
