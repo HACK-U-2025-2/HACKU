@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/router.gr.dart';
+import 'package:frontend/widgets/favorite_icon.dart';
 
 class MemoCard extends HookWidget {
   const MemoCard({
@@ -62,11 +63,7 @@ class MemoCard extends HookWidget {
               ),
               if (showFavoriteButton)
                 IconButton(
-                  icon: Icon(
-                    isFavorite.value
-                        ? Icons.favorite
-                        : Icons.favorite_border_outlined,
-                  ),
+                  icon: FavoriteIcon(isFavorite: isFavorite.value),
                   onPressed: () {
                     isFavorite.value = !isFavorite.value;
                     // TODO(Rozelin-dc): API処理
