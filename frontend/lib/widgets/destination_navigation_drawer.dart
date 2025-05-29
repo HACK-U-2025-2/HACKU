@@ -49,10 +49,12 @@ class DestinationNavigationDrawer extends StatelessWidget {
       },
       children: [
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(24),
           child: Text(
             'MynDly',
-            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         for (final destination in Destination.values)
