@@ -34,7 +34,7 @@ def test_normal_delete(test_db, client):
         .all()
     )
 
-    delete_unnecessary_memos(test_db)
+    delete_unnecessary_memos(test_db, False)
 
     all_memos = test_db.query(Memos).all()
     all_memotags = test_db.query(MemoTags).all()
