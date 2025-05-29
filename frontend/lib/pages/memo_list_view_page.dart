@@ -205,6 +205,15 @@ class _TagsHorizontalListView extends HookConsumerWidget {
       });
       return null;
     }, [debouncedSelectedTagNames]);
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // 初期選択タグを設定
+        if (ref.read(memoSearchTagNamesProvider).isNotEmpty) {
+          selectedTagNames.value = ref.read(memoSearchTagNamesProvider);
+        }
+      });
+      return null;
+    }, []);
 
     return SizedBox(
       height: 50,
