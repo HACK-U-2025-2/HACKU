@@ -4,7 +4,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/constant.dart';
-import 'package:frontend/providers/memo_search_query_provider.dart';
 import 'package:frontend/providers/tag_list_provider.dart';
 import 'package:frontend/providers/tag_search_query_provider.dart';
 import 'package:frontend/router.gr.dart';
@@ -22,12 +21,12 @@ class TagListViewPage extends HookConsumerWidget {
     final selectedTagNames = useState<Set<String>>({});
 
     void goToMemoList() {
-      ref.read(tagSearchKeywordProvider.notifier).setKeyword('');
-      ref
-          .read(memoSearchTagNamesProvider.notifier)
-          .setTagNames(selectedTagNames.value);
       if (context.mounted) {
-        unawaited(context.router.push(const MemoListViewRoute()));
+        unawaited(
+          context.router.push(
+            MemoListViewRoute(initialSelectedTagNames: selectedTagNames.value),
+          ),
+        );
       }
     }
 

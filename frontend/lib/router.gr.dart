@@ -72,18 +72,47 @@ class MemoDetailsRouteArgs {
 
 /// generated route for
 /// [_i3.MemoListViewPage]
-class MemoListViewRoute extends _i5.PageRouteInfo<void> {
-  const MemoListViewRoute({List<_i5.PageRouteInfo>? children})
-    : super(MemoListViewRoute.name, initialChildren: children);
+class MemoListViewRoute extends _i5.PageRouteInfo<MemoListViewRouteArgs> {
+  MemoListViewRoute({
+    _i7.Key? key,
+    Set<String>? initialSelectedTagNames,
+    List<_i5.PageRouteInfo>? children,
+  }) : super(
+         MemoListViewRoute.name,
+         args: MemoListViewRouteArgs(
+           key: key,
+           initialSelectedTagNames: initialSelectedTagNames,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'MemoListViewRoute';
 
   static _i5.PageInfo page = _i5.PageInfo(
     name,
     builder: (data) {
-      return const _i3.MemoListViewPage();
+      final args = data.argsAs<MemoListViewRouteArgs>(
+        orElse: () => const MemoListViewRouteArgs(),
+      );
+      return _i3.MemoListViewPage(
+        key: args.key,
+        initialSelectedTagNames: args.initialSelectedTagNames,
+      );
     },
   );
+}
+
+class MemoListViewRouteArgs {
+  const MemoListViewRouteArgs({this.key, this.initialSelectedTagNames});
+
+  final _i7.Key? key;
+
+  final Set<String>? initialSelectedTagNames;
+
+  @override
+  String toString() {
+    return 'MemoListViewRouteArgs{key: $key, initialSelectedTagNames: $initialSelectedTagNames}';
+  }
 }
 
 /// generated route for
