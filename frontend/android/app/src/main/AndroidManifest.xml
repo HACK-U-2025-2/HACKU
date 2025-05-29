@@ -10,7 +10,7 @@
     <!-- ここまで -->
 
     <application
-        android:label="frontend"
+        android:label="MynDly"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
