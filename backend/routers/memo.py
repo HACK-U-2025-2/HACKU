@@ -6,6 +6,7 @@ from crud.memo import (
     delete_memo_by_id,
     fetch_memo_by_ids,
     fetch_memos,
+    fetch_memos_randomly,
     fetch_memos_relate,
     update_memo_by_id,
     update_memo_favorite,
@@ -49,6 +50,17 @@ async def handle_read_memos(
     memos = fetch_memos(
         db=db, user_id=user.user_id, search_word=keyword, tags=tags, sort=sort
     )
+    return [MemoPreviewResponse.model_validate(m) for m in memos]
+
+
+@router.get(
+    "/random", response_model=List[MemoPreviewResponse], status_code=status.HTTP_200_OK
+)
+async def handle_read_memos(
+    db: DbDependency,
+    user: UserDependency,
+):
+    memos = fetch_memos_randomly(db=db, user_id=user.user_id)
     return [MemoPreviewResponse.model_validate(m) for m in memos]
 
 
