@@ -58,7 +58,7 @@ class TagListViewPage extends HookConsumerWidget {
                                     .map(
                                       (tag) => CheckboxListTile(
                                         title: Text(tag.name),
-                                        // TODO(Rozelin-dc): Mynd数の表示
+                                        // TODO(Rozelin-dc): メモ数の表示
                                         value: selectedTagNames.value.contains(
                                           tag.name,
                                         ),

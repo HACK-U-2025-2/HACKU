@@ -30,7 +30,7 @@ class _MemoListViewPageState extends ConsumerState<MemoListViewPage>
   @override
   void didPopNext() {
     super.didPopNext();
-    // ページに戻ってきたときにMyndとタグの一覧を再取得
+    // ページに戻ってきたときにメモとタグの一覧を再取得
     ref
       ..invalidate(memoListProvider)
       ..invalidate(tagListProvider);
