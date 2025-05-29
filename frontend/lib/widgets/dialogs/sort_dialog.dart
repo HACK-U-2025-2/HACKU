@@ -30,7 +30,7 @@ class MemoSortDialog extends HookWidget {
     final isAsc = useState(initialSortOption.isAsc);
 
     return AlertDialog(
-      title: const Text('メモの並び替え'),
+      title: const Text('Myndの並び替え'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

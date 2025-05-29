@@ -28,7 +28,7 @@ Future<void> Function(String) useCreateMemo({
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showErrorSnackBar(message: 'メモの追加に失敗しました。やり直してください');
+        ).showErrorSnackBar(message: 'Myndの追加に失敗しました。やり直してください');
       }
     } finally {
       if (context.mounted) {

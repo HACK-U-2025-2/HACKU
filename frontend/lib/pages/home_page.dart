@@ -85,7 +85,7 @@ class _MemoListHeaderLabel extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Text('頻出メモ', style: Theme.of(context).textTheme.titleMedium),
+        child: Text('頻出Mynd', style: Theme.of(context).textTheme.titleMedium),
       ),
     );
   }

@@ -16,9 +16,9 @@ class AppRouter extends RootStackRouter {
 
 enum Destination {
   home(iconData: Icons.home_outlined, label: 'ホーム', path: '/'),
-  memoList(iconData: Icons.list_outlined, label: 'メモ一覧', path: '/memo-list'),
+  memoList(iconData: Icons.list_outlined, label: 'Mynd一覧', path: '/memo-list'),
   tagList(iconData: Icons.label_outline, label: 'タグ一覧', path: '/tag-list'),
-  // importantList(iconData: Icons.favorite_outline, label: '重要メモ'),
+  // importantList(iconData: Icons.favorite_outline, label: '重要Mynd'),
   // archiveList(iconData: Icons.archive_outlined, label: 'アーカイブ'),
   sphere(iconData: Icons.public_outlined, label: '思考空間', path: '/sphere');
 
