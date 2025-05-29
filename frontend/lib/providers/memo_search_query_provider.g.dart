@@ -24,12 +24,12 @@ final memoSearchKeywordProvider =
 
 typedef _$MemoSearchKeyword = AutoDisposeNotifier<String>;
 String _$memoSearchTagNamesHash() =>
-    r'207d5ea82a956aeb2378a78617ffd275e765188b';
+    r'd020914a876ab43a09d1c51346a0ec7acf53484e';
 
 /// See also [MemoSearchTagNames].
 @ProviderFor(MemoSearchTagNames)
 final memoSearchTagNamesProvider =
-    AutoDisposeNotifierProvider<MemoSearchTagNames, List<String>>.internal(
+    AutoDisposeNotifierProvider<MemoSearchTagNames, Set<String>>.internal(
       MemoSearchTagNames.new,
       name: r'memoSearchTagNamesProvider',
       debugGetCreateSourceHash:
@@ -40,7 +40,7 @@ final memoSearchTagNamesProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$MemoSearchTagNames = AutoDisposeNotifier<List<String>>;
+typedef _$MemoSearchTagNames = AutoDisposeNotifier<Set<String>>;
 String _$memoSearchSortOptionHash() =>
     r'ad7c5ce6f77f007f3f799bf786d33fd48440f296';
 

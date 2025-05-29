@@ -40,7 +40,9 @@ class DestinationNavigationDrawer extends StatelessWidget {
             // 何もしない
             break;
           case Destination.memoList:
-            unawaited(context.router.push(const MemoListViewRoute()));
+            unawaited(context.router.push(MemoListViewRoute()));
+          case Destination.tagList:
+            unawaited(context.router.push(const TagListViewRoute()));
           case Destination.sphere:
             unawaited(context.router.push(const SphereRoute()));
         }

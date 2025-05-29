@@ -17,7 +17,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 @RoutePage()
 class MemoListViewPage extends StatefulHookConsumerWidget {
-  const MemoListViewPage({super.key});
+  const MemoListViewPage({super.key, this.initialSelectedTagNames});
+
+  final Set<String>? initialSelectedTagNames;
 
   @override
   ConsumerState<MemoListViewPage> createState() => _MemoListViewPageState();
@@ -32,6 +34,19 @@ class _MemoListViewPageState extends ConsumerState<MemoListViewPage>
     ref
       ..invalidate(memoListProvider)
       ..invalidate(tagListProvider);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // 初期選択タグを設定
+    if (widget.initialSelectedTagNames != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref
+            .read(memoSearchTagNamesProvider.notifier)
+            .setTagNames(widget.initialSelectedTagNames!);
+      });
+    }
   }
 
   @override
