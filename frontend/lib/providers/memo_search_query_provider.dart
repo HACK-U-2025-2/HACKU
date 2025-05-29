@@ -37,10 +37,6 @@ class MemoSearchTagNames extends _$MemoSearchTagNames {
   void setTagNames(Set<String> tagNames) {
     state = tagNames;
   }
-
-  void setTagNames(List<String> tagNames) {
-    state = tagNames;
-  }
 }
 
 @riverpod
