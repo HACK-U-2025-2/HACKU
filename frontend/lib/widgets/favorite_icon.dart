@@ -7,6 +7,6 @@ class FavoriteIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Icon(isFavorite ? Icons.favorite : Icons.favorite_border_outlined);
+    return Icon(isFavorite ? Icons.lock : Icons.lock_open);
   }
 }
