@@ -23,7 +23,7 @@ def fetch_tags(db: Session, user_id: str, search_word: Optional[str] = None):
 
 
 def fetch_tags_with_count(db: Session, user_id: str, search_word: Optional[str] = None):
-    sub_query = select(MemoTags, func.count(MemoTags.memo_id).label("used_num"))
+    sub_query = select(MemoTags.tag_id, func.count(MemoTags.memo_id).label("used_num"))
     sub_query = sub_query.group_by(MemoTags.tag_id)
     sub_query = sub_query.subquery()
 
