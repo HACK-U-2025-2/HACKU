@@ -24,6 +24,7 @@ class MemoCreateRequest {
     required this.raw,
     this.tagNames = const [],
     this.needProofreading = false,
+    this.needGenerateTags = true,
   });
 
   factory MemoCreateRequest.fromJson(Map<String, dynamic> json) =>
@@ -31,6 +32,7 @@ class MemoCreateRequest {
   final String raw;
   final List<String> tagNames;
   final bool needProofreading;
+  final bool needGenerateTags;
 
   Map<String, dynamic> toJson() => _$MemoCreateRequestToJson(this);
 }

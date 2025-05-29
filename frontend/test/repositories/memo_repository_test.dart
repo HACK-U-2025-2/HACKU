@@ -241,5 +241,54 @@ void main() {
       final memo = await repository.getMemoById(const MemoId(1));
       expect(memo.isFavorite, isTrue);
     });
+
+    test('addMemo increments usedNum of picked tags', () async {
+      await repository.addMemo('テストメモ');
+      final tags = await repository.getTags();
+      // どのタグが選ばれるかはランダムだが、必ず2つのタグのusedNumが1になる
+      final usedTags = tags.where((t) => t.usedNum == 1).toList();
+      expect(usedTags.length, 2);
+      final unusedTags = tags.where((t) => t.usedNum == 0).toList();
+      expect(usedTags.length + unusedTags.length, tags.length);
+    });
+
+    test(
+      'updateMemoTags increments and decrements usedNum correctly',
+      () async {
+        await repository.addMemo('テストメモ');
+        // 既存タグ名を取得
+        final tagsBefore = await repository.getTags();
+        final pickedTagNames =
+            tagsBefore.where((t) => t.usedNum == 1).map((t) => t.name).toList();
+        // 既存タグ1つと新規タグ1つで更新
+        await repository.updateMemoTags(const MemoId(1), [
+          pickedTagNames.first,
+          '新規タグ',
+        ]);
+        final tagsAfter = await repository.getTags();
+        // 既存タグ1つはusedNum=1、新規タグもusedNum=1、元々選ばれていたもう1つの既存タグはusedNum=0
+        expect(
+          tagsAfter.firstWhere((t) => t.name == pickedTagNames.first).usedNum,
+          1,
+        );
+        expect(tagsAfter.firstWhere((t) => t.name == '新規タグ').usedNum, 1);
+        final removedTag = pickedTagNames.length > 1 ? pickedTagNames[1] : null;
+        if (removedTag != null) {
+          expect(tagsAfter.firstWhere((t) => t.name == removedTag).usedNum, 0);
+        }
+      },
+    );
+
+    test('deleteMemo decrements usedNum of related tags', () async {
+      await repository.addMemo('テストメモ');
+      final tagsBefore = await repository.getTags();
+      final pickedTagNames =
+          tagsBefore.where((t) => t.usedNum == 1).map((t) => t.name).toList();
+      await repository.deleteMemo(const MemoId(1));
+      final tagsAfter = await repository.getTags();
+      for (final tagName in pickedTagNames) {
+        expect(tagsAfter.firstWhere((t) => t.name == tagName).usedNum, 0);
+      }
+    });
   });
 }

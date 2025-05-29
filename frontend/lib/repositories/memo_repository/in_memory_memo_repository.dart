@@ -11,9 +11,9 @@ class InMemoryMemoRepository implements MemoRepository {
 
   final Map<MemoId, Memo> _memos = {};
   final Map<TagId, Tag> _tags = {
-    const TagId(1): const Tag(id: TagId(1), name: 'tag1'),
-    const TagId(2): const Tag(id: TagId(2), name: 'tag2'),
-    const TagId(3): const Tag(id: TagId(3), name: 'tag3'),
+    const TagId(1): const Tag(id: TagId(1), name: 'tag1', usedNum: 0),
+    const TagId(2): const Tag(id: TagId(2), name: 'tag2', usedNum: 0),
+    const TagId(3): const Tag(id: TagId(3), name: 'tag3', usedNum: 0),
   };
   int _nextId = 0;
 
@@ -93,13 +93,23 @@ class InMemoryMemoRepository implements MemoRepository {
   @override
   Future<Memo> addMemo(String rawMemo) async {
     final memoId = MemoId(++_nextId);
+    final pickedTags = _pickTags();
+    // usedNumをインクリメント（新規タグも考慮）
+    for (final tag in pickedTags) {
+      final current = _tags[tag.id];
+      if (current != null) {
+        _tags[tag.id] = current.copyWith(usedNum: current.usedNum + 1);
+      } else {
+        _tags[tag.id] = tag.copyWith(usedNum: 1);
+      }
+    }
     return _memos[memoId] = Memo(
       id: memoId,
       title: 'Memo $_nextId',
       body: '$rawMemoの要約',
       raw: rawMemo,
       createdAt: DateTime.now(),
-      tags: _pickTags(),
+      tags: pickedTags,
     );
   }
 
@@ -116,20 +126,51 @@ class InMemoryMemoRepository implements MemoRepository {
   );
 
   @override
-  Future<void> updateMemoTags(MemoId id, List<String> newTags) {
-    final updatedTags =
-        newTags.map((tagName) {
-          final existingTag = _tags.values.firstWhereOrNull(
-            (tag) => tag.name == tagName,
-          );
-          if (existingTag != null) return existingTag;
-          final newId = TagId(_tags.length);
-          final newTag = Tag(id: newId, name: tagName);
-          _tags[newId] = newTag;
-          return newTag;
-        }).toList();
+  Future<void> updateMemoTags(MemoId id, List<String> newTags) async {
+    final memo = _memos[id];
+    if (memo == null) throw MemoNotFoundException(id);
+    final oldTags = memo.tags;
+    final oldTagNames = oldTags.map((t) => t.name).toSet();
+    final newTagNames = newTags.toSet();
 
-    return _updateMemo(
+    // 追加されたタグ
+    final addedTagNames = newTagNames.difference(oldTagNames);
+    // 削除されたタグ
+    final removedTagNames = oldTagNames.difference(newTagNames);
+
+    // usedNumを増減
+    for (final tagName in addedTagNames) {
+      final existingTag = _tags.values.firstWhereOrNull(
+        (tag) => tag.name == tagName,
+      );
+      if (existingTag != null) {
+        _tags[existingTag.id] = existingTag.copyWith(
+          usedNum: existingTag.usedNum + 1,
+        );
+      } else {
+        // 新規タグIDは最大ID+1で採番
+        final newId = TagId(_tags.keys.map((id) => id.value).fold(0, max) + 1);
+        final newTag = Tag(id: newId, name: tagName, usedNum: 1);
+        _tags[newId] = newTag;
+      }
+    }
+    for (final tagName in removedTagNames) {
+      final tag = _tags.values.firstWhereOrNull((tag) => tag.name == tagName);
+      if (tag != null && tag.usedNum > 0) {
+        _tags[tag.id] = tag.copyWith(usedNum: tag.usedNum - 1);
+      }
+    }
+
+    // 新しいタグリストを構築
+    final updatedTags =
+        newTags
+            .map(
+              (tagName) =>
+                  _tags.values.firstWhere((tag) => tag.name == tagName),
+            )
+            .toList();
+
+    await _updateMemo(
       id,
       (memo) => memo.copyWith(tags: updatedTags, updatedAt: DateTime.now()),
     );
@@ -145,7 +186,16 @@ class InMemoryMemoRepository implements MemoRepository {
 
   @override
   Future<void> deleteMemo(MemoId id) async {
-    if (_memos.remove(id) == null) throw MemoNotFoundException(id);
+    final memo = _memos[id];
+    if (memo == null) throw MemoNotFoundException(id);
+    // usedNumをデクリメント
+    for (final tag in memo.tags) {
+      final current = _tags[tag.id];
+      if (current != null && current.usedNum > 0) {
+        _tags[tag.id] = current.copyWith(usedNum: current.usedNum - 1);
+      }
+    }
+    _memos.remove(id);
   }
 
   @override

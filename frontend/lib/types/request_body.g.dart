@@ -36,6 +36,7 @@ MemoCreateRequest _$MemoCreateRequestFromJson(Map<String, dynamic> json) =>
               .toList() ??
           const [],
       needProofreading: json['need_proofreading'] as bool? ?? false,
+      needGenerateTags: json['need_generate_tags'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$MemoCreateRequestToJson(MemoCreateRequest instance) =>
@@ -43,6 +44,7 @@ Map<String, dynamic> _$MemoCreateRequestToJson(MemoCreateRequest instance) =>
       'raw': instance.raw,
       'tag_names': instance.tagNames,
       'need_proofreading': instance.needProofreading,
+      'need_generate_tags': instance.needGenerateTags,
     };
 
 MemoBodyUpdateRequest _$MemoBodyUpdateRequestFromJson(
