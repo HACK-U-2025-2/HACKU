@@ -181,6 +181,8 @@ class _EditToolBar extends ConsumerWidget {
               IconButton.outlined(
                 icon: const Icon(Icons.close),
                 onPressed: () {
+                  // もともとのメモのタグの内容にリセット
+                  ref.read(memoTagNamesProvider.notifier).setTags(memo.tags);
                   ref.read(isEditingModeProvider.notifier).toggle();
                 },
               ),

@@ -8,7 +8,6 @@ import 'package:frontend/providers/memo_edit_provider.dart';
 import 'package:frontend/providers/memo_provider.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
 import 'package:frontend/widgets/custom_back_button.dart';
-import 'package:frontend/widgets/dialogs/delete_dialog.dart';
 import 'package:frontend/widgets/dialogs/input_dialog.dart';
 import 'package:frontend/widgets/favorite_icon.dart';
 import 'package:frontend/widgets/memo_details/memo_body_view.dart';
@@ -200,16 +199,9 @@ class _TagChip extends ConsumerWidget {
       deleteIcon: const Icon(Icons.close),
       onDeleted:
           isEditingMode
-              ? () async {
-                final isDeletionSelected = await showDialog<bool>(
-                  context: context,
-                  builder: (context) {
-                    return MemoTagDeleteDialog(tagName: tagName);
-                  },
-                );
-                if (isDeletionSelected != null && isDeletionSelected) {
-                  ref.read(memoTagNamesProvider.notifier).removeTag(tagName);
-                }
+              ? () {
+                // TODO(tyPhoon-collab): Websocketに対応時にダイアログを表示する機構を復活させる
+                ref.read(memoTagNamesProvider.notifier).removeTag(tagName);
               }
               : null,
     );
