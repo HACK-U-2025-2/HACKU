@@ -16,6 +16,9 @@ from sqlalchemy import asc, desc, select
 from sqlalchemy.orm import Session
 from utils.exceptions import raise_if_none
 
+cosine_distance = MemoEmbeddings.embedding.cosine_distance
+
+
 sort_mapping = {
     MemoSortOrder.CREATED_AT_ASC: asc(Memos.created_at),
     MemoSortOrder.CREATED_AT_DESC: desc(Memos.created_at),
@@ -97,6 +100,36 @@ def fetch_memo_by_ids(db: Session, user_id: str, memo_id: int):
     memo = result.unique().scalars().one_or_none()
 
     return memo
+
+
+def fetch_memos_relate(db: Session, user_id: str, memo_id: int):
+    target_memo = fetch_memo_by_ids(db, user_id, memo_id)
+
+    raise_if_none(target_memo, "Memo")
+
+    query = select(MemoEmbeddings.embedding)
+    query = query.where(MemoEmbeddings.id == memo_id)
+
+    target_memo_embedding = db.execute(query).scalar_one_or_none()
+
+    raise_if_none(target_memo_embedding, "MemoEmbedding")
+
+    cosine_distance_query = cosine_distance(target_memo_embedding).label(
+        "cosine_distance"
+    )
+
+    query = select(Memos)
+    query = query.join(MemoEmbeddings, Memos.id == MemoEmbeddings.id)
+    query = query.where(Memos.user_id == user_id)
+    query = query.where(Memos.id != memo_id)
+    query = query.where(cosine_distance_query <= 0.3)  # 値は適当
+    query = query.order_by(cosine_distance_query)
+    query = query.limit(3)
+
+    result = db.execute(query)
+    memos = result.unique().scalars().all()
+
+    return memos
 
 
 def update_memo_by_id(
