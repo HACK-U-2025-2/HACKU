@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:frontend/widgets/dialogs/sort_dialog.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -11,6 +12,10 @@ class MemoSearchKeyword extends _$MemoSearchKeyword {
   }
 
   void setKeyword(String keyword) {
+    if (state == keyword) {
+      // クエリの実体が変わらないなら更新しない
+      return;
+    }
     state = keyword;
   }
 }
@@ -35,6 +40,10 @@ class MemoSearchTagNames extends _$MemoSearchTagNames {
   }
 
   void setTagNames(Set<String> tagNames) {
+    if (setEquals(state, tagNames)) {
+      // クエリの実体が変わらないなら更新しない
+      return;
+    }
     state = tagNames;
   }
 }
