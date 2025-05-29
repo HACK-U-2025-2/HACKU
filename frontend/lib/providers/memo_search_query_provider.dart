@@ -18,20 +18,24 @@ class MemoSearchKeyword extends _$MemoSearchKeyword {
 @riverpod
 class MemoSearchTagNames extends _$MemoSearchTagNames {
   @override
-  List<String> build() {
-    return [];
+  Set<String> build() {
+    return {};
   }
 
   void addTagName(String tagName) {
-    state = [...state, tagName];
+    state = {...state, tagName};
   }
 
   void removeTagName(String tagName) {
-    state = state.where((name) => name != tagName).toList();
+    state = {...state}..remove(tagName);
   }
 
   void clearTagNames() {
-    state = [];
+    state = {};
+  }
+
+  void setTagNames(Set<String> tagNames) {
+    state = tagNames;
   }
 
   void setTagNames(List<String> tagNames) {

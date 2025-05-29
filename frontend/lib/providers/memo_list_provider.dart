@@ -19,7 +19,7 @@ Future<List<MemoPreview>> memoList(Ref ref) async {
       .watch(memoRepositoryProvider)
       .getMemos(
         keyword: keywordQuery,
-        tagNames: tagNamesQuery,
+        tagNames: tagNamesQuery.toList(),
         sort: sortOptionQuery,
       );
 }

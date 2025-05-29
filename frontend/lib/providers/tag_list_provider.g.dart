@@ -22,5 +22,23 @@ final tagListProvider = AutoDisposeFutureProvider<List<Tag>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef TagListRef = AutoDisposeFutureProviderRef<List<Tag>>;
+String _$filteredTagListHash() => r'e5da6db5f358ba7bb2f70394de2e00a7934cfc73';
+
+/// See also [filteredTagList].
+@ProviderFor(filteredTagList)
+final filteredTagListProvider = AutoDisposeFutureProvider<List<Tag>>.internal(
+  filteredTagList,
+  name: r'filteredTagListProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$filteredTagListHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef FilteredTagListRef = AutoDisposeFutureProviderRef<List<Tag>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
