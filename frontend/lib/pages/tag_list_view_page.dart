@@ -137,16 +137,6 @@ class _SearchBar extends HookConsumerWidget {
       return null;
     }, [debouncedSearchText]);
 
-    // 表示と内部処理の不整合を防ぐため、dispose時に検索クエリをクリア
-    useEffect(
-      () => () {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(tagSearchKeywordProvider.notifier).setKeyword('');
-        });
-      },
-      [],
-    );
-
     return SearchBar(
       leading: const Icon(Icons.search),
       hintText: '検索キーワードを入力',
