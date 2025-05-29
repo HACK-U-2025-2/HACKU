@@ -17,7 +17,7 @@ class TagListViewPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tagList = ref.watch(tagListProvider);
+    final tagList = ref.watch(filteredTagListProvider);
     final selectedTagNames = useState<Set<String>>({});
 
     void goToMemoList() {

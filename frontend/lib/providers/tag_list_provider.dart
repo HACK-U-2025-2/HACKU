@@ -8,6 +8,11 @@ part 'tag_list_provider.g.dart';
 
 @riverpod
 Future<List<Tag>> tagList(Ref ref) async {
+  return ref.watch(memoRepositoryProvider).getTags();
+}
+
+@riverpod
+Future<List<Tag>> filteredTagList(Ref ref) async {
   final keywordQuery = ref.watch(tagSearchKeywordProvider);
 
   return ref.watch(memoRepositoryProvider).getTags(keyword: keywordQuery);
