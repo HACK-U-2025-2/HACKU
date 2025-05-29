@@ -20,3 +20,5 @@ SQLAlchemy
 starlette
 python-jose[cryptography]
 python-multipart
+tzdata
+apscheduler

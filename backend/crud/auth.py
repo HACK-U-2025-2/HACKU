@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Annotated
 
 from config import get_settings
@@ -8,6 +8,7 @@ from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from schemas.auth import DecodedToken
 from starlette.status import HTTP_401_UNAUTHORIZED
+from utils.jst_now import jst_now
 
 SECRET_KEY = get_settings().secret_key
 SECRET_ALGORITHM = get_settings().secret_algorithm
@@ -16,7 +17,7 @@ security = HTTPBearer(auto_error=False)
 
 
 def create_access_token(user_id: str, expires_delta: timedelta):
-    expired = datetime.now() + expires_delta
+    expired = jst_now() + expires_delta
     payload = {"id": user_id, "exp": expired}
     token = jwt.encode(payload, SECRET_KEY, algorithm=SECRET_ALGORITHM)
     return token, expired

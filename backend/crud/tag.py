@@ -2,9 +2,10 @@ from typing import List, Optional
 
 from crud.query.filter_tags_by_user_id import filter_tags_by_user_id_query
 from embedding.embedding import get_embedding
+from models.memotag import MemoTags
 from models.tag import Tags
 from models.tagembeddings import TagEmbeddings
-from sqlalchemy import select
+from sqlalchemy import delete, func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -19,6 +20,23 @@ def fetch_tags(db: Session, user_id: str, search_word: Optional[str] = None):
     result = db.execute(query)
 
     return result.scalars().all()
+
+
+def fetch_tags_with_count(db: Session, user_id: str, search_word: Optional[str] = None):
+    sub_query = select(MemoTags, func.count(MemoTags.memo_id).label("used_num"))
+    sub_query = sub_query.group_by(MemoTags.tag_id)
+    sub_query = sub_query.subquery()
+
+    query = select(Tags, func.coalesce(sub_query.c.used_num, 0).label("used_num"))
+    query = query.outerjoin(sub_query, Tags.id == sub_query.c.tag_id)
+    query = filter_tags_by_user_id_query(query, user_id)
+
+    if search_word:
+        query = query.where(Tags.name.ilike(f"%{search_word}%"))
+
+    result = db.execute(query)
+
+    return result.all()
 
 
 def upsert_tags(db: Session, tag_names: List[str]):
@@ -54,3 +72,15 @@ def fetch_tags_by_names(db: Session, tag_names: List[str]):
     result = db.execute(query)
 
     return result.scalars().all()
+
+
+def delete_invalid_tags(db: Session):
+    sub_query = select(MemoTags.tag_id)
+
+    query = delete(Tags)
+    query = query.where(Tags.id.not_in(sub_query))
+
+    db.execute(query)
+
+    db.commit()
+    return
