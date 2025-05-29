@@ -39,9 +39,9 @@ class MemoTitleMenu extends ConsumerWidget {
 
           if (context.mounted) {
             final message = switch (e) {
-              final MemoNotFoundException _ => 'メモが見つかりませんでした。',
+              final MemoNotFoundException _ => 'Myndが見つかりませんでした。',
               final MemoValidationException _ =>
-                '有効なタイトルではありません。メモのタイトルを確認してください。',
+                '有効なタイトルではありません。Myndのタイトルを確認してください。',
               _ => 'タイトルの更新に失敗しました。やり直してください。',
             };
             ScaffoldMessenger.of(context).showErrorSnackBar(message: message);
@@ -66,7 +66,7 @@ class MemoTitleMenu extends ConsumerWidget {
           if (context.mounted) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(const SnackBar(content: Text('メモを削除しました')));
+            ).showSnackBar(const SnackBar(content: Text('Myndを削除しました')));
             Navigator.of(context).pop();
           }
         } on Exception catch (e) {
@@ -74,8 +74,8 @@ class MemoTitleMenu extends ConsumerWidget {
 
           if (context.mounted) {
             final message = switch (e) {
-              final MemoNotFoundException _ => 'メモが見つかりませんでした。',
-              _ => 'メモの削除に失敗しました。やり直してください。',
+              final MemoNotFoundException _ => 'Myndが見つかりませんでした。',
+              _ => 'Myndの削除に失敗しました。やり直してください。',
             };
             ScaffoldMessenger.of(context).showErrorSnackBar(message: message);
           }

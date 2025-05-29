@@ -72,7 +72,9 @@ class _RecordDialog extends HookConsumerWidget {
               ? Text(errorMessage.value!)
               : isRecording.value
               ? Text(
-                transcribed.value.isEmpty ? 'メモの内容を話してください' : transcribed.value,
+                transcribed.value.isEmpty
+                    ? 'Myndの内容を話してください'
+                    : transcribed.value,
               )
               : const Text('音声入力準備中...'),
       actions: [

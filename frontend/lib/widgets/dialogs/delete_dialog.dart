@@ -33,7 +33,7 @@ class MemoDeleteDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DeleteDialog(title: 'このメモを削除しますか？');
+    return const DeleteDialog(title: 'このMyndを削除しますか？');
   }
 }
 

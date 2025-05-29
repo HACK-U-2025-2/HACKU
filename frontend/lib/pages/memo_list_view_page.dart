@@ -30,7 +30,7 @@ class _MemoListViewPageState extends ConsumerState<MemoListViewPage>
   @override
   void didPopNext() {
     super.didPopNext();
-    // ページに戻ってきたときにメモとタグの一覧を再取得
+    // ページに戻ってきたときにMyndとタグの一覧を再取得
     ref
       ..invalidate(memoListProvider)
       ..invalidate(tagListProvider);
@@ -55,7 +55,7 @@ class _MemoListViewPageState extends ConsumerState<MemoListViewPage>
 
     return Scaffold(
       drawer: const DestinationNavigationDrawer(),
-      appBar: AppBar(title: const Text('メモ一覧')),
+      appBar: AppBar(title: const Text('Mynd一覧')),
       floatingActionButton: const _AddMemoFab(),
       body: SafeArea(
         child: Padding(
@@ -72,14 +72,14 @@ class _MemoListViewPageState extends ConsumerState<MemoListViewPage>
                         : memoList.hasError
                         ? Center(
                           child: ErrorWithRefresh(
-                            errorMessage: 'メモの取得に失敗しました。やり直してください',
+                            errorMessage: 'Myndの取得に失敗しました。やり直してください',
                             onRefresh: () {
                               ref.invalidate(memoListProvider);
                             },
                           ),
                         )
                         : memoList.requireValue.isEmpty
-                        ? const Center(child: Text('メモがまだありません'))
+                        ? const Center(child: Text('Myndがまだありません'))
                         : Scrollbar(
                           child: ListView.separated(
                             // FABの分大きめにpaddingをとる

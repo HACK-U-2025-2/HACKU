@@ -28,8 +28,8 @@ class MemoBodyView extends HookConsumerWidget {
       3,
       (index) => MemoPreview(
         id: MemoId(index),
-        title: 'メモタイトル$index',
-        body: 'メモ$indexの要約',
+        title: 'Myndタイトル$index',
+        body: 'Mynd$indexの要約',
         createdAt: DateTime.now(),
       ),
     );
@@ -48,7 +48,7 @@ class MemoBodyView extends HookConsumerWidget {
           const SizedBox(height: 30),
           const Divider(),
           Text(
-            '関連メモ',
+            '関連Mynd',
             style: Theme.of(
               context,
             ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
@@ -141,16 +141,16 @@ class _EditToolBar extends ConsumerWidget {
 
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(const SnackBar(content: Text('メモを更新しました。')));
+          ).showSnackBar(const SnackBar(content: Text('Myndを更新しました。')));
         }
       } on Exception catch (e) {
         debugPrint('Error updating memo body: $e');
 
         if (context.mounted) {
           final message = switch (e) {
-            final MemoNotFoundException _ => 'メモが見つかりません。',
-            final MemoValidationException _ => '有効な内容ではありません。メモの内容を確認してください。',
-            _ => 'メモの更新に失敗しました。やり直してください。',
+            final MemoNotFoundException _ => 'Myndが見つかりません。',
+            final MemoValidationException _ => '有効な内容ではありません。Myndの内容を確認してください。',
+            _ => 'Myndの更新に失敗しました。やり直してください。',
           };
           ScaffoldMessenger.of(context).showErrorSnackBar(message: message);
         }

@@ -12,7 +12,7 @@ class MemoNotFoundPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('メモが見つかりません'),
+            const Text('Myndが見つかりません'),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: context.router.pop,
