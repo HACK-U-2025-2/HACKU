@@ -1,6 +1,6 @@
-from crud.tag import delete_invalid_tags
 from models.tag import Tags
 from models.tagembeddings import TagEmbeddings
+from scheduler.delete_invald_tags import delete_invalid_tags
 from tests.mock_data.memo import EMPTY_MEMOS, SHORT_MEMOS
 from tests.mock_data.memoembedding import EMPTY_MEMOEMBEDDINGS, SHORT_MEMOEMBEDDINGS
 from tests.mock_data.memotag import EMPTY_MEMOTAGS, SHORT_MEMOTAGS

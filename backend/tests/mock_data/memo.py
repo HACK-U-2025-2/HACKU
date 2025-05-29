@@ -19,7 +19,7 @@ SHORT_MEMOS = [
         "user_id": "a",
         "body": "sample",
         "raw": "sample",
-        "is_favorite": False,
+        "is_favorite": True,
         "is_archive": False,
         "simple_embedding": [0.1] * 3,
         "created_at": datetime(2024, 4, 4, 15, 30, 0, tzinfo=JST),

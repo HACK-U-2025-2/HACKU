@@ -64,6 +64,8 @@ def mock_ai_functions():
         "crud.tag.get_embedding", return_value=[0.6] * 1024
     ), patch(
         "crud.memo.embedding_to_3d_unit", return_value=[0.5] * 3
+    ), patch(
+        "scheduler.delete_unnecessary_memos.predict_archive", return_value=True
     ):
         yield
 

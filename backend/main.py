@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from embedding.loader import load_embedding_model
 from fastapi import FastAPI
 from llm.utils.loader import load_llm_model
-from routers import auth, memo, memo_websocket, tag
+from routers import auth, demo, memo, memo_websocket, tag
 from scheduler.start_scheduller import start_scheduler
 
 logger = logging.getLogger(__name__)
@@ -46,3 +46,4 @@ app.include_router(auth.router)
 app.include_router(tag.router)
 app.include_router(memo.router)
 app.include_router(memo_websocket.router)
+app.include_router(demo.router)

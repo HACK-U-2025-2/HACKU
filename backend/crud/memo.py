@@ -11,9 +11,10 @@ from llm.generate_title import generate_title
 from llm.summarize_text import summarize_text
 from models.memo import Memos
 from models.memoembeddings import MemoEmbeddings
+from models.memotag import MemoTags
 from schemas.memo import MemoSortOrder
 from sqlalchemy import asc, desc, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.sql.expression import func
 from utils.exceptions import raise_if_none
 
@@ -105,6 +106,17 @@ def fetch_memos_randomly(
 
     result = db.execute(query)
     return result.scalars().all()
+
+
+def fetch_not_favorite_memos(db: Session):
+    query = select(Memos)
+    query = query.options(joinedload(Memos.tags).joinedload(MemoTags.tag))
+    query = query.where(Memos.is_favorite == False)
+
+    result = db.execute(query)
+    memos = result.unique().scalars().all()
+
+    return memos
 
 
 def fetch_memo_by_ids(db: Session, user_id: str, memo_id: int):
