@@ -10,6 +10,7 @@ import 'package:frontend/repositories/memo_repository/memo_repository.dart';
 import 'package:frontend/widgets/custom_back_button.dart';
 import 'package:frontend/widgets/dialogs/delete_dialog.dart';
 import 'package:frontend/widgets/dialogs/input_dialog.dart';
+import 'package:frontend/widgets/favorite_icon.dart';
 import 'package:frontend/widgets/memo_details/memo_body_view.dart';
 import 'package:frontend/widgets/memo_details/memo_raw_view.dart';
 import 'package:frontend/widgets/memo_details/memo_title_menu.dart';
@@ -81,11 +82,7 @@ class MemoDetailsPage extends HookConsumerWidget {
         title: MemoTitleMenu(memo: memo),
         actions: [
           IconButton(
-            icon: Icon(
-              isFavorite.value
-                  ? Icons.favorite
-                  : Icons.favorite_border_outlined,
-            ),
+            icon: FavoriteIcon(isFavorite: isFavorite.value),
             onPressed: () {
               isFavorite.value = !isFavorite.value;
               // TODO(Rozelin-dc): API処理
