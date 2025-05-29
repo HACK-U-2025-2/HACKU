@@ -5,7 +5,7 @@ from embedding.embedding import get_embedding
 from models.memotag import MemoTags
 from models.tag import Tags
 from models.tagembeddings import TagEmbeddings
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -72,3 +72,15 @@ def fetch_tags_by_names(db: Session, tag_names: List[str]):
     result = db.execute(query)
 
     return result.scalars().all()
+
+
+def delete_invalid_tags(db: Session):
+    sub_query = select(MemoTags.tag_id)
+
+    query = delete(Tags)
+    query = query.where(Tags.id.not_in(sub_query))
+
+    db.execute(query)
+
+    db.commit()
+    return

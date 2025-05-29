@@ -1,9 +1,8 @@
-from datetime import datetime
-
 from database import Base
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import Boolean, Column, Date, DateTime, Integer, String
 from sqlalchemy.orm import relationship
+from utils.jst_now import jst_now
 
 
 class Memos(Base):
@@ -17,8 +16,8 @@ class Memos(Base):
     is_favorite = Column(Boolean, nullable=False)
     is_archive = Column(Boolean, nullable=False)
     archived_at = Column(Date)
-    created_at = Column(DateTime, default=datetime.now)
-    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    created_at = Column(DateTime, default=jst_now)
+    updated_at = Column(DateTime, default=jst_now, onupdate=jst_now)
 
     tags = relationship(
         "MemoTags",
