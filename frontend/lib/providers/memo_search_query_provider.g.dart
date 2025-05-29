@@ -42,7 +42,7 @@ final memoSearchTagNamesProvider =
 
 typedef _$MemoSearchTagNames = AutoDisposeNotifier<List<String>>;
 String _$memoSearchSortOptionHash() =>
-    r'53888895c79bac4b53e3cab7a5feeb0ddb4fa7fd';
+    r'ad7c5ce6f77f007f3f799bf786d33fd48440f296';
 
 /// See also [MemoSearchSortOption].
 @ProviderFor(MemoSearchSortOption)
