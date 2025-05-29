@@ -28,7 +28,7 @@ def test_normal_update_websocket(test_db, client):
         assert response["status"] == "success"
         assert response["memo_id"] == memo_id
 
-        asyncio.run(asyncio.sleep(1.2))
+        asyncio.run(asyncio.sleep(3.2))
 
         websocket.close()
 
