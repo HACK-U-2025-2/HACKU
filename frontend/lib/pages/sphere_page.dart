@@ -42,7 +42,13 @@ class SpherePage extends HookConsumerWidget {
 
     final data =
         embeddings.requireValue.map((embedding) {
-          return {'value': embedding.simpleEmbedding, 'name': embedding.title};
+          return {
+            'value': embedding.simpleEmbedding,
+            'name':
+                embedding.title.length > 10
+                    ? '${embedding.title.substring(0, 8)}...'
+                    : embedding.title,
+          };
         }).toList();
 
     return Scaffold(
@@ -64,7 +70,7 @@ class SpherePage extends HookConsumerWidget {
               'series': [
                 {
                   'type': 'scatter3D',
-                  'symbolSize': 20,
+                  'symbolSize': 12,
                   'data': data,
                   'label': const {
                     'show': true,
