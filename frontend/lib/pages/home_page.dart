@@ -105,7 +105,8 @@ class _MemoHorizontalListView extends ConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
     if (memoPreviews.hasError) {
-      return Center(child: Text('エラーが発生しました: ${memoPreviews.error}'));
+      debugPrint('Error fetching random memos: ${memoPreviews.error}');
+      return const Center(child: Text('エラーが発生しました'));
     }
 
     final data = memoPreviews.requireValue;
