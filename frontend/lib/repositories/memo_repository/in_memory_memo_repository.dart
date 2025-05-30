@@ -111,7 +111,7 @@ class InMemoryMemoRepository implements MemoRepository {
       _memos[id] ?? (throw MemoNotFoundException(id));
 
   @override
-  Future<Memo> addMemo(String rawMemo) async {
+  Future<Memo> addMemo(String rawMemo, {bool needProofreading = false}) async {
     final memoId = MemoId(++_nextId);
     final pickedTags = _pickTags();
     // usedNumをインクリメント（新規タグも考慮）
