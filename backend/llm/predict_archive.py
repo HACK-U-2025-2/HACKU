@@ -55,7 +55,10 @@ def predict_archive(memo_text: str, created_at_str: str, tag_list: list[str]) ->
     tag_check_json = generate_text(
         prompt_tag_check, enable_thinking=False, max_new_tokens=32
     )
-    tag_check_result = parse_json(tag_check_json)
+    try:
+        tag_check_result = parse_json(tag_check_json)
+    except Exception:
+        return False
     if isinstance(tag_check_result, dict):
         tag_check_result = tag_check_result.get("result", "")
     tag_check_result = str(tag_check_result).strip().lower()
@@ -91,7 +94,10 @@ def predict_archive(memo_text: str, created_at_str: str, tag_list: list[str]) ->
     archive_check_json = generate_text(
         prompt_archive_check, enable_thinking=False, max_new_tokens=32
     )
-    archive_check_result = parse_json(archive_check_json)
+    try:
+        archive_check_result = parse_json(archive_check_json)
+    except Exception:
+        return False
     if isinstance(archive_check_result, dict):
         archive_check_result = archive_check_result.get("result", "")
     archive_check_result = str(archive_check_result).strip().lower()

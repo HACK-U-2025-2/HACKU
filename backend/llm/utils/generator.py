@@ -3,16 +3,22 @@ import json
 from llm.utils.loader import load_llm_model
 
 
-def generate_text(prompt: str, enable_thinking: bool, max_new_tokens: int) -> str:
+def generate_text(
+    prompt: str, enable_thinking: bool, max_new_tokens: int, json_output: bool = True
+) -> str:
     model, tokenizer = load_llm_model()
 
     if model == "mock_model":
         clean_prompt = prompt.replace("\n", "")
         mock_result = f"モック応答（プロンプト: {clean_prompt[:25]}...）"
-        return json.dumps({"result": mock_result})
+        if json_output:
+            return json.dumps({"result": mock_result})
+        else:
+            return mock_result
 
-    # JSON形式の出力を強制するプロンプト設計
-    json_prompt = f"""
+    # プロンプトを2種類用意
+    if json_output:
+        system_prompt = """
 # 指示
 次の指示を実行し、結果を必ずJSON形式で返してください。
 結果は必ず{{"result": "<生成した内容>"}}の形式で出力してください。
@@ -22,6 +28,18 @@ JSON以外のテキストを絶対に出力してはいけません。
 
 # 出力
 """
+    else:
+        system_prompt = """
+# 指示
+次の指示を実行してください。
+出力は通常のテキスト形式で返してください。
+
+{prompt}
+
+# 出力
+"""
+
+    json_prompt = system_prompt.format(prompt=prompt)
 
     messages = [{"role": "user", "content": json_prompt}]
     prepared = tokenizer.apply_chat_template(
@@ -52,6 +70,6 @@ JSON以外のテキストを絶対に出力してはいけません。
     else:
         content_ids = gen_ids
 
-    generated_json = tokenizer.decode(content_ids, skip_special_tokens=True).strip()
+    generated_text = tokenizer.decode(content_ids, skip_special_tokens=True).strip()
 
-    return generated_json
+    return generated_text

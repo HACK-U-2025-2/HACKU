@@ -1,6 +1,6 @@
 transformers==4.51.3
 numpy==1.25.2
-scikit-learn
+scikit-learn==1.4.2
 hf_xet
 alembic
 accelerate

@@ -38,9 +38,12 @@ def generate_tags(
 # メモ本文
 {text}
 """
-        tag_str = parse_json(
-            generate_text(prompt, enable_thinking=False, max_new_tokens=128)
-        )
+        try:
+            tag_str = parse_json(
+                generate_text(prompt, enable_thinking=False, max_new_tokens=256)
+            )
+        except Exception:
+            return []
         if isinstance(tag_str, str):
             return [t.strip() for t in tag_str.split(",") if t.strip()]
         if isinstance(tag_str, list):
@@ -62,9 +65,12 @@ def generate_tags(
 # メモ本文
 {text}
 """
-        tag_str = parse_json(
-            generate_text(prompt, enable_thinking=False, max_new_tokens=128)
-        )
+        try:
+            tag_str = parse_json(
+                generate_text(prompt, enable_thinking=False, max_new_tokens=256)
+            )
+        except Exception:
+            return []
         if isinstance(tag_str, str):
             return [t.strip() for t in tag_str.split(",") if t.strip()]
         if isinstance(tag_str, list):
@@ -86,9 +92,12 @@ def generate_tags(
 例1: {{"result": "健康"}}
 例2: {{"result": "None"}}
 """
-        category = parse_json(
-            generate_text(prompt, enable_thinking=False, max_new_tokens=64)
-        )
+        try:
+            category = parse_json(
+                generate_text(prompt, enable_thinking=False, max_new_tokens=256)
+            )
+        except Exception:
+            return ""
         if isinstance(category, str):
             cat = category.strip()
             if cat and cat.lower() != "none":
@@ -119,9 +128,12 @@ def generate_tags(
 # 出力形式
 {{"result": "タグ1, タグ2, タグ3"}}
 """
-        tag_str = parse_json(
-            generate_text(prompt, enable_thinking=False, max_new_tokens=128)
-        )
+        try:
+            tag_str = parse_json(
+                generate_text(prompt, enable_thinking=False, max_new_tokens=256)
+            )
+        except Exception:
+            return []
         if isinstance(tag_str, str):
             return [t.strip() for t in tag_str.split(",") if t.strip()]
         if isinstance(tag_str, list):
