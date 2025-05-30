@@ -1,5 +1,4 @@
 from llm.utils.generator import generate_text
-from llm.utils.parser import parse_json
 
 
 def clean_transcript(text: str) -> str:
@@ -18,5 +17,7 @@ def clean_transcript(text: str) -> str:
 # 文章
 {text}
 """
-    json_text = generate_text(prompt, enable_thinking=True, max_new_tokens=8192)
-    return parse_json(json_text)
+    result_text = generate_text(
+        prompt, enable_thinking=False, max_new_tokens=8192, json_output=False
+    )
+    return result_text

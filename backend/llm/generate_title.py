@@ -11,4 +11,7 @@ def generate_title(text: str) -> str:
 {text}
 """
     json_text = generate_text(prompt, enable_thinking=False, max_new_tokens=128)
-    return parse_json(json_text)
+    try:
+        return parse_json(json_text)
+    except Exception:
+        return "タイトル未設定"
