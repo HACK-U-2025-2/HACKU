@@ -74,7 +74,7 @@ final authDioProvider = Provider<Dio>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AuthDioRef = ProviderRef<Dio>;
-String _$baseUrlHash() => r'42ba2e6e8b3301bdc0a9b7f0e7fdcea0773f8ea2';
+String _$baseUrlHash() => r'a0b94683e0ce50ec9245b6f5a96cd7dc4f0569d6';
 
 /// See also [baseUrl].
 @ProviderFor(baseUrl)

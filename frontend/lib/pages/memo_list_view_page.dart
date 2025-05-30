@@ -110,6 +110,7 @@ class _AddMemoFab extends HookConsumerWidget {
     final theme = Theme.of(context);
 
     final isOpen = useState(false);
+    final needProofreading = useRef(false);
 
     const animationDuration = Duration(milliseconds: 300);
     const animationCurve = Curves.easeOut;
@@ -117,7 +118,11 @@ class _AddMemoFab extends HookConsumerWidget {
     final submitNewMemo = useCreateMemo(
       context: context,
       ref: ref,
-      afterCreate: () => isOpen.value = false,
+      needProofreading: needProofreading.value,
+      afterCreate: () {
+        isOpen.value = false;
+        needProofreading.value = false;
+      },
     );
 
     return Column(
@@ -135,6 +140,7 @@ class _AddMemoFab extends HookConsumerWidget {
                 builder: (context) => const AddMemoFromTextDialog(),
               );
               if (rawMemo != null) {
+                needProofreading.value = true;
                 await submitNewMemo(rawMemo);
               }
             },

@@ -58,9 +58,10 @@ class ApiClientMemoRepository implements MemoRepository {
   }
 
   @override
-  Future<Memo> addMemo(String rawMemo) async {
+  Future<Memo> addMemo(String rawMemo, {bool needProofreading = false}) async {
     final request = MemoCreateRequest(
       raw: rawMemo,
+      needProofreading: needProofreading,
       // tagNames: [],
     );
     try {

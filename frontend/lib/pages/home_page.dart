@@ -18,11 +18,17 @@ class HomePage extends HookConsumerWidget {
     final isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 16;
     final textController = useTextEditingController();
     final focusNode = useFocusNode();
+    final needProofreading = useRef(false);
 
     final submit = useCreateMemo(
       context: context,
       ref: ref,
-      afterCreate: textController.clear,
+      needProofreading: needProofreading.value,
+      afterCreate: () {
+        textController.clear();
+        focusNode.unfocus();
+        needProofreading.value = false;
+      },
     );
 
     return Scaffold(
@@ -66,6 +72,7 @@ class HomePage extends HookConsumerWidget {
                               if (transcription.isEmpty) return;
                               textController.text += ' $transcription';
                               focusNode.requestFocus();
+                              needProofreading.value = true;
                             },
                           ),
                         )

@@ -12,12 +12,15 @@ import 'package:loader_overlay/loader_overlay.dart';
 Future<void> Function(String) useCreateMemo({
   required BuildContext context,
   required WidgetRef ref,
+  bool needProofreading = false,
   void Function()? afterCreate,
 }) {
   return (String raw) async {
     context.loaderOverlay.show();
     try {
-      final memo = await ref.read(memoRepositoryProvider).addMemo(raw);
+      final memo = await ref
+          .read(memoRepositoryProvider)
+          .addMemo(raw, needProofreading: needProofreading);
       if (afterCreate != null) {
         afterCreate();
       }
