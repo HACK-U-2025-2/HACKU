@@ -22,6 +22,25 @@ final memoListProvider = AutoDisposeFutureProvider<List<MemoPreview>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef MemoListRef = AutoDisposeFutureProviderRef<List<MemoPreview>>;
+String _$randomMemoListHash() => r'3c93532c64d4fc6cc5b6ca99267adb7c5ff403a8';
+
+/// See also [randomMemoList].
+@ProviderFor(randomMemoList)
+final randomMemoListProvider =
+    AutoDisposeFutureProvider<List<MemoPreview>>.internal(
+      randomMemoList,
+      name: r'randomMemoListProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$randomMemoListHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef RandomMemoListRef = AutoDisposeFutureProviderRef<List<MemoPreview>>;
 String _$memoEmbeddingsHash() => r'6825e7d730ec535da36b8e77d72566347963278f';
 
 /// See also [memoEmbeddings].

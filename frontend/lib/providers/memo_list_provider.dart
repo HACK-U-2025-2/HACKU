@@ -25,6 +25,11 @@ Future<List<MemoPreview>> memoList(Ref ref) async {
 }
 
 @riverpod
+Future<List<MemoPreview>> randomMemoList(Ref ref) async {
+  return ref.watch(memoRepositoryProvider).getRandomMemos();
+}
+
+@riverpod
 Future<List<MemoEmbedding>> memoEmbeddings(Ref ref) async {
   // TODO(tyPhoon-collab): 実データに置き換える
   return [
