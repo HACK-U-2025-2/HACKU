@@ -52,7 +52,7 @@ class SpherePage extends HookConsumerWidget {
         }).toList();
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: !kIsWeb,
       backgroundColor: colorScheme.surface,
       appBar: AppBar(title: const Text('思考空間')),
       body: Stack(
