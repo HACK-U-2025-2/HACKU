@@ -79,8 +79,8 @@ as int,
 
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class _Tag implements Tag {
   const _Tag({@TagIdJsonConverter() required this.id, required this.name, this.usedNum = 0});
   factory _Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
