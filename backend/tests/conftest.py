@@ -64,6 +64,8 @@ def mock_ai_functions():
         "crud.tag.get_embedding", return_value=[0.6] * 1024
     ), patch(
         "crud.memo.embedding_to_3d_unit", return_value=[0.5] * 3
+    ), patch(
+        "crud.tag.generate_tags", return_value=["mock1", "mock2"]
     ):
         yield
 
@@ -75,4 +77,5 @@ def mock_cosine_distance(monkeypatch):
         return literal(0.0)
 
     monkeypatch.setattr("crud.memo.cosine_distance", mock_cosine_distance)
+    monkeypatch.setattr("crud.tag.cosine_distance", mock_cosine_distance)
     yield

@@ -14,8 +14,6 @@ class Memos(Base):
     raw = Column(String, nullable=False)
     simple_embedding = Column(Vector(3), nullable=False)
     is_favorite = Column(Boolean, nullable=False)
-    is_archive = Column(Boolean, nullable=False)
-    archived_at = Column(Date)
     created_at = Column(DateTime, default=jst_now)
     updated_at = Column(DateTime, default=jst_now, onupdate=jst_now)
 

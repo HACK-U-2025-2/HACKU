@@ -1,9 +1,9 @@
-from typing import List, Optional
+from typing import List, Optional, Sequence
 
 from crud.memotag import add_memotags_by_tags, update_memo_tags
 from crud.query.build_memo_by_id_query import build_memo_by_id_query
 from crud.query.filter_memos_by_tags import filter_memos_by_tags
-from crud.tag import fetch_tags_by_names, upsert_tags
+from crud.tag import add_generate_tags, fetch_tags_by_names, upsert_tags
 from embedding.embedding import get_embedding
 from embedding.reduce_to_3d import embedding_to_3d_unit
 from llm.clean_transcript import clean_transcript
@@ -29,7 +29,12 @@ sort_mapping = {
 
 
 def create_memo(
-    db: Session, user_id: str, raw: str, tag_names: List[str], need_proofreading: bool
+    db: Session,
+    user_id: str,
+    raw: str,
+    tag_names: List[str],
+    need_generate_tags: bool,
+    need_proofreading: bool,
 ):
     if need_proofreading:
         raw = clean_transcript(raw)
@@ -38,6 +43,12 @@ def create_memo(
     title = generate_title(body)
     embedding = get_embedding(f"{title} {body}")
     simple_embedding = embedding_to_3d_unit(embedding)
+
+    if need_generate_tags:
+        relate_memos = fetch_memos_relate_by_embedding(
+            db=db, user_id=user_id, target_memo_embedding=embedding, get_num=1
+        )
+        tag_names = add_generate_tags(db, body, tag_names, relate_memos)
 
     upsert_tags(db, tag_names)
     tags = fetch_tags_by_names(db, tag_names)
@@ -49,8 +60,7 @@ def create_memo(
         body=body,
         raw=raw,
         simple_embedding=simple_embedding,
-        is_favorite=False,
-        is_archive=False,
+        is_favorite=True,
     )
 
     db.add(new_memo)
@@ -116,7 +126,7 @@ def fetch_memo_by_ids(db: Session, user_id: str, memo_id: int):
     return memo
 
 
-def fetch_memos_relate(db: Session, user_id: str, memo_id: int):
+def fetch_memos_relate_by_id(db: Session, user_id: str, memo_id: int, get_num: int):
     target_memo = fetch_memo_by_ids(db, user_id, memo_id)
 
     raise_if_none(target_memo, "Memo")
@@ -128,6 +138,18 @@ def fetch_memos_relate(db: Session, user_id: str, memo_id: int):
 
     raise_if_none(target_memo_embedding, "MemoEmbedding")
 
+    return fetch_memos_relate_by_embedding(
+        db, user_id, target_memo_embedding, get_num, memo_id
+    )
+
+
+def fetch_memos_relate_by_embedding(
+    db: Session,
+    user_id: str,
+    target_memo_embedding: Sequence[float],
+    get_num: int,
+    memo_id: Optional[str] = None,
+):
     cosine_distance_query = cosine_distance(target_memo_embedding).label(
         "cosine_distance"
     )
@@ -135,10 +157,11 @@ def fetch_memos_relate(db: Session, user_id: str, memo_id: int):
     query = select(Memos)
     query = query.join(MemoEmbeddings, Memos.id == MemoEmbeddings.id)
     query = query.where(Memos.user_id == user_id)
-    query = query.where(Memos.id != memo_id)
+    if memo_id:
+        query = query.where(Memos.id != memo_id)
     query = query.where(cosine_distance_query <= 0.3)  # 値は適当
     query = query.order_by(cosine_distance_query)
-    query = query.limit(3)
+    query = query.limit(get_num)
 
     result = db.execute(query)
     memos = result.unique().scalars().all()

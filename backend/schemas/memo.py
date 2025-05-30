@@ -55,6 +55,7 @@ class MemoCreateRequest(BaseModel):
     tag_names: List[TagName] = Field(
         default_factory=list, json_schema_extra={"examples": [["タグ1", "タグ2"]]}
     )
+    need_generate_tags: bool = Field(json_schema_extra={"examples": [True]})
     need_proofreading: bool = Field(json_schema_extra={"examples": [True]})
 
     model_config = {"from_attributes": True}
