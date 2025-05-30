@@ -45,7 +45,7 @@ class SpherePage extends HookConsumerWidget {
           return {
             'value': embedding.simpleEmbedding,
             'name':
-                embedding.title.length > 10
+                embedding.title.length > 8
                     ? '${embedding.title.substring(0, 8)}...'
                     : embedding.title,
           };
@@ -72,10 +72,13 @@ class SpherePage extends HookConsumerWidget {
                   'type': 'scatter3D',
                   'symbolSize': 12,
                   'data': data,
-                  'label': const {
+                  'label': {
                     'show': true,
                     'formatter': '{b}',
-                    'textStyle': {'fontSize': 10}, // 実際にデータを入れてから調整する
+                    'textStyle': {
+                      'fontSize': 10,
+                      'color': colorScheme.onSurface.toEchartsString(),
+                    },
                   },
                   'itemStyle': {'color': colorScheme.primary.toEchartsString()},
                 },
