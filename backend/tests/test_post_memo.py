@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 from models.memo import Memos
 from models.memoembeddings import MemoEmbeddings
@@ -115,9 +117,16 @@ def test_ai_generate(test_db, client):
     assert response.status_code == 201
     data = response.json()
 
-    assert data["raw"] == "校正原文"
+    assert data["raw"] != "校正原文"
     assert data["body"] == "要約ボディ"
     assert data["title"] == "生成タイトル"
+
+    asyncio.run(asyncio.sleep(1.2))
+    test_db.expire_all()
+
+    memo = test_db.query(Memos).where(Memos.id == data["id"]).first()
+
+    assert memo.raw == "校正原文"
 
 
 # タグが存在しない場合、適切にタグが生成されるか

@@ -12,7 +12,7 @@ from crud.memo import (
     update_memo_favorite,
 )
 from database import get_db
-from fastapi import APIRouter, Depends, Query, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, Query, Response, status
 from schemas.auth import DecodedToken
 from schemas.memo import (
     MemoAllUpdateRequest,
@@ -112,6 +112,7 @@ async def handle_create_memo(
     db: DbDependency,
     user: UserDependency,
     request: MemoCreateRequest,
+    background_tasks: BackgroundTasks,
 ):
     memo, tags = create_memo(
         db=db,
@@ -120,6 +121,7 @@ async def handle_create_memo(
         tag_names=request.tag_names,
         need_generate_tags=request.need_generate_tags,
         need_proofreading=request.need_proofreading,
+        background_tasks=background_tasks,
     )
 
     tag_response = [TagResponse.model_validate(tag) for tag in tags]

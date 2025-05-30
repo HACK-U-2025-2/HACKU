@@ -4,8 +4,10 @@ from crud.memotag import add_memotags_by_tags, update_memo_tags
 from crud.query.build_memo_by_id_query import build_memo_by_id_query
 from crud.query.filter_memos_by_tags import filter_memos_by_tags
 from crud.tag import add_generate_tags, fetch_tags_by_names, upsert_tags
+from database import SessionLocal
 from embedding.embedding import get_embedding
 from embedding.reduce_to_3d import embedding_to_3d_unit
+from fastapi import BackgroundTasks
 from llm.clean_transcript import clean_transcript
 from llm.generate_title import generate_title
 from llm.summarize_text import summarize_text
@@ -36,10 +38,8 @@ def create_memo(
     tag_names: List[str],
     need_generate_tags: bool,
     need_proofreading: bool,
+    background_tasks: BackgroundTasks,
 ):
-    if need_proofreading:
-        raw = clean_transcript(raw)
-
     body = summarize_text(raw)
     title = generate_title(body)
     embedding = get_embedding(f"{title} {body}")
@@ -77,7 +77,17 @@ def create_memo(
     db.commit()
     db.refresh(new_memo)
 
+    if need_proofreading:
+        background_tasks.add_task(update_proofreading_by_id, db, new_memo.id)
+
     return new_memo, tags
+
+
+def update_proofreading_by_id(db: Session, memo_id: int):
+    memo = db.query(Memos).filter(Memos.id == memo_id).first()
+    if memo:
+        memo.raw = clean_transcript(memo.raw)
+        db.commit()
 
 
 def fetch_memos(
