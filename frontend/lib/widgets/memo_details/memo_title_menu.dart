@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/memo.dart';
+import 'package:frontend/providers/memo_list_provider.dart';
 import 'package:frontend/providers/memo_provider.dart';
 import 'package:frontend/providers/repository_provider.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
@@ -64,6 +64,7 @@ class MemoTitleMenu extends ConsumerWidget {
         try {
           await ref.read(memoRepositoryProvider).deleteMemo(memo.id);
           if (context.mounted) {
+            ref.invalidate(randomMemoListProvider);
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(const SnackBar(content: Text('Myndを削除しました')));
