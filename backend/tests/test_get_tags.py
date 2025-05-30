@@ -41,12 +41,11 @@ def test_normal_get(test_db, client):
 
     assert len(data) == 2
 
-    for tag in data:
-        assert tag["name"] in ["タグ1", "Tag 2"]
-        if tag["name"] == "タグ1":
-            assert tag["used_num"] == 2
-        else:
-            assert tag["used_num"] == 1
+    assert data[0]["name"] == "タグ1"
+    assert data[0]["used_num"] == 2
+
+    assert data[1]["name"] == "Tag 2"
+    assert data[1]["used_num"] == 1
 
 
 # ユーザのタグが存在しない場合に正常に通信が行われるか
