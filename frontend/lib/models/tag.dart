@@ -7,6 +7,7 @@ extension type const TagId(int value) {}
 
 @freezed
 sealed class Tag with _$Tag {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory Tag({
     @TagIdJsonConverter() required TagId id,
     required String name,

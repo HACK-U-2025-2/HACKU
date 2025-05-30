@@ -15,6 +15,7 @@ _MemoPreview _$MemoPreviewFromJson(Map<String, dynamic> json) => _MemoPreview(
       json['updated_at'] == null
           ? null
           : DateTime.parse(json['updated_at'] as String),
+  isFavorite: json['is_favorite'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$MemoPreviewToJson(_MemoPreview instance) =>
@@ -24,4 +25,5 @@ Map<String, dynamic> _$MemoPreviewToJson(_MemoPreview instance) =>
       'body': instance.body,
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
+      'is_favorite': instance.isFavorite,
     };

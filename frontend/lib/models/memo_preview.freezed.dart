@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MemoPreview {
 
-@MemoIdJsonConverter() MemoId get id; String get title; String get body; DateTime get createdAt; DateTime? get updatedAt;
+@MemoIdJsonConverter() MemoId get id; String get title; String get body; DateTime get createdAt; DateTime? get updatedAt; bool get isFavorite;
 /// Create a copy of MemoPreview
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $MemoPreviewCopyWith<MemoPreview> get copyWith => _$MemoPreviewCopyWithImpl<Memo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MemoPreview&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MemoPreview&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,body,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,title,body,createdAt,updatedAt,isFavorite);
 
 @override
 String toString() {
-  return 'MemoPreview(id: $id, title: $title, body: $body, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'MemoPreview(id: $id, title: $title, body: $body, createdAt: $createdAt, updatedAt: $updatedAt, isFavorite: $isFavorite)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $MemoPreviewCopyWith<$Res>  {
   factory $MemoPreviewCopyWith(MemoPreview value, $Res Function(MemoPreview) _then) = _$MemoPreviewCopyWithImpl;
 @useResult
 $Res call({
-@MemoIdJsonConverter() MemoId id, String title, String body, DateTime createdAt, DateTime? updatedAt
+@MemoIdJsonConverter() MemoId id, String title, String body, DateTime createdAt, DateTime? updatedAt, bool isFavorite
 });
 
 
@@ -66,14 +66,15 @@ class _$MemoPreviewCopyWithImpl<$Res>
 
 /// Create a copy of MemoPreview
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? body = null,Object? createdAt = null,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? body = null,Object? createdAt = null,Object? updatedAt = freezed,Object? isFavorite = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as MemoId,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,body: null == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -84,7 +85,7 @@ as DateTime?,
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class _MemoPreview implements MemoPreview {
-  const _MemoPreview({@MemoIdJsonConverter() required this.id, required this.title, required this.body, required this.createdAt, this.updatedAt});
+  const _MemoPreview({@MemoIdJsonConverter() required this.id, required this.title, required this.body, required this.createdAt, this.updatedAt, this.isFavorite = false});
   factory _MemoPreview.fromJson(Map<String, dynamic> json) => _$MemoPreviewFromJson(json);
 
 @override@MemoIdJsonConverter() final  MemoId id;
@@ -92,6 +93,7 @@ class _MemoPreview implements MemoPreview {
 @override final  String body;
 @override final  DateTime createdAt;
 @override final  DateTime? updatedAt;
+@override@JsonKey() final  bool isFavorite;
 
 /// Create a copy of MemoPreview
 /// with the given fields replaced by the non-null parameter values.
@@ -106,16 +108,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MemoPreview&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MemoPreview&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,body,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,title,body,createdAt,updatedAt,isFavorite);
 
 @override
 String toString() {
-  return 'MemoPreview(id: $id, title: $title, body: $body, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'MemoPreview(id: $id, title: $title, body: $body, createdAt: $createdAt, updatedAt: $updatedAt, isFavorite: $isFavorite)';
 }
 
 
@@ -126,7 +128,7 @@ abstract mixin class _$MemoPreviewCopyWith<$Res> implements $MemoPreviewCopyWith
   factory _$MemoPreviewCopyWith(_MemoPreview value, $Res Function(_MemoPreview) _then) = __$MemoPreviewCopyWithImpl;
 @override @useResult
 $Res call({
-@MemoIdJsonConverter() MemoId id, String title, String body, DateTime createdAt, DateTime? updatedAt
+@MemoIdJsonConverter() MemoId id, String title, String body, DateTime createdAt, DateTime? updatedAt, bool isFavorite
 });
 
 
@@ -143,14 +145,15 @@ class __$MemoPreviewCopyWithImpl<$Res>
 
 /// Create a copy of MemoPreview
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? body = null,Object? createdAt = null,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? body = null,Object? createdAt = null,Object? updatedAt = freezed,Object? isFavorite = null,}) {
   return _then(_MemoPreview(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as MemoId,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,body: null == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

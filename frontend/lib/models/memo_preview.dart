@@ -13,6 +13,7 @@ sealed class MemoPreview with _$MemoPreview {
     required String body,
     required DateTime createdAt,
     DateTime? updatedAt,
+    @Default(false) bool isFavorite,
   }) = _MemoPreview;
 
   factory MemoPreview.fromJson(Map<String, dynamic> json) =>
