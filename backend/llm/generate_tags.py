@@ -5,8 +5,8 @@ from llm.utils.parser import parse_json
 def generate_tags(
     new_text: str,
     initial_tags: list[str] = None,
-    related_text: str = None,  # ここをstr型に
-    related_tags: list[str] = None,  # ここをlist[str]型に
+    related_text: str = None,
+    related_tags: list[str] = None,
 ) -> list[str]:
     """
     メモ追加時のタグ生成アシスタント関数。
@@ -19,7 +19,7 @@ def generate_tags(
     # tags（除外したいタグ）が空でなければ、それらを除外するようLLMへの指示文を設計する
     def format_exclude_tags_instruction(tags: set[str]) -> str:
         if tags:
-            return f"- 既に含まれるタグ（{', '.join(tags)}）は除外してください。"
+            return f"既に含まれるタグ（{', '.join(tags)}）は除外してください。"
         return ""
 
     # メジャータグ抽出
@@ -28,8 +28,8 @@ def generate_tags(
         prompt = f"""
 # 指示
 あなたはメモ分類アシスタントです。
-以下のメモ本文から、該当する「メジャータグ」を**必要なだけ全て**選んでください。
-- メジャータグ：「アイデア、日記、ToDo、イベント」
+メモ本文に該当するタグを次のリストの中から選んでください。
+["アイデア", "日記", "ToDo", "イベント"]
 {exclude_instruction}
 
 # 出力形式 該当がなければ空リスト
@@ -56,7 +56,7 @@ def generate_tags(
         prompt = f"""
 # 指示
 あなたはメモ分類アシスタントです。
-以下のメモ本文から、人名以外の固有名詞（例：地名、商品名、施設名、イベント名、キーワードなど）をすべて抽出してください。
+メモ本文から、人名以外の固有名詞（例：地名、商品名、施設名、イベント名、キーワードなど）を５つまで抽出してください。
 {exclude_instruction}
 
 # 出力形式 該当がなければ空リスト
@@ -115,11 +115,11 @@ def generate_tags(
         prompt = f"""
 # 指示
 あなたはメモ分類アシスタントです。
-追加されるメモ本文と関連メモの情報を参考に、
+メモ本文と関連メモの情報を参考に、
 **追加すべきタグ**を必要なだけ提案してください。
 {exclude_instruction}
 
-# 追加されるメモ本文
+# メモ本文
 {text}
 
 # 関連メモ
@@ -168,9 +168,10 @@ def generate_tags(
     already_tags.update(custom_tags)
 
     # 関連メモタグ
-    related_suggestions = suggest_related_tags(
-        new_text, related_text, related_tags, already_tags
-    )
-    tags_result += [t for t in related_suggestions if t not in already_tags]
+    if related_text:  # related_textが空でない場合のみ実行
+        related_suggestions = suggest_related_tags(
+            new_text, related_text, related_tags, already_tags
+        )
+        tags_result += [t for t in related_suggestions if t not in already_tags]
 
     return tags_result
