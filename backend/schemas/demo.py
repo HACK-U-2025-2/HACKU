@@ -15,13 +15,11 @@ class MemoRead(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 class TagRead(BaseModel):
     id: int
     name: str
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
