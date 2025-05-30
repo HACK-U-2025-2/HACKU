@@ -11,12 +11,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i6;
 import 'package:flutter/material.dart' as _i8;
-import 'package:frontend/models/memo.dart' as _i7;
 import 'package:frontend/pages/home_page.dart' as _i1;
 import 'package:frontend/pages/memo_details_page.dart' as _i2;
 import 'package:frontend/pages/memo_list_view_page.dart' as _i3;
 import 'package:frontend/pages/sphere_page.dart' as _i4;
 import 'package:frontend/pages/tag_list_view_page.dart' as _i5;
+import 'package:frontend/repositories/memo_repository/memo_repository.dart'
+    as _i7;
 
 /// generated route for
 /// [_i1.HomePage]

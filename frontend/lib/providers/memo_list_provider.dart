@@ -1,3 +1,4 @@
+import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/memo_embedding.dart';
 import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/providers/memo_search_query_provider.dart';
