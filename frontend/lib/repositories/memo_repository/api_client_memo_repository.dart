@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/models/memo.dart';
-import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:frontend/repositories/auth_repository/auth_repository.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
@@ -27,6 +25,24 @@ class ApiClientMemoRepository implements MemoRepository {
           sort: sort?.toSortOrder(),
         ),
       );
+    } on DioException catch (e) {
+      throw _handleDioException(e, null);
+    }
+  }
+
+  @override
+  Future<List<MemoPreview>> getRelatedMemos(MemoId id) async {
+    try {
+      return await _memoApiClient.getRelatedMemos(memoId: id.value);
+    } on DioException catch (e) {
+      throw _handleDioException(e, id);
+    }
+  }
+
+  @override
+  Future<List<MemoPreview>> getRandomMemos() async {
+    try {
+      return await _memoApiClient.getRandomMemos();
     } on DioException catch (e) {
       throw _handleDioException(e, null);
     }
@@ -85,6 +101,19 @@ class ApiClientMemoRepository implements MemoRepository {
   }
 
   @override
+  Future<void> updateMemoFavorite(MemoId id, {required bool isFavorite}) async {
+    try {
+      final request = MemoFavoriteUpdateRequest(isFavorite: isFavorite);
+      await _memoApiClient.updateMemoFavorite(
+        memoId: id.value,
+        request: request,
+      );
+    } on DioException catch (e) {
+      throw _handleDioException(e, id);
+    }
+  }
+
+  @override
   Future<void> deleteMemo(MemoId id) async {
     try {
       await _memoApiClient.deleteMemo(memoId: id.value);
@@ -97,6 +126,15 @@ class ApiClientMemoRepository implements MemoRepository {
   Future<List<Tag>> getTags({String? keyword}) async {
     try {
       return await _memoApiClient.getTags(keyword: keyword);
+    } on DioException catch (e) {
+      throw _handleDioException(e, null);
+    }
+  }
+
+  @override
+  Future<List<MemoEmbedding>> getMemoEmbeddings() async {
+    try {
+      return await _memoApiClient.getMemoEmbeddings();
     } on DioException catch (e) {
       throw _handleDioException(e, null);
     }

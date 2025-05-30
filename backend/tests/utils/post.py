@@ -14,7 +14,6 @@ def create_test_memos(test_db, memo_list, memoembedding_list):
             body=data["body"],
             raw=data["raw"],
             is_favorite=data["is_favorite"],
-            is_archive=data["is_archive"],
             simple_embedding=data["simple_embedding"],
             created_at=data["created_at"],
             updated_at=data["updated_at"],

@@ -6,7 +6,7 @@ part of 'memo_search_query_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$memoSearchKeywordHash() => r'f15b47884229840884852c7c943027a6b351e228';
+String _$memoSearchKeywordHash() => r'475593b2909620217fc9613e95947a992ed54ecb';
 
 /// See also [MemoSearchKeyword].
 @ProviderFor(MemoSearchKeyword)
@@ -24,7 +24,7 @@ final memoSearchKeywordProvider =
 
 typedef _$MemoSearchKeyword = AutoDisposeNotifier<String>;
 String _$memoSearchTagNamesHash() =>
-    r'd020914a876ab43a09d1c51346a0ec7acf53484e';
+    r'2aeabce833216ab0153fbb479df8eac3f46cc74d';
 
 /// See also [MemoSearchTagNames].
 @ProviderFor(MemoSearchTagNames)

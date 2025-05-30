@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/memo.dart';
+import 'package:frontend/providers/memo_list_provider.dart';
 import 'package:frontend/providers/memo_provider.dart';
 import 'package:frontend/providers/repository_provider.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
@@ -27,9 +27,12 @@ class MemoTitleMenu extends ConsumerWidget {
           await ref
               .read(memoRepositoryProvider)
               .updateMemoTitle(memo.id, newTitle);
+
+          // データを再取得
+          final newMemo = await ref.refresh(memoProvider(memo.id).future);
+
           if (context.mounted) {
-            // データを再取得
-            ref.invalidate(memoProvider(memo.id));
+            ref.read(randomMemoListProvider.notifier).updateMemo(newMemo);
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(const SnackBar(content: Text('タイトルを更新しました')));
@@ -39,9 +42,9 @@ class MemoTitleMenu extends ConsumerWidget {
 
           if (context.mounted) {
             final message = switch (e) {
-              final MemoNotFoundException _ => 'メモが見つかりませんでした。',
+              final MemoNotFoundException _ => 'Myndが見つかりませんでした。',
               final MemoValidationException _ =>
-                '有効なタイトルではありません。メモのタイトルを確認してください。',
+                '有効なタイトルではありません。Myndのタイトルを確認してください。',
               _ => 'タイトルの更新に失敗しました。やり直してください。',
             };
             ScaffoldMessenger.of(context).showErrorSnackBar(message: message);
@@ -64,9 +67,10 @@ class MemoTitleMenu extends ConsumerWidget {
         try {
           await ref.read(memoRepositoryProvider).deleteMemo(memo.id);
           if (context.mounted) {
+            ref.invalidate(randomMemoListProvider);
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(const SnackBar(content: Text('メモを削除しました')));
+            ).showSnackBar(const SnackBar(content: Text('Myndを削除しました')));
             Navigator.of(context).pop();
           }
         } on Exception catch (e) {
@@ -74,8 +78,8 @@ class MemoTitleMenu extends ConsumerWidget {
 
           if (context.mounted) {
             final message = switch (e) {
-              final MemoNotFoundException _ => 'メモが見つかりませんでした。',
-              _ => 'メモの削除に失敗しました。やり直してください。',
+              final MemoNotFoundException _ => 'Myndが見つかりませんでした。',
+              _ => 'Myndの削除に失敗しました。やり直してください。',
             };
             ScaffoldMessenger.of(context).showErrorSnackBar(message: message);
           }

@@ -2,7 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:frontend/hooks/use_create_memo.dart';
+import 'package:frontend/providers/memo_list_provider.dart';
 import 'package:frontend/widgets/destination_navigation_drawer.dart';
+import 'package:frontend/widgets/memo_card.dart';
 import 'package:frontend/widgets/memo_text_field.dart';
 import 'package:frontend/widgets/record_button.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -36,9 +38,10 @@ class HomePage extends HookConsumerWidget {
           child: Column(
             children: [
               const SizedBox(height: 8),
+              // TODO: 頻出メモを取得するように書き換える
               const _MemoListHeaderLabel(),
               const SizedBox(height: 8),
-              const SizedBox(height: 60, child: _MemoHorizontalListView()),
+              const SizedBox(height: 70, child: _MemoHorizontalListView()),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -85,50 +88,49 @@ class _MemoListHeaderLabel extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Text('頻出メモ', style: Theme.of(context).textTheme.titleMedium),
+        child: Text('ランダムMynd', style: Theme.of(context).textTheme.titleMedium),
       ),
     );
   }
 }
 
-class _MemoHorizontalListView extends StatelessWidget {
+class _MemoHorizontalListView extends ConsumerWidget {
   const _MemoHorizontalListView();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final memoPreviews = ref.watch(randomMemoListProvider);
+
+    if (memoPreviews.isLoading && !memoPreviews.hasValue) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (memoPreviews.hasError) {
+      debugPrint('Error fetching random memos: ${memoPreviews.error}');
+      return const Center(child: Text('エラーが発生しました'));
+    }
+
+    final data = memoPreviews.requireValue;
+
+    if (data.isEmpty) {
+      return const Center(child: Text('Myndを作成しよう！'));
+    }
+
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       scrollDirection: Axis.horizontal,
-      itemCount: 10,
+      itemCount: data.length,
       separatorBuilder: (context, index) => const SizedBox(width: 4),
       itemBuilder: (context, index) {
-        // TODO(tyPhoon-collab): MemoCardに統合する
-        // 仮置きのWidgetを採用中
-        return const _MiniMemoCard();
-      },
-    );
-  }
-}
-
-class _MiniMemoCard extends StatelessWidget {
-  const _MiniMemoCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: InkWell(
-        onTap: () {},
-        borderRadius: BorderRadius.circular(10),
-        child: const Padding(
-          padding: EdgeInsets.all(16),
-          child: Center(
-            child: Text(
-              'メモタイトル',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+        final memoPreview = data[index];
+        return ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 256),
+          child: MemoCard(
+            memoPreview: memoPreview,
+            showBody: false,
+            showFavoriteButton: false,
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

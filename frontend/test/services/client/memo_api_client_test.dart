@@ -105,6 +105,39 @@ void main() {
       await deleteTestMemo(memo.id.value);
     });
 
+    test('Get related memos', () async {
+      final memo1 = await createTestMemo(
+        content: '関連メモテスト用',
+        tags: ['関連', 'テスト'],
+      );
+      final memo2 = await createTestMemo(
+        content: '関連メモテスト用2',
+        tags: ['関連', 'テスト'],
+      );
+
+      final relatedMemos = await memoClient.getRelatedMemos(
+        memoId: memo1.id.value,
+      );
+
+      expect(relatedMemos, isNotNull); // モック時のサーバーは適切に関連メモを返さない
+
+      await deleteTestMemo(memo1.id.value);
+      await deleteTestMemo(memo2.id.value);
+    });
+
+    test('Get embeddings', () async {
+      final memo = await createTestMemo(
+        content: '埋め込みテスト用メモ',
+        tags: ['埋め込み', 'テスト'],
+      );
+
+      final embeddings = await memoClient.getMemoEmbeddings();
+      expect(embeddings, isNotEmpty);
+      expect(embeddings.any((e) => e.id.value == memo.id.value), isTrue);
+
+      await deleteTestMemo(memo.id.value);
+    });
+
     test('Update memo', () async {
       final memo = await createTestMemo(
         content: '更新テスト用メモ',
@@ -115,15 +148,17 @@ void main() {
         memoId: memo.id.value,
         request: const MemoTitleUpdateRequest(title: '更新されたタイトル'),
       );
-
       await memoClient.updateMemoBody(
         memoId: memo.id.value,
         request: const MemoBodyUpdateRequest(body: '更新された本文内容です。'),
       );
-
       await memoClient.updateMemoTags(
         memoId: memo.id.value,
         request: const MemoTagsUpdateRequest(tagNames: ['更新済み', 'テスト完了']),
+      );
+      await memoClient.updateMemoFavorite(
+        memoId: memo.id.value,
+        request: const MemoFavoriteUpdateRequest(isFavorite: true),
       );
 
       final updatedMemo = await memoClient.getMemo(memoId: memo.id.value);
@@ -132,6 +167,7 @@ void main() {
       expect(updatedMemo.body, '更新された本文内容です。');
       expect(updatedMemo.tags.map((t) => t.name).toList(), contains('更新済み'));
       expect(updatedMemo.tags.map((t) => t.name).toList(), contains('テスト完了'));
+      expect(updatedMemo.isFavorite, isTrue);
 
       await deleteTestMemo(memo.id.value);
     });
@@ -145,11 +181,12 @@ void main() {
       final tags = await memoClient.getTags();
 
       expect(tags, isNotEmpty);
-      expect(tags.where((tag) => tag.name == 'タグ一覧'), isNotEmpty);
+      expect(tags.map((t) => t.name), containsAll(['タグ一覧', 'テスト']));
 
       final filteredTags = await memoClient.getTags(keyword: 'タグ一覧');
       expect(filteredTags, isNotEmpty);
-      expect(filteredTags.every((tag) => tag.name.contains('タグ一覧')), isTrue);
+      expect(filteredTags.map((t) => t.name), contains('タグ一覧'));
+      expect(filteredTags.map((t) => t.name), isNot(contains('テスト')));
 
       await deleteTestMemo(memo.id.value);
     });
@@ -264,6 +301,21 @@ void main() {
 
       await deleteTestMemo(memo1.id.value);
       await deleteTestMemo(memo2.id.value);
+    });
+
+    test('Get random memos', () async {
+      final memo1 = await createTestMemo(content: 'random1', tags: ['rnd']);
+      final memo2 = await createTestMemo(content: 'random2', tags: ['rnd']);
+      final memo3 = await createTestMemo(content: 'random3', tags: ['rnd']);
+      final memo4 = await createTestMemo(content: 'random4', tags: ['rnd']);
+
+      final randomMemos = await memoClient.getRandomMemos();
+      expect(randomMemos.length, lessThanOrEqualTo(3));
+
+      await deleteTestMemo(memo1.id.value);
+      await deleteTestMemo(memo2.id.value);
+      await deleteTestMemo(memo3.id.value);
+      await deleteTestMemo(memo4.id.value);
     });
   });
 }

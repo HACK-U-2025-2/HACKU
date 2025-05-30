@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/memo_list_provider.dart';
 import 'package:frontend/providers/repository_provider.dart';
 import 'package:frontend/router.gr.dart';
 import 'package:frontend/types/extensions/snack_bar.dart';
@@ -21,6 +22,7 @@ Future<void> Function(String) useCreateMemo({
         afterCreate();
       }
       if (context.mounted) {
+        ref.invalidate(randomMemoListProvider);
         unawaited(context.router.push(MemoDetailsRoute(memoId: memo.id)));
       }
     } on Exception catch (e) {
@@ -28,7 +30,7 @@ Future<void> Function(String) useCreateMemo({
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showErrorSnackBar(message: 'メモの追加に失敗しました。やり直してください');
+        ).showErrorSnackBar(message: 'Myndの追加に失敗しました。やり直してください');
       }
     } finally {
       if (context.mounted) {

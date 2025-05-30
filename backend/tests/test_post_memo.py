@@ -21,6 +21,7 @@ def test_format(test_db, client):
     raw = "raw"
     tag_names = ["a", "b"]
     need_proofreading = False
+    need_generate_tags = False
 
     response = client.post(
         "/memos/",
@@ -29,6 +30,7 @@ def test_format(test_db, client):
             "raw": raw,
             "tag_names": tag_names,
             "need_proofreading": need_proofreading,
+            "need_generate_tags": need_generate_tags,
         },
     )
     assert response.status_code == 201
@@ -63,6 +65,7 @@ def test_db_save(test_db, client):
     raw = "raw"
     tag_names = ["タグ1", "add"]
     need_proofreading = False
+    need_generate_tags = False
 
     response = client.post(
         "/memos/",
@@ -71,6 +74,7 @@ def test_db_save(test_db, client):
             "raw": raw,
             "tag_names": tag_names,
             "need_proofreading": need_proofreading,
+            "need_generate_tags": need_generate_tags,
         },
     )
     assert response.status_code == 201
@@ -96,6 +100,7 @@ def test_ai_generate(test_db, client):
     raw = "raw"
     tag_names = ["a", "b"]
     need_proofreading = True
+    need_generate_tags = False
 
     response = client.post(
         "/memos/",
@@ -104,6 +109,7 @@ def test_ai_generate(test_db, client):
             "raw": raw,
             "tag_names": tag_names,
             "need_proofreading": need_proofreading,
+            "need_generate_tags": need_generate_tags,
         },
     )
     assert response.status_code == 201
@@ -112,6 +118,166 @@ def test_ai_generate(test_db, client):
     assert data["raw"] == "校正原文"
     assert data["body"] == "要約ボディ"
     assert data["title"] == "生成タイトル"
+
+
+# タグが存在しない場合、適切にタグが生成されるか
+def test_tag_generate_without_tag(test_db, client):
+    user_id = "c"
+    headers = get_headers(user_id, client)
+
+    raw = "raw"
+    tag_names = []
+    need_proofreading = False
+    need_generate_tags = True
+
+    response = client.post(
+        "/memos/",
+        headers=headers,
+        json={
+            "raw": raw,
+            "tag_names": tag_names,
+            "need_proofreading": need_proofreading,
+            "need_generate_tags": need_generate_tags,
+        },
+    )
+    assert response.status_code == 201
+    data = response.json()
+
+    tags = data["tags"]
+
+    assert tags
+
+    assert all("mock" in tag["name"] for tag in tags)
+
+
+# 関連メモが存在しない場合、適切にタグが生成されるか
+def test_tag_generate_without_memo(test_db, client):
+    user_id = "c"
+    headers = get_headers(user_id, client)
+    create_test_tags(test_db, SHORT_TAGS, SHORT_TAGEMBEDDINGS)
+
+    raw = "raw"
+    tag_names = []
+    need_proofreading = False
+    need_generate_tags = True
+
+    response = client.post(
+        "/memos/",
+        headers=headers,
+        json={
+            "raw": raw,
+            "tag_names": tag_names,
+            "need_proofreading": need_proofreading,
+            "need_generate_tags": need_generate_tags,
+        },
+    )
+    assert response.status_code == 201
+    data = response.json()
+
+    tags = data["tags"]
+
+    assert tags
+
+    assert all("mock" not in tag["name"] for tag in tags)
+
+
+# 関連メモが存在する場合、適切にタグが生成されるか
+def test_tag_generate_with_memo(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
+    create_test_tags(test_db, SHORT_TAGS, SHORT_TAGEMBEDDINGS)
+    create_test_memotags(test_db, SHORT_MEMOTAGS)
+
+    raw = "raw"
+    tag_names = []
+    need_proofreading = False
+    need_generate_tags = True
+
+    response = client.post(
+        "/memos/",
+        headers=headers,
+        json={
+            "raw": raw,
+            "tag_names": tag_names,
+            "need_proofreading": need_proofreading,
+            "need_generate_tags": need_generate_tags,
+        },
+    )
+    assert response.status_code == 201
+    data = response.json()
+
+    tags = data["tags"]
+
+    assert tags
+
+    assert all("mock" not in tag["name"] for tag in tags)
+
+
+# 関連メモが存在せず、ユーザ生成のタグが存在する場合、適切にタグが生成されるか
+def test_add_tag_generate_without_memo(test_db, client):
+    user_id = "c"
+    headers = get_headers(user_id, client)
+    create_test_tags(test_db, SHORT_TAGS, SHORT_TAGEMBEDDINGS)
+
+    raw = "raw"
+    tag_names = ["成功"]
+    need_proofreading = False
+    need_generate_tags = True
+
+    response = client.post(
+        "/memos/",
+        headers=headers,
+        json={
+            "raw": raw,
+            "tag_names": tag_names,
+            "need_proofreading": need_proofreading,
+            "need_generate_tags": need_generate_tags,
+        },
+    )
+    assert response.status_code == 201
+    data = response.json()
+
+    tags = data["tags"]
+
+    assert tags
+
+    assert any("成功" in tag["name"] for tag in tags)
+    assert all("mock" not in tag["name"] for tag in tags)
+
+
+# 関連メモが存在し、ユーザ生成のタグが存在する場合、適切にタグが生成されるか
+def test_add_tag_generate_with_memo(test_db, client):
+    user_id = "a"
+    headers = get_headers(user_id, client)
+    create_test_memos(test_db, SHORT_MEMOS, SHORT_MEMOEMBEDDINGS)
+    create_test_tags(test_db, SHORT_TAGS, SHORT_TAGEMBEDDINGS)
+    create_test_memotags(test_db, SHORT_MEMOTAGS)
+
+    raw = "raw"
+    tag_names = ["成功"]
+    need_proofreading = False
+    need_generate_tags = True
+
+    response = client.post(
+        "/memos/",
+        headers=headers,
+        json={
+            "raw": raw,
+            "tag_names": tag_names,
+            "need_proofreading": need_proofreading,
+            "need_generate_tags": need_generate_tags,
+        },
+    )
+    assert response.status_code == 201
+    data = response.json()
+
+    tags = data["tags"]
+
+    assert tags
+
+    assert any("成功" in tag["name"] for tag in tags)
+    assert all("mock" not in tag["name"] for tag in tags)
 
 
 # タグ名が重複する際にDBに正しく保存されているか
@@ -125,6 +291,7 @@ def test_db_save_duplicate_tags(test_db, client):
     raw = "raw"
     tag_names = ["add", "add"]
     need_proofreading = False
+    need_generate_tags = False
 
     response = client.post(
         "/memos/",
@@ -133,6 +300,7 @@ def test_db_save_duplicate_tags(test_db, client):
             "raw": raw,
             "tag_names": tag_names,
             "need_proofreading": need_proofreading,
+            "need_generate_tags": need_generate_tags,
         },
     )
     assert response.status_code == 201
@@ -155,6 +323,7 @@ def test_db_save_empty_tags(test_db, client):
     raw = "raw"
     tag_names = []
     need_proofreading = False
+    need_generate_tags = False
 
     response = client.post(
         "/memos/",
@@ -163,6 +332,7 @@ def test_db_save_empty_tags(test_db, client):
             "raw": raw,
             "tag_names": tag_names,
             "need_proofreading": need_proofreading,
+            "need_generate_tags": need_generate_tags,
         },
     )
     assert response.status_code == 201

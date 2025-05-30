@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Tag {
 
-@TagIdJsonConverter() TagId get id; String get name;
+@TagIdJsonConverter() TagId get id; String get name; int get usedNum;
 /// Create a copy of Tag
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $TagCopyWith<Tag> get copyWith => _$TagCopyWithImpl<Tag>(this as Tag, _$identity
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Tag&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Tag&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.usedNum, usedNum) || other.usedNum == usedNum));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name);
+int get hashCode => Object.hash(runtimeType,id,name,usedNum);
 
 @override
 String toString() {
-  return 'Tag(id: $id, name: $name)';
+  return 'Tag(id: $id, name: $name, usedNum: $usedNum)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $TagCopyWith<$Res>  {
   factory $TagCopyWith(Tag value, $Res Function(Tag) _then) = _$TagCopyWithImpl;
 @useResult
 $Res call({
-@TagIdJsonConverter() TagId id, String name
+@TagIdJsonConverter() TagId id, String name, int usedNum
 });
 
 
@@ -66,11 +66,12 @@ class _$TagCopyWithImpl<$Res>
 
 /// Create a copy of Tag
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? usedNum = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as TagId,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,
+as String,usedNum: null == usedNum ? _self.usedNum : usedNum // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -78,14 +79,15 @@ as String,
 
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class _Tag implements Tag {
-  const _Tag({@TagIdJsonConverter() required this.id, required this.name});
+  const _Tag({@TagIdJsonConverter() required this.id, required this.name, this.usedNum = 0});
   factory _Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
 
 @override@TagIdJsonConverter() final  TagId id;
 @override final  String name;
+@override@JsonKey() final  int usedNum;
 
 /// Create a copy of Tag
 /// with the given fields replaced by the non-null parameter values.
@@ -100,16 +102,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Tag&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Tag&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.usedNum, usedNum) || other.usedNum == usedNum));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name);
+int get hashCode => Object.hash(runtimeType,id,name,usedNum);
 
 @override
 String toString() {
-  return 'Tag(id: $id, name: $name)';
+  return 'Tag(id: $id, name: $name, usedNum: $usedNum)';
 }
 
 
@@ -120,7 +122,7 @@ abstract mixin class _$TagCopyWith<$Res> implements $TagCopyWith<$Res> {
   factory _$TagCopyWith(_Tag value, $Res Function(_Tag) _then) = __$TagCopyWithImpl;
 @override @useResult
 $Res call({
-@TagIdJsonConverter() TagId id, String name
+@TagIdJsonConverter() TagId id, String name, int usedNum
 });
 
 
@@ -137,11 +139,12 @@ class __$TagCopyWithImpl<$Res>
 
 /// Create a copy of Tag
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? usedNum = null,}) {
   return _then(_Tag(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as TagId,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,
+as String,usedNum: null == usedNum ? _self.usedNum : usedNum // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

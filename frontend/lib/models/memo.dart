@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/models/tag.dart';
 
 part 'memo.freezed.dart';
@@ -15,6 +16,7 @@ sealed class Memo with _$Memo {
     required String body,
     required String raw,
     required DateTime createdAt,
+    @Default(false) bool isFavorite,
     @Default([]) List<Tag> tags,
     DateTime? updatedAt,
   }) = _Memo;
@@ -24,6 +26,17 @@ sealed class Memo with _$Memo {
   const Memo._();
 
   List<String> get tagNames => tags.map((tag) => tag.name).toList();
+
+  MemoPreview toPreview() {
+    return MemoPreview(
+      id: id,
+      title: title,
+      body: body,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      isFavorite: isFavorite,
+    );
+  }
 }
 
 final class MemoIdJsonConverter implements JsonConverter<MemoId, int> {

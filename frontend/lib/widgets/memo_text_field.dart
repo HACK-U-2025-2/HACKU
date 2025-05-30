@@ -38,12 +38,12 @@ class MemoTextField extends HookWidget {
         expands: true,
         validator: (value) {
           if (value == null || value.trim().isEmpty) {
-            return '空のメモは作成できません';
+            return '空のMyndは作成できません';
           }
           return null;
         },
         decoration: InputDecoration(
-          labelText: 'メモを入力してください',
+          labelText: 'Myndを入力してください',
           alignLabelWithHint: true,
           filled: true,
           fillColor: colorScheme.secondaryContainer,

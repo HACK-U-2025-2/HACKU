@@ -73,7 +73,7 @@ class MemoTitleInputDialog extends StatelessWidget {
     return InputDialog(
       title: 'タイトルを編集',
       actionLabel: '変更',
-      hintText: 'メモのタイトル',
+      hintText: 'Myndのタイトル',
       initialValue: initialValue,
       maxLength: memoTitleMaxLength,
       validator: (value) {
@@ -96,7 +96,7 @@ class AddMemoTagInputDialog extends StatelessWidget {
     return InputDialog(
       title: 'タグを追加',
       actionLabel: '追加',
-      hintText: 'メモのタグ',
+      hintText: 'Myndのタグ',
       maxLength: memoTagNameMaxLength,
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -117,13 +117,13 @@ class AddMemoFromTextDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InputDialog(
-      title: 'メモを追加',
+      title: 'Myndを追加',
       actionLabel: '追加',
-      hintText: 'メモの内容',
+      hintText: 'Myndの内容',
       expandsWithInputText: true,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'メモを入力してください';
+          return 'Myndを入力してください';
         }
         return null;
       },
