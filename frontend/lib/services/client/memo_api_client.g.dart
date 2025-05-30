@@ -52,6 +52,70 @@ class _MemoApiClient implements MemoApiClient {
   }
 
   @override
+  Future<List<MemoPreview>> getRelatedMemos({required int memoId}) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<List<MemoPreview>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/memos/${memoId}/relate',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<MemoPreview> _value;
+    try {
+      _value =
+          _result.data!
+              .map(
+                (dynamic i) => MemoPreview.fromJson(i as Map<String, dynamic>),
+              )
+              .toList();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<List<MemoPreview>> getRandomMemos() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<List<MemoPreview>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/memos/random',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<MemoPreview> _value;
+    try {
+      _value =
+          _result.data!
+              .map(
+                (dynamic i) => MemoPreview.fromJson(i as Map<String, dynamic>),
+              )
+              .toList();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<Memo> createMemo({required MemoCreateRequest request}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -176,6 +240,29 @@ class _MemoApiClient implements MemoApiClient {
   }
 
   @override
+  Future<void> updateMemoFavorite({
+    required int memoId,
+    required MemoFavoriteUpdateRequest request,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request.toJson());
+    final _options = _setStreamType<void>(
+      Options(method: 'PATCH', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/memos/${memoId}/favorite',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    await _dio.fetch<void>(_options);
+  }
+
+  @override
   Future<void> deleteMemo({required int memoId}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -217,6 +304,39 @@ class _MemoApiClient implements MemoApiClient {
       _value =
           _result.data!
               .map((dynamic i) => Tag.fromJson(i as Map<String, dynamic>))
+              .toList();
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<List<MemoEmbedding>> getMemoEmbeddings() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<List<MemoEmbedding>>(
+      Options(method: 'GET', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/memos/embeddings',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<MemoEmbedding> _value;
+    try {
+      _value =
+          _result.data!
+              .map(
+                (dynamic i) =>
+                    MemoEmbedding.fromJson(i as Map<String, dynamic>),
+              )
               .toList();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);

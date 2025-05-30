@@ -24,6 +24,7 @@ class MemoCreateRequest {
     required this.raw,
     this.tagNames = const [],
     this.needProofreading = false,
+    this.needGenerateTags = true,
   });
 
   factory MemoCreateRequest.fromJson(Map<String, dynamic> json) =>
@@ -31,6 +32,7 @@ class MemoCreateRequest {
   final String raw;
   final List<String> tagNames;
   final bool needProofreading;
+  final bool needGenerateTags;
 
   Map<String, dynamic> toJson() => _$MemoCreateRequestToJson(this);
 }
@@ -66,6 +68,17 @@ class MemoTagsUpdateRequest {
   final List<String> tagNames;
 
   Map<String, dynamic> toJson() => _$MemoTagsUpdateRequestToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+class MemoFavoriteUpdateRequest {
+  const MemoFavoriteUpdateRequest({required this.isFavorite});
+
+  factory MemoFavoriteUpdateRequest.fromJson(Map<String, dynamic> json) =>
+      _$MemoFavoriteUpdateRequestFromJson(json);
+  final bool isFavorite;
+
+  Map<String, dynamic> toJson() => _$MemoFavoriteUpdateRequestToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
