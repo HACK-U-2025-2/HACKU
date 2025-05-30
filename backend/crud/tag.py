@@ -120,7 +120,6 @@ def add_generate_tags(
         ai_generate_tags = list(set(generate_tag_names) - set(tag_names))
 
     modified_generate_tags = replace_with_similar_tags(db, ai_generate_tags)
-
     return list(dict.fromkeys(tag_names + modified_generate_tags))
 
 
@@ -152,6 +151,6 @@ def fetch_tags_relate_by_embedding(
     query = query.order_by(cosine_distance_query)
 
     result = db.execute(query)
-    tag = result.unique().scalars().one_or_none()
+    tag = result.unique().scalars().first()
 
     return tag

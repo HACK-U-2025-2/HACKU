@@ -138,7 +138,7 @@ def fetch_memos_relate_by_id(db: Session, user_id: str, memo_id: int, get_num: i
 
     raise_if_none(target_memo_embedding, "MemoEmbedding")
 
-    fetch_memos_relate_by_embedding(
+    return fetch_memos_relate_by_embedding(
         db, user_id, target_memo_embedding, get_num, memo_id
     )
 
