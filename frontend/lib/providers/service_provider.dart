@@ -37,8 +37,6 @@ Dio authDio(Ref ref) {
 
 @Riverpod(keepAlive: true)
 String baseUrl(Ref ref) {
-  return 'https://hacku2025.typhoonmoon.com';
-  // return 'https://hacku2025_sub.typhoonmoon.com';
   // AndroidエミュレータでのホストPCのlocalhostのIPアドレスは10.0.2.2にマッピングされる
   final localhost = UniversalPlatform.isAndroid ? '10.0.2.2' : 'localhost';
   const port = 8000;

@@ -140,7 +140,6 @@ class _AddMemoFab extends HookConsumerWidget {
                 builder: (context) => const AddMemoFromTextDialog(),
               );
               if (rawMemo != null) {
-                needProofreading.value = true;
                 await submitNewMemo(rawMemo);
               }
             },
@@ -157,6 +156,7 @@ class _AddMemoFab extends HookConsumerWidget {
             onPressed: () async {
               final transcription = await pickTranscribed(context);
               if (transcription != null) {
+                needProofreading.value = true;
                 await submitNewMemo(transcription);
               }
             },
