@@ -88,7 +88,7 @@ def fetch_tags_by_names(db: Session, tag_names: List[str]):
     return result.scalars().all()
 
 
-def delete_invalid_tags(db: Session):
+def delete_unconnected_tags(db: Session):
     sub_query = select(MemoTags.tag_id)
 
     query = delete(Tags)

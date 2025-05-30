@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from embedding.loader import load_embedding_model
 from fastapi import FastAPI
 from llm.utils.loader import load_llm_model
-from routers import auth, memo, memo_websocket, tag
+from routers import auth, demo, memo, memo_websocket, tag
 from scheduler.start_scheduller import start_scheduler
 
 logger = logging.getLogger(__name__)
@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    start_scheduler()
     # ── ① モデル類をロード ─────────────────────────────
     model, tokenizer = load_llm_model()
     load_embedding_model()
@@ -30,7 +31,7 @@ async def lifespan(app: FastAPI):
         logger.warning("LLM warm-up skipped: %s", e)
 
     # ── ③ アプリ起動へ ────────────────────────────────
-    start_scheduler()
+
     yield
 
 
@@ -46,3 +47,4 @@ app.include_router(auth.router)
 app.include_router(tag.router)
 app.include_router(memo.router)
 app.include_router(memo_websocket.router)
+app.include_router(demo.router)
