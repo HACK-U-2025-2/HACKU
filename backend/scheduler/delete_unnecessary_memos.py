@@ -1,8 +1,11 @@
+import logging
 from datetime import datetime
 
 from crud.memo import delete_memo_by_id, fetch_not_favorite_memos
 from llm.predict_archive import predict_archive
 from sqlalchemy.orm import Session
+
+logger = logging.getLogger(__name__)
 
 
 def delete_unnecessary_memos(db: Session, is_demo: bool):
@@ -20,7 +23,7 @@ def delete_unnecessary_memos(db: Session, is_demo: bool):
             if is_demo:
                 continue
             delete_memo_by_id(db, memo.user_id, memo.id)
-            print(log)
+            logger.warning(log)
         else:
             log = f"{memo.id}:{memo.title} is not deleted."
             deleted_logs.append(log)

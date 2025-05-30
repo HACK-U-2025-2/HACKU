@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    start_scheduler()
     # ── ① モデル類をロード ─────────────────────────────
     model, tokenizer = load_llm_model()
     load_embedding_model()
@@ -30,7 +31,7 @@ async def lifespan(app: FastAPI):
         logger.warning("LLM warm-up skipped: %s", e)
 
     # ── ③ アプリ起動へ ────────────────────────────────
-    start_scheduler()
+
     yield
 
 

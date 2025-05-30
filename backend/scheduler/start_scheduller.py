@@ -1,3 +1,5 @@
+import logging
+
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from database import SessionLocal
@@ -7,16 +9,22 @@ from utils.jst_now import JST
 
 scheduler = AsyncIOScheduler(timezone=JST)
 
+logger = logging.getLogger(__name__)
+
 
 def tag_wrapper():
+    logger.warning(f"tag auto delete")
     db = SessionLocal()
     try:
         delete_invalid_tags(db)
+    except Exception as e:
+        logger.error("Error tag auto delete: %s", e)
     finally:
         db.close()
 
 
 def memo_wrapper():
+    logger.warning(f"memo auto delete")
     db = SessionLocal()
     try:
         delete_unnecessary_memos(db, is_demo=False)
