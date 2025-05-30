@@ -7,7 +7,7 @@ from models.memo import Memos
 from models.memotag import MemoTags
 from models.tag import Tags
 from models.tagembeddings import TagEmbeddings
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, desc, func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
@@ -47,6 +47,8 @@ def fetch_tags_with_count(db: Session, user_id: str, search_word: Optional[str] 
 
     if search_word:
         query = query.where(Tags.name.ilike(f"%{search_word}%"))
+
+    query = query.order_by(desc("used_num"))
 
     result = db.execute(query)
 
