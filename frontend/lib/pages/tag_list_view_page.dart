@@ -58,7 +58,7 @@ class TagListViewPage extends HookConsumerWidget {
                                     .map(
                                       (tag) => CheckboxListTile(
                                         title: Text(tag.name),
-                                        // TODO(Rozelin-dc): メモ数の表示
+                                        secondary: Text(tag.usedNum.toString()),
                                         value: selectedTagNames.value.contains(
                                           tag.name,
                                         ),
@@ -77,7 +77,9 @@ class TagListViewPage extends HookConsumerWidget {
                                             }..remove(tag.name);
                                           }
                                         },
-                                        contentPadding: EdgeInsets.zero,
+                                        contentPadding: const EdgeInsets.only(
+                                          right: 16,
+                                        ),
                                         controlAffinity:
                                             ListTileControlAffinity.leading,
                                       ),
