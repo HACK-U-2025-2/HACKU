@@ -2,13 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_quill/flutter_quill.dart';
-import 'package:frontend/models/memo.dart';
-import 'package:frontend/models/memo_preview.dart';
 import 'package:frontend/providers/memo_edit_provider.dart';
 import 'package:frontend/providers/memo_provider.dart';
 import 'package:frontend/providers/repository_provider.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
 import 'package:frontend/types/extensions/snack_bar.dart';
+import 'package:frontend/widgets/error_with_refresh.dart';
 import 'package:frontend/widgets/memo_card.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -23,16 +22,7 @@ class MemoBodyView extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isEditingMode = ref.watch(isEditingModeProvider);
 
-    // TODO(Rozelin-dc): memoを参照する
-    final relatedMemos = List.generate(
-      3,
-      (index) => MemoPreview(
-        id: MemoId(index),
-        title: 'Myndタイトル$index',
-        body: 'Mynd$indexの要約',
-        createdAt: DateTime.now(),
-      ),
-    );
+    final relatedMemos = ref.watch(relatedMemosProvider(memo.id));
 
     if (isEditingMode) {
       return _EditView(memo);
@@ -54,16 +44,30 @@ class MemoBodyView extends HookConsumerWidget {
             ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: relatedMemos.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 8),
-            itemBuilder: (context, index) {
-              final relatedMemo = relatedMemos[index];
-              return MemoCard(memoPreview: relatedMemo, showBody: false);
-            },
-          ),
+          if (relatedMemos.isLoading)
+            const Center(child: CircularProgressIndicator())
+          else if (relatedMemos.hasError)
+            Center(
+              child: ErrorWithRefresh(
+                errorMessage: '関連Myndの取得に失敗しました。やり直してください。',
+                onRefresh: () {
+                  ref.invalidate(relatedMemosProvider(memo.id));
+                },
+              ),
+            )
+          else if (relatedMemos.requireValue.isEmpty)
+            const Text('関連Myndはありません。')
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: relatedMemos.requireValue.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final relatedMemo = relatedMemos.requireValue[index];
+                return MemoCard(memoPreview: relatedMemo, showBody: false);
+              },
+            ),
         ],
       ),
     );

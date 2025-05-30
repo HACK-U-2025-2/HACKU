@@ -140,5 +140,127 @@ class _MemoProviderElement extends AutoDisposeFutureProviderElement<Memo>
   MemoId get id => (origin as MemoProvider).id;
 }
 
+String _$relatedMemosHash() => r'7f79799e1a6dbd0a2cfd79a9ed919684d6482ec6';
+
+/// See also [relatedMemos].
+@ProviderFor(relatedMemos)
+const relatedMemosProvider = RelatedMemosFamily();
+
+/// See also [relatedMemos].
+class RelatedMemosFamily extends Family<AsyncValue<List<MemoPreview>>> {
+  /// See also [relatedMemos].
+  const RelatedMemosFamily();
+
+  /// See also [relatedMemos].
+  RelatedMemosProvider call(MemoId id) {
+    return RelatedMemosProvider(id);
+  }
+
+  @override
+  RelatedMemosProvider getProviderOverride(
+    covariant RelatedMemosProvider provider,
+  ) {
+    return call(provider.id);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'relatedMemosProvider';
+}
+
+/// See also [relatedMemos].
+class RelatedMemosProvider
+    extends AutoDisposeFutureProvider<List<MemoPreview>> {
+  /// See also [relatedMemos].
+  RelatedMemosProvider(MemoId id)
+    : this._internal(
+        (ref) => relatedMemos(ref as RelatedMemosRef, id),
+        from: relatedMemosProvider,
+        name: r'relatedMemosProvider',
+        debugGetCreateSourceHash:
+            const bool.fromEnvironment('dart.vm.product')
+                ? null
+                : _$relatedMemosHash,
+        dependencies: RelatedMemosFamily._dependencies,
+        allTransitiveDependencies:
+            RelatedMemosFamily._allTransitiveDependencies,
+        id: id,
+      );
+
+  RelatedMemosProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.id,
+  }) : super.internal();
+
+  final MemoId id;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<MemoPreview>> Function(RelatedMemosRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: RelatedMemosProvider._internal(
+        (ref) => create(ref as RelatedMemosRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        id: id,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<MemoPreview>> createElement() {
+    return _RelatedMemosProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RelatedMemosProvider && other.id == id;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, id.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin RelatedMemosRef on AutoDisposeFutureProviderRef<List<MemoPreview>> {
+  /// The parameter `id` of this provider.
+  MemoId get id;
+}
+
+class _RelatedMemosProviderElement
+    extends AutoDisposeFutureProviderElement<List<MemoPreview>>
+    with RelatedMemosRef {
+  _RelatedMemosProviderElement(super.provider);
+
+  @override
+  MemoId get id => (origin as RelatedMemosProvider).id;
+}
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
