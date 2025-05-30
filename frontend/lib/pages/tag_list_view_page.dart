@@ -12,11 +12,24 @@ import 'package:frontend/widgets/error_with_refresh.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 @RoutePage()
-class TagListViewPage extends HookConsumerWidget {
+class TagListViewPage extends StatefulHookConsumerWidget {
   const TagListViewPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TagListViewPage> createState() => _TagListViewPageState();
+}
+
+class _TagListViewPageState extends ConsumerState<TagListViewPage>
+    with AutoRouteAwareStateMixin {
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    // このページに戻ってきたときに、タグを再取得
+    ref.invalidate(filteredTagListProvider);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final tagList = ref.watch(filteredTagListProvider);
     final selectedTagNames = useState<Set<String>>({});
 
