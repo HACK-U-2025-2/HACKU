@@ -27,9 +27,12 @@ class MemoTitleMenu extends ConsumerWidget {
           await ref
               .read(memoRepositoryProvider)
               .updateMemoTitle(memo.id, newTitle);
+
+          // データを再取得
+          final newMemo = await ref.refresh(memoProvider(memo.id).future);
+
           if (context.mounted) {
-            // データを再取得
-            ref.invalidate(memoProvider(memo.id));
+            ref.read(randomMemoListProvider.notifier).updateMemo(newMemo);
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(const SnackBar(content: Text('タイトルを更新しました')));

@@ -25,8 +25,21 @@ Future<List<MemoPreview>> memoList(Ref ref) async {
 }
 
 @riverpod
-Future<List<MemoPreview>> randomMemoList(Ref ref) async {
-  return ref.watch(memoRepositoryProvider).getRandomMemos();
+class RandomMemoList extends _$RandomMemoList {
+  @override
+  Future<List<MemoPreview>> build() async {
+    return ref.watch(memoRepositoryProvider).getRandomMemos();
+  }
+
+  /// キャッシュ上で更新する
+  /// タイトル更新時などに呼び出すことを想定
+  void updateMemo(Memo memo) {
+    state = AsyncData(
+      (state.value ?? [])
+          .map((m) => m.id == memo.id ? memo.toPreview() : m)
+          .toList(),
+    );
+  }
 }
 
 @riverpod
