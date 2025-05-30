@@ -7,7 +7,7 @@ from crud.memo import (
     fetch_memo_by_ids,
     fetch_memos,
     fetch_memos_randomly,
-    fetch_memos_relate,
+    fetch_memos_relate_by_id,
     update_memo_by_id,
     update_memo_favorite,
 )
@@ -101,7 +101,9 @@ async def handle_read_memo_relates(
     user: UserDependency,
     memo_id: int,
 ):
-    memos = fetch_memos_relate(db=db, user_id=user.user_id, memo_id=memo_id)
+    memos = fetch_memos_relate_by_id(
+        db=db, user_id=user.user_id, memo_id=memo_id, get_num=3
+    )
     return [MemoPreviewResponse.model_validate(m) for m in memos]
 
 
@@ -116,6 +118,7 @@ async def handle_create_memo(
         user_id=user.user_id,
         raw=request.raw,
         tag_names=request.tag_names,
+        need_generate_tags=request.need_generate_tags,
         need_proofreading=request.need_proofreading,
     )
 
