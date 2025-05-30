@@ -6,7 +6,6 @@ import 'package:frontend/pages/errors/memo_not_found_page.dart';
 import 'package:frontend/providers/memo_edit_provider.dart';
 import 'package:frontend/providers/memo_provider.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
-import 'package:frontend/widgets/custom_back_button.dart';
 import 'package:frontend/widgets/dialogs/input_dialog.dart';
 import 'package:frontend/widgets/favorite_button.dart';
 import 'package:frontend/widgets/memo_details/memo_body_view.dart';
@@ -85,7 +84,6 @@ class MemoDetailsPage extends HookConsumerWidget {
             },
           ),
         ],
-        leading: const CustomBackButton(),
       ),
       floatingActionButton:
           showFab

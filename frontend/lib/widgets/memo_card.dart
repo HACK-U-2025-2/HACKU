@@ -11,18 +11,24 @@ class MemoCard extends HookWidget {
     super.key,
     this.showBody = true,
     this.showFavoriteButton = true,
+    this.useReplaceNavigation = false,
   });
 
   final MemoPreview memoPreview;
   final bool showBody;
   final bool showFavoriteButton;
+  final bool useReplaceNavigation;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     void onTap() {
-      context.router.push(MemoDetailsRoute(memoId: memoPreview.id));
+      if (useReplaceNavigation) {
+        context.router.replace(MemoDetailsRoute(memoId: memoPreview.id));
+      } else {
+        context.router.push(MemoDetailsRoute(memoId: memoPreview.id));
+      }
     }
 
     // 一覧系の画面ではお気に入り状態の変更だけで再度APIを叩きたくないので、表示用にstateを用意する
