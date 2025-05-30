@@ -22,7 +22,7 @@ final memoListProvider = AutoDisposeFutureProvider<List<MemoPreview>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef MemoListRef = AutoDisposeFutureProviderRef<List<MemoPreview>>;
-String _$memoEmbeddingsHash() => r'6825e7d730ec535da36b8e77d72566347963278f';
+String _$memoEmbeddingsHash() => r'9dac5e5c74c0ffe866b0feaa9b50fcd611576887';
 
 /// See also [memoEmbeddings].
 @ProviderFor(memoEmbeddings)
