@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend/models/memo.dart';
 import 'package:frontend/repositories/memo_repository/in_memory_memo_repository.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
 import 'package:frontend/widgets/dialogs/sort_dialog.dart';
@@ -14,6 +13,11 @@ void main() {
 
     test('getMemos returns empty list initially', () async {
       final memos = await repository.getMemos();
+      expect(memos, isEmpty);
+    });
+
+    test('getRandomMemos returns empty list initially', () async {
+      final memos = await repository.getRandomMemos();
       expect(memos, isEmpty);
     });
 
@@ -210,6 +214,94 @@ void main() {
       expect(asc.first.title, anyOf('Memo 2', 'A updated'));
       expect(desc.first.title, anyOf('Memo 2', 'A updated'));
       expect(asc.first.title != desc.first.title, isTrue);
+    });
+
+    test('getRelatedMemos returns up to 3 other memos', () async {
+      await repository.addMemo('A'); // id:1
+      await repository.addMemo('B'); // id:2
+      await repository.addMemo('C'); // id:3
+      await repository.addMemo('D'); // id:4
+      final related = await repository.getRelatedMemos(const MemoId(1));
+      expect(related.length, lessThanOrEqualTo(3));
+      expect(related.every((m) => m.id != const MemoId(1)), isTrue);
+    });
+
+    test('getRandomMemos returns up to 3 random memos', () async {
+      await repository.addMemo('A');
+      await repository.addMemo('B');
+      await repository.addMemo('C');
+      final randomMemos = await repository.getRandomMemos();
+      expect(randomMemos.length, lessThanOrEqualTo(3));
+    });
+
+    test('getTags filters by keyword', () async {
+      final tags = await repository.getTags(keyword: '1');
+      expect(tags.length, 1);
+      expect(tags.first.name, 'tag1');
+    });
+
+    test('getMemoEmbeddings returns embedding for each memo', () async {
+      await repository.addMemo('A');
+      await repository.addMemo('B');
+      final embeddings = await repository.getMemoEmbeddings();
+      expect(embeddings.length, 2);
+      expect(embeddings.first.simpleEmbedding.length, 3);
+    });
+
+    test('updateMemoFavorite updates favorite flag', () async {
+      await repository.addMemo('A');
+      await repository.updateMemoFavorite(const MemoId(1), isFavorite: true);
+      final memo = await repository.getMemoById(const MemoId(1));
+      expect(memo.isFavorite, isTrue);
+    });
+
+    test('addMemo increments usedNum of picked tags', () async {
+      await repository.addMemo('テストメモ');
+      final tags = await repository.getTags();
+      // どのタグが選ばれるかはランダムだが、必ず2つのタグのusedNumが1になる
+      final usedTags = tags.where((t) => t.usedNum == 1).toList();
+      expect(usedTags.length, 2);
+      final unusedTags = tags.where((t) => t.usedNum == 0).toList();
+      expect(usedTags.length + unusedTags.length, tags.length);
+    });
+
+    test(
+      'updateMemoTags increments and decrements usedNum correctly',
+      () async {
+        await repository.addMemo('テストメモ');
+        // 既存タグ名を取得
+        final tagsBefore = await repository.getTags();
+        final pickedTagNames =
+            tagsBefore.where((t) => t.usedNum == 1).map((t) => t.name).toList();
+        // 既存タグ1つと新規タグ1つで更新
+        await repository.updateMemoTags(const MemoId(1), [
+          pickedTagNames.first,
+          '新規タグ',
+        ]);
+        final tagsAfter = await repository.getTags();
+        // 既存タグ1つはusedNum=1、新規タグもusedNum=1、元々選ばれていたもう1つの既存タグはusedNum=0
+        expect(
+          tagsAfter.firstWhere((t) => t.name == pickedTagNames.first).usedNum,
+          1,
+        );
+        expect(tagsAfter.firstWhere((t) => t.name == '新規タグ').usedNum, 1);
+        final removedTag = pickedTagNames.length > 1 ? pickedTagNames[1] : null;
+        if (removedTag != null) {
+          expect(tagsAfter.firstWhere((t) => t.name == removedTag).usedNum, 0);
+        }
+      },
+    );
+
+    test('deleteMemo decrements usedNum of related tags', () async {
+      await repository.addMemo('テストメモ');
+      final tagsBefore = await repository.getTags();
+      final pickedTagNames =
+          tagsBefore.where((t) => t.usedNum == 1).map((t) => t.name).toList();
+      await repository.deleteMemo(const MemoId(1));
+      final tagsAfter = await repository.getTags();
+      for (final tagName in pickedTagNames) {
+        expect(tagsAfter.firstWhere((t) => t.name == tagName).usedNum, 0);
+      }
     });
   });
 }
