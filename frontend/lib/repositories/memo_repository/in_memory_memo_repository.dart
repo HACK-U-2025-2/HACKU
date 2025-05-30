@@ -44,6 +44,7 @@ class InMemoryMemoRepository implements MemoRepository {
               body: memo.body,
               createdAt: memo.createdAt,
               updatedAt: memo.updatedAt,
+              isFavorite: memo.isFavorite,
             ),
           )
           .sorted((a, b) {
@@ -81,6 +82,7 @@ class InMemoryMemoRepository implements MemoRepository {
             body: m.body,
             createdAt: m.createdAt,
             updatedAt: m.updatedAt,
+            isFavorite: m.isFavorite,
           ),
         )
         .toList();
@@ -98,6 +100,7 @@ class InMemoryMemoRepository implements MemoRepository {
             body: memo.body,
             createdAt: memo.createdAt,
             updatedAt: memo.updatedAt,
+            isFavorite: memo.isFavorite,
           ),
         )
         .toList();

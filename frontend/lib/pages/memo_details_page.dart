@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:frontend/models/memo.dart';
 import 'package:frontend/pages/errors/memo_error_with_refresh_page.dart';
 import 'package:frontend/pages/errors/memo_not_found_page.dart';
 import 'package:frontend/providers/memo_edit_provider.dart';
@@ -9,7 +8,7 @@ import 'package:frontend/providers/memo_provider.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
 import 'package:frontend/widgets/custom_back_button.dart';
 import 'package:frontend/widgets/dialogs/input_dialog.dart';
-import 'package:frontend/widgets/favorite_icon.dart';
+import 'package:frontend/widgets/favorite_button.dart';
 import 'package:frontend/widgets/memo_details/memo_body_view.dart';
 import 'package:frontend/widgets/memo_details/memo_raw_view.dart';
 import 'package:frontend/widgets/memo_details/memo_title_menu.dart';
@@ -47,8 +46,6 @@ class MemoDetailsPage extends HookConsumerWidget {
 
     final memo = memoValue.requireValue;
     final tags = ref.watch(memoTagNamesProvider);
-    // TODO(Rozelin-dc): memoのフラグを参照するように
-    final isFavorite = useState(false);
 
     final currentTab = useState(MemoDetailsTab.body);
     final tabController = useTabController(
@@ -80,11 +77,11 @@ class MemoDetailsPage extends HookConsumerWidget {
       appBar: AppBar(
         title: MemoTitleMenu(memo: memo),
         actions: [
-          IconButton(
-            icon: FavoriteIcon(isFavorite: isFavorite.value),
-            onPressed: () {
-              isFavorite.value = !isFavorite.value;
-              // TODO(Rozelin-dc): API処理
+          FavoriteButton(
+            memoId: memo.id,
+            isFavorite: memo.isFavorite,
+            afterToggle: () {
+              ref.invalidate(memoProvider(memoId));
             },
           ),
         ],
