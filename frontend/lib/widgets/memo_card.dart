@@ -47,6 +47,7 @@ class MemoCard extends HookWidget {
                     IconButton(
                       visualDensity: const VisualDensity(
                         vertical: VisualDensity.minimumDensity,
+                        horizontal: VisualDensity.minimumDensity,
                       ),
                       icon: FavoriteIcon(isFavorite: isFavorite.value),
                       onPressed: () {
@@ -55,7 +56,7 @@ class MemoCard extends HookWidget {
                       },
                     ),
                   ] else
-                    _MemoTitle(title: memoPreview.title),
+                    Flexible(child: _MemoTitle(title: memoPreview.title)),
                 ],
               ),
               if (showBody)

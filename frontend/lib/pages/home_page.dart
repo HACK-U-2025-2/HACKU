@@ -121,10 +121,13 @@ class _MemoHorizontalListView extends ConsumerWidget {
       separatorBuilder: (context, index) => const SizedBox(width: 4),
       itemBuilder: (context, index) {
         final memoPreview = data[index];
-        return MemoCard(
-          memoPreview: memoPreview,
-          showBody: false,
-          showFavoriteButton: false,
+        return ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 256),
+          child: MemoCard(
+            memoPreview: memoPreview,
+            showBody: false,
+            showFavoriteButton: false,
+          ),
         );
       },
     );
