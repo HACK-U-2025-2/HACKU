@@ -10,7 +10,11 @@ class CustomBackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BackButton(
       onPressed: () {
-        context.router.popUntil((route) => route.data?.toDestination() != null);
+        context.router.popUntil((route) {
+          final destination = route.data?.toDestination();
+          // 思考空間はドロワー内に存在するが、思考空間ページにドロワーが表示されない
+          return destination != null && destination != Destination.sphere;
+        });
       },
     );
   }

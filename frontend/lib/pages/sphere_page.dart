@@ -49,63 +49,67 @@ class SpherePage extends HookConsumerWidget {
       extendBodyBehindAppBar: true,
       backgroundColor: colorScheme.surface,
       appBar: AppBar(title: const Text('思考空間')),
-      body: Stack(
-        children: [
-          GraphifyView(
-            controller: controller,
-            onConsoleMessage: (message) {
-              debugPrint('Console: $message');
-            },
-            onCreated: () {
-              isSphereLoading.value = false;
-            },
-            initialOptions: {
-              'backgroundColor': Colors.transparent.toEchartsString(),
-              'series': [
-                {
-                  'type': 'scatter3D',
-                  'symbolSize': 20,
-                  'data': data,
-                  'label': const {
-                    'show': true,
-                    'formatter': '{b}',
-                    'textStyle': {'fontSize': 10}, // 実際にデータを入れてから調整する
+      body: SafeArea(
+        child: Stack(
+          children: [
+            GraphifyView(
+              controller: controller,
+              onConsoleMessage: (message) {
+                debugPrint('Console: $message');
+              },
+              onCreated: () {
+                isSphereLoading.value = false;
+              },
+              initialOptions: {
+                'backgroundColor': Colors.transparent.toEchartsString(),
+                'series': [
+                  {
+                    'type': 'scatter3D',
+                    'symbolSize': 20,
+                    'data': data,
+                    'label': const {
+                      'show': true,
+                      'formatter': '{b}',
+                      'textStyle': {'fontSize': 10}, // 実際にデータを入れてから調整する
+                    },
+                    'itemStyle': {
+                      'color': colorScheme.primary.toEchartsString(),
+                    },
                   },
-                  'itemStyle': {'color': colorScheme.primary.toEchartsString()},
-                },
-                ...wireframe.meridianLines.map(
-                  (line) => {
-                    'type': 'line3D',
-                    'data': line,
-                    'lineStyle': lineStyle,
+                  ...wireframe.meridianLines.map(
+                    (line) => {
+                      'type': 'line3D',
+                      'data': line,
+                      'lineStyle': lineStyle,
+                    },
+                  ),
+                  ...wireframe.parallelLines.map(
+                    (line) => {
+                      'type': 'line3D',
+                      'data': line,
+                      'lineStyle': lineStyle,
+                    },
+                  ),
+                ],
+                'xAxis3D': const {'type': 'value', 'max': 1, 'min': -1},
+                'yAxis3D': const {'type': 'value', 'max': 1, 'min': -1},
+                'zAxis3D': const {'type': 'value', 'max': 1, 'min': -1},
+                'grid3D': const {
+                  'show': false,
+                  'boxWidth': 100,
+                  'boxHeight': 100,
+                  'viewControl': {
+                    'autoRotate': true,
+                    'autoRotateSpeed': 10,
+                    'distance': 250,
                   },
-                ),
-                ...wireframe.parallelLines.map(
-                  (line) => {
-                    'type': 'line3D',
-                    'data': line,
-                    'lineStyle': lineStyle,
-                  },
-                ),
-              ],
-              'xAxis3D': const {'type': 'value', 'max': 1, 'min': -1},
-              'yAxis3D': const {'type': 'value', 'max': 1, 'min': -1},
-              'zAxis3D': const {'type': 'value', 'max': 1, 'min': -1},
-              'grid3D': const {
-                'show': false,
-                'boxWidth': 100,
-                'boxHeight': 100,
-                'viewControl': {
-                  'autoRotate': true,
-                  'autoRotateSpeed': 10,
-                  'distance': 250,
                 },
               },
-            },
-          ),
-          if (isSphereLoading.value)
-            const Center(child: CircularProgressIndicator()),
-        ],
+            ),
+            if (isSphereLoading.value)
+              const Center(child: CircularProgressIndicator()),
+          ],
+        ),
       ),
     );
   }
