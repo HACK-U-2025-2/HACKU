@@ -33,46 +33,56 @@ class MemoCard extends HookWidget {
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 8,
+            spacing: 4,
             children: [
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 4,
-                  children: [
-                    Text(
-                      memoPreview.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (showFavoriteButton) ...[
+                    Expanded(child: _MemoTitle(title: memoPreview.title)),
+                    FavoriteButton(
+                      memoId: memoPreview.id,
+                      isFavorite: isFavorite.value,
+                      afterToggle: () {
+                        isFavorite.value = !isFavorite.value;
+                      },
                     ),
-                    if (showBody)
-                      Text(
-                        memoPreview.body,
-                        style: theme.textTheme.bodyMedium,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 3,
-                      ),
-                  ],
-                ),
+                  ] else
+                    Flexible(child: _MemoTitle(title: memoPreview.title)),
+                ],
               ),
-              if (showFavoriteButton)
-                FavoriteButton(
-                  memoId: memoPreview.id,
-                  isFavorite: isFavorite.value,
-                  afterToggle: () {
-                    isFavorite.value = !isFavorite.value;
-                  },
+              if (showBody)
+                Text(
+                  memoPreview.body,
+                  style: theme.textTheme.bodyMedium,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 3,
                 ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _MemoTitle extends StatelessWidget {
+  const _MemoTitle({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Text(
+      title,
+      style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
     );
   }
 }

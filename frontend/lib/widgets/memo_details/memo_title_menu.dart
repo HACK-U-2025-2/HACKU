@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/memo.dart';
+import 'package:frontend/providers/memo_list_provider.dart';
 import 'package:frontend/providers/memo_provider.dart';
 import 'package:frontend/providers/repository_provider.dart';
 import 'package:frontend/repositories/memo_repository/memo_repository.dart';
@@ -27,9 +27,12 @@ class MemoTitleMenu extends ConsumerWidget {
           await ref
               .read(memoRepositoryProvider)
               .updateMemoTitle(memo.id, newTitle);
+
+          // データを再取得
+          final newMemo = await ref.refresh(memoProvider(memo.id).future);
+
           if (context.mounted) {
-            // データを再取得
-            ref.invalidate(memoProvider(memo.id));
+            ref.read(randomMemoListProvider.notifier).updateMemo(newMemo);
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(const SnackBar(content: Text('タイトルを更新しました')));
@@ -64,6 +67,7 @@ class MemoTitleMenu extends ConsumerWidget {
         try {
           await ref.read(memoRepositoryProvider).deleteMemo(memo.id);
           if (context.mounted) {
+            ref.invalidate(randomMemoListProvider);
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(const SnackBar(content: Text('Myndを削除しました')));
