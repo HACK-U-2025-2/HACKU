@@ -45,7 +45,7 @@ class MemoDetailsPage extends HookConsumerWidget {
     }
 
     final memo = memoValue.requireValue;
-    final tags = ref.watch(memoTagNamesProvider);
+    final tags = ref.watch(memoTagNamesProvider(memo.id));
 
     final currentTab = useState(MemoDetailsTab.body);
     final tabController = useTabController(
@@ -58,7 +58,7 @@ class MemoDetailsPage extends HookConsumerWidget {
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(memoTagNamesProvider.notifier).setTags(memo.tags);
+        ref.read(memoTagNamesProvider(memo.id).notifier).setTags(memo.tags);
       });
       return null;
     }, [memo]);
@@ -90,6 +90,7 @@ class MemoDetailsPage extends HookConsumerWidget {
       floatingActionButton:
           showFab
               ? FloatingActionButton(
+                heroTag: null,
                 onPressed: ref.read(isEditingModeProvider.notifier).toggle,
                 child: const Icon(Icons.edit),
               )
@@ -99,7 +100,7 @@ class MemoDetailsPage extends HookConsumerWidget {
           spacing: 8,
           children: [
             const SizedBox(height: 8),
-            _TagsHorizontalListView(tagNames: tags),
+            _TagsHorizontalListView(tagNames: tags, memoId: memo.id),
             TabBar(
               controller: tabController,
               tabs: [
@@ -126,8 +127,9 @@ class MemoDetailsPage extends HookConsumerWidget {
 }
 
 class _TagsHorizontalListView extends ConsumerWidget {
-  const _TagsHorizontalListView({required this.tagNames});
+  const _TagsHorizontalListView({required this.tagNames, required this.memoId});
 
+  final MemoId memoId;
   final List<String> tagNames;
 
   @override
@@ -148,11 +150,11 @@ class _TagsHorizontalListView extends ConsumerWidget {
           final isAddButtonIndex = isEditingMode && index == tagNames.length;
 
           if (isAddButtonIndex) {
-            return const _AddTagButton();
+            return _AddTagButton(memoId);
           }
           // 通常のタグ表示
           final tagName = tagNames[index];
-          return _TagChip(tagName: tagName);
+          return _TagChip(tagName: tagName, memoId: memoId);
         },
       ),
     );
@@ -160,11 +162,13 @@ class _TagsHorizontalListView extends ConsumerWidget {
 }
 
 class _AddTagButton extends ConsumerWidget {
-  const _AddTagButton();
+  const _AddTagButton(this.memoId);
+
+  final MemoId memoId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tagNames = ref.watch(memoTagNamesProvider);
+    final tagNames = ref.watch(memoTagNamesProvider(memoId));
     return GestureDetector(
       child: const Icon(Icons.add),
       onTap: () async {
@@ -175,7 +179,7 @@ class _AddTagButton extends ConsumerWidget {
           },
         );
         if (newTagName != null) {
-          ref.read(memoTagNamesProvider.notifier).addTag(newTagName);
+          ref.read(memoTagNamesProvider(memoId).notifier).addTag(newTagName);
         }
       },
     );
@@ -183,9 +187,10 @@ class _AddTagButton extends ConsumerWidget {
 }
 
 class _TagChip extends ConsumerWidget {
-  const _TagChip({required this.tagName});
+  const _TagChip({required this.tagName, required this.memoId});
 
   final String tagName;
+  final MemoId memoId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -198,7 +203,9 @@ class _TagChip extends ConsumerWidget {
           isEditingMode
               ? () {
                 // TODO(tyPhoon-collab): Websocketに対応時にダイアログを表示する機構を復活させる
-                ref.read(memoTagNamesProvider.notifier).removeTag(tagName);
+                ref
+                    .read(memoTagNamesProvider(memoId).notifier)
+                    .removeTag(tagName);
               }
               : null,
     );

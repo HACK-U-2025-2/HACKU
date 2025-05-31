@@ -120,7 +120,7 @@ class _EditToolBar extends ConsumerWidget {
     Future<void> update() async {
       final repo = ref.read(memoRepositoryProvider);
       final newBody = controller.document.toPlainText();
-      final newTags = ref.read(memoTagNamesProvider);
+      final newTags = ref.read(memoTagNamesProvider(id));
 
       final wasBodyChanged = newBody.trim() != memo.body.trim();
       final wasTagsChanged = !listEquals(newTags, memo.tagNames);
@@ -186,7 +186,9 @@ class _EditToolBar extends ConsumerWidget {
                 icon: const Icon(Icons.close),
                 onPressed: () {
                   // もともとのメモのタグの内容にリセット
-                  ref.read(memoTagNamesProvider.notifier).setTags(memo.tags);
+                  ref
+                      .read(memoTagNamesProvider(id).notifier)
+                      .setTags(memo.tags);
                   ref.read(isEditingModeProvider.notifier).toggle();
                 },
               ),
