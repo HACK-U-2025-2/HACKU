@@ -1,3 +1,4 @@
+import 'package:frontend/models/memo.dart';
 import 'package:frontend/models/tag.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -18,7 +19,7 @@ class IsEditingMode extends _$IsEditingMode {
 @riverpod
 class MemoTagNames extends _$MemoTagNames {
   @override
-  List<String> build() {
+  List<String> build(MemoId id) {
     return [];
   }
 
