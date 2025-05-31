@@ -34,6 +34,13 @@ async def demo_get_user_name(
     return demo_get_tag(db=db)
 
 
+@router.get("/back_times", status_code=status.HTTP_200_OK)
+async def demo_get_back_time(
+    db: DbDependency,
+):
+    return demo_backdate_memos(db, 10)
+
+
 @router.get("/auto_delete", response_model=List[str], status_code=status.HTTP_200_OK)
 async def demo_get_delete_memos_target(
     db: DbDependency,

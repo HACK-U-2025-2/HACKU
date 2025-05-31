@@ -1,6 +1,6 @@
 import ast
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from models.memo import Memos
@@ -10,7 +10,6 @@ from models.tag import Tags
 from models.tagembeddings import TagEmbeddings
 from sqlalchemy import delete, distinct, select, text
 from sqlalchemy.orm import Session
-from utils.jst_now import jst_now
 
 CSV_DIR = Path("initial_data")
 
@@ -240,3 +239,11 @@ def save_tagembedding(db: Session):
                     "embedding": list(row.embedding),
                 }
             )
+
+
+def demo_backdate_memos(db: Session, days: int = 10):
+    memos = db.query(Memos).all()
+    for memo in memos:
+        memo.created_at -= timedelta(days=days)
+        memo.updated_at -= timedelta(days=days)
+    db.commit()
