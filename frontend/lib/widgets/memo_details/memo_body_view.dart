@@ -65,7 +65,11 @@ class MemoBodyView extends HookConsumerWidget {
               separatorBuilder: (context, index) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final relatedMemo = relatedMemos.requireValue[index];
-                return MemoCard(memoPreview: relatedMemo, showBody: false);
+                return MemoCard(
+                  memoPreview: relatedMemo,
+                  showBody: false,
+                  useReplaceNavigation: true, // 詳細画面→詳細画面に遷移する際はreplaceを使用
+                );
               },
             ),
         ],
